@@ -45,12 +45,10 @@ fprintf('Wilcoxon rank sum test (one-sided) - p = %.4f\n', P);
 
 % Ergodic Harvesting Data
 % Load Ergodic data
-EH_lSNR = load(GEN_DATA_PATH('ErgodicHarvesting-WeakSignal-Sine.mat'), ...
+EH_lSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-ElectricFish-SNR-30.mat'), ...
     'oTrajList', 'sTrajList', 'dt');
-EH_hSNR = load(['./Data/ElectricFish/', ...
-    'ErgodicHarvesting-StrongSignal-Sine.mat'], ...
+EH_hSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-ElectricFish-SNR-60.mat'), ...
     'oTrajList', 'sTrajList', 'dt');
-
 % Load Infotaxis data
 IT_lSNR = load(GEN_DATA_PATH('fig3-Infotaxis-ElectricFish-SNR-30.mat'), ...
     'oTrajList', 'sTrajList', 'dt');
@@ -153,9 +151,9 @@ fprintf('Wilcoxon rank sum test (one-sided) - p = %.4f\n', P);
 
 % Mole Odor Localization
 % Ergodic Harvesting
-EH_hSNR = load(GEN_DATA_PATH('ErgodicHarvesting-StrongSignal.mat'), ...
+EH_hSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Mole-StrongSignal.mat'), ...
     'sTrajList', 'sTrajList', 'dt');
-EH_lSNR = load(GEN_DATA_PATH('ErgodicHarvesting-WeakSignal.mat'), ...
+EH_lSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Mole-WeakSignal.mat'), ...
     'sTrajList', 'sTrajList', 'dt');
 
 IT_hSNR = load(GEN_DATA_PATH('fig3-Infotaxis-Mole-SNR-60.mat'), ...
@@ -168,6 +166,12 @@ EH_lSNR.sTrajList = movmean(EH_lSNR.sTrajList, 2);
 EH_hSNR.sTrajList = movmean(EH_hSNR.sTrajList, 2);
 IT_lSNR.sTrajList = movmean(IT_lSNR.sTrajList, 2);
 IT_hSNR.sTrajList = movmean(IT_hSNR.sTrajList, 2);
+
+% % Crop intial transient
+% EH_lSNR.sTrajList = EH_lSNR.sTrajList(100:end);
+% EH_hSNR.sTrajList = EH_hSNR.sTrajList(100:end);
+% IT_lSNR.sTrajList = IT_lSNR.sTrajList(100:end);
+% IT_hSNR.sTrajList = IT_hSNR.sTrajList(100:end);
 
 % Relative exploration effort - Angular distance traveled
 EH_hSNR.moleDist = cumAngularDist(EH_hSNR.sTrajList);
