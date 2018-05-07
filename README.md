@@ -57,5 +57,6 @@ To reproduce figure 1 for example, use the following procedures:
 - Specify input parameters
   - Set `targetFig = 'fig1'` to select figure 1 as the target
   - Set `USE_PREV_DATASET = 1` to use previously simulated dataset. Alternatively, use `USE_PREV_DATASET = 0` if simulation data for figure 1 has been created through step 1
-- Run the code
-You should see new MATLAB figure panel pops up contains figure 1 panels.
+- Run the MATLAB code
+
+You should see new MATLAB figure panel pops up contains figure 1 panels and PDF(s) will be saved under `./FigureOutput/fig1/`.
