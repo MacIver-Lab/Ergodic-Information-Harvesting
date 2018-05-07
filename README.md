@@ -3,7 +3,7 @@
 ## Ergodic Information Harvesting (EIH) Tutorial
 To ease the effort of understanding how EIH works, we have included an interactive tutorial in Jupyter as well as a video published for our prior "Ergodic Exploration of Distributed Information" paper. You can find the link to them below:
 - Interactive Jupyter notebook tutorial [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/MacIver-Lab/Ergodic-Information-Harvesting/master?filepath=Tutorial%2FErgodic_Information_Harvesting_Tutorial.ipynb)
-- Video of how EIH works in action in a two-dimensional tracking case using Fisher Information instead of entropy [Link to video]()
+- Video of how EIH works in action in a two-dimensional tracking case using Fisher Information instead of entropy. [Click here to watch the video on YouTube](https://youtu.be/QZ9fGYmJ0G0)
 
 ## Simulation of EIH
 EIH is written with Python 3.6 using [Jupyter Notebook](http://jupyter.org/) or simply IPython. The simulation can be run on:
