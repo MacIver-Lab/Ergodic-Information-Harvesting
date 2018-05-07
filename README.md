@@ -1,9 +1,9 @@
 # Code and data to reproduce results from "Ergodic information harvesting as a behavioral strategy for complex environments"
 
 ## Ergodic Information Harvesting (EIH) Tutorial
-To ease the effort of understanding how EIH works, we have included an interactive tutorial in Jupyter as well as an video published by the "Ergodic Exploration of Distributed Information" paper. You can find the link to them below:
-- Interactive jupyter notebook tutorial [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/MacIver-Lab/Ergodic-Information-Harvesting/master?filepath=Tutorial%2FErgodic_Information_Harvesting_Tutorial.ipynb)
-- Video of EIH works in action on 2D using Fisher Information instead of entropy [Link to video]()
+To ease the effort of understanding how EIH works, we have included an interactive tutorial in Jupyter as well as a video published for our prior "Ergodic Exploration of Distributed Information" paper. You can find the link to them below:
+- Interactive Jupyter notebook tutorial [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/MacIver-Lab/Ergodic-Information-Harvesting/master?filepath=Tutorial%2FErgodic_Information_Harvesting_Tutorial.ipynb)
+- Video of how EIH works in action in a two-dimensional tracking case using Fisher Information instead of entropy [Link to video]()
 
 ## Simulation of EIH
 EIH is written with Python 3.6 using [Jupyter Notebook](http://jupyter.org/) or simply IPython. The simulation can be run on:
