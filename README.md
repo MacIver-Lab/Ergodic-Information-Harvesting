@@ -52,3 +52,10 @@ Once completed (the program will display `All done! EOF at timestamp = ***` at t
 The figure code files are under `./Production-Figure-Code/`. Similarly, it is centralized in a single MATLAB file `makeFigurePanels.m`. Code for each figure panels are included under `./Production-Figure-Code/FigureCode/` alongside with the previously simulated data if step 1 is skipped.
 
 ##### Example Procedure of Reproducing figure 1
+To reproduce figure 1 for example, use the following procedures:
+- Launch `./Production-Figure-Code/makeFigurePanels.m` using MATLAB. Note that the code has been tested with MATLAB `R2017a` and `R2018a` so any version in between should work. Previous versions after `R2016a` should also work but not tested.
+- Specify input parameters
+  - Set `targetFig = 'fig1'` to select figure 1 as the target
+  - Set `USE_PREV_DATASET = 1` to use previously simulated dataset. Alternatively, use `USE_PREV_DATASET = 0` if simulation data for figure 1 has been created through step 1
+- Run the code
+You should see new MATLAB figure panel pops up contains figure 1 panels.
