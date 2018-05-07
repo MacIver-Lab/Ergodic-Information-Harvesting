@@ -21,7 +21,7 @@ end
 fprintf('Strong signal trials, n = %d, average trial length = %.2f seconds\n', ...
     length(trialLength), averageTrialLenInSec);
 
-% Weak Signal, n = 12
+% Weak Signal, n = 11
 load(GEN_BEHAVIOR_DATA_PATH('/ElectricFish/Eigenmannia-sp-WeakSignal.mat'), 'averageTrialLenInSec', 'trialLength', 'weakSigData');
 nTrials = length(trialLength);
 weakSig = zeros(nTrials, 2, 'double');
@@ -113,7 +113,7 @@ hLine.LineWidth = 2;
 legend(gca, 'off');
 set(gca,'XTickLabel',{'Strong Signal','Weak Signal'})
 set(gca,'YTickLabel',{'1x', '2x', '3x'})
-print(gcf,'-dpdf','fish-RE.pdf');
+print(gcf,'-dpdf',GEN_SAVE_PATH('fish-RE.pdf'));
 
 
 %% Mole behavioral data
@@ -167,12 +167,6 @@ EH_hSNR.sTrajList = movmean(EH_hSNR.sTrajList, 2);
 IT_lSNR.sTrajList = movmean(IT_lSNR.sTrajList, 2);
 IT_hSNR.sTrajList = movmean(IT_hSNR.sTrajList, 2);
 
-% % Crop intial transient
-% EH_lSNR.sTrajList = EH_lSNR.sTrajList(100:end);
-% EH_hSNR.sTrajList = EH_hSNR.sTrajList(100:end);
-% IT_lSNR.sTrajList = IT_lSNR.sTrajList(100:end);
-% IT_hSNR.sTrajList = IT_hSNR.sTrajList(100:end);
-
 % Relative exploration effort - Angular distance traveled
 EH_hSNR.moleDist = cumAngularDist(EH_hSNR.sTrajList);
 EH_lSNR.moleDist = cumAngularDist(EH_lSNR.sTrajList);
@@ -209,14 +203,10 @@ hLine(3).Marker = '.';
 hLine(1).MarkerEdgeColor = 'b';
 hLine(1).MarkerSize = 26;
 hLine(3).MarkerSize = 26;
-% hold on;
-% hLine = line([0,3],[1,1]);
-% hLine.LineStyle = '--';
-% hLine.LineWidth = 2;
 legend(gca, 'off');
 set(gca,'XTickLabel',{'Strong Signal','Weak Signal'})
 set(gca,'YTickLabel',{'1x', '2x', '4x', '6x'})
-print(gcf,'-dpdf','mole-RE.pdf');
+print(gcf,'-dpdf',GEN_SAVE_PATH('mole-RE.pdf'));
 
 
 function dist = calcSumLength2D(path)

@@ -53,6 +53,15 @@ switch targetFig
                 FIG_DATA_PATH);
         end
         makeFig3Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
+    case 'sm-fig1'
+        if ~USE_PREV_DATASET
+            mkdir(FIG_DATA_PATH);
+            cpySimDataFiles('../SimulationCode/SimData/fig2/*ElectricFish*', ...
+                FIG_DATA_PATH);
+            cpySimDataFiles('../SimulationCode/SimData/fig2/*Rat*', ...
+                FIG_DATA_PATH);
+        end
+        makeSMFig1Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'sm-fig4'
         
     otherwise
