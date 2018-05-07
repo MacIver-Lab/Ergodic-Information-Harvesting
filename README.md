@@ -1,14 +1,19 @@
 # Code and data to reproduce results from "Ergodic information harvesting as a behavioral strategy for complex environments"
 
-## Simulation of Ergodic Information Harvesting (EIH)
+## Ergodic Information Harvesting (EIH) Tutorial
+To ease the effort of understanding how EIH works, we have included an interactive tutorial in Jupyter as well as an video published by the "Ergodic Exploration of Distributed Information" paper. You can find the link to them below:
+- Interactive jupyter notebook tutorial [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/MacIver-Lab/Ergodic-Information-Harvesting/master?filepath=Tutorial%2FErgodic_Information_Harvesting_Tutorial.ipynb)
+- Video of EIH works in action on 2D using Fisher Information instead of entropy [Link to video]()
+
+## Simulation of EIH
 EIH is written with Python 3.6 using [Jupyter Notebook](http://jupyter.org/) or simply IPython. The simulation can be run on:
 - A local computer, which is very easy to setup but limited by the number of accessible CPU cores.
 - Cloud computing virtual servers throug any popular Infrastructure as a Service (IaaS) provider, *e.g.* [Amazon Elastic Compute Cloud](https://aws.amazon.com/ec2/) or [Google Cloud Compute Engine](https://cloud.google.com/compute/). CLoud computing is easy to setup and provides a way to scale up the total number of running threads (*e.g.* Google Cloud Compute Engine allows up to 96 CPU threads per instance).
 
-## Setting up runtime environment
-EIH uses Jupyter as the environment for interaction. Jupyter is very easy to setup if you haven't used it before.
+### Setting up runtime environment
+EIH simulation uses Jupyter as the environment for interaction. Jupyter is very easy to setup if you haven't used it before.
 
-### Setup Anaconda 
+#### Setup Anaconda 
 [Anaconda](https://www.anaconda.com/download/) is the required Python environment. It runs on MacOS, Unix, and Windows environments and provide easy package management for setting up the runtime environments for the simulation. To download, go to [https://www.anaconda.com/download/](https://www.anaconda.com/download/) and install Anaconda.
 
 Once installed, open the Anaconda Prompt or bash and run the following code to install all of the dependencies.
@@ -21,7 +26,7 @@ Alternatively, if you prefer `pip`, you could use the code below instead.
 pip install scipy==1.0.1 numpy==1.14.2
 ```
 
-### Launch Jupyter
+#### Launch Jupyter
 Once the environment is setup, you can launch the simulation through a `jupyter notebook` client. Here's how to do it.
 - Navigate to the simulation code folder `/SimulationCode/`
 - Launch a new Jupyter notebook instance
@@ -41,4 +46,4 @@ Once completed (the program will display `All done! EOF at timestamp = ***` at t
 
 Finally, copy the data over to the figure code folder and run the figure code for figure 1 and you should see the panel d and e of figure 1 been reproduced with the data you just simulated locally.
   
-### References
+## References
