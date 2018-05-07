@@ -36,11 +36,19 @@ Once the environment is setup, you can launch the simulation through a `jupyter 
 - Once opened, you should see the code for simulation and you are now good to go to reproduce the results of our study.
 
 ### How to Reproduce Figure Results
-#### Code Structure
-The code is organized in a centralized fashion. `Ergodic-Information-Harvesting-Simulation.ipynb` is the only notebook file you need to run and you can use it to reproduce the raw simulation data used for all of the figures in the paper and Supplementary Information. Each dataset is organized in a per-figure fashion and the parameter supporting the simulation is stored under `/SimulationCode/FigParameters/` folder as `json` format.
+To reproduce figure results, first follow the simulation section below to run EIH simulation trials. Then proceed to the figure plotting code to reproduce the figure results. Note that previously simulated data has been included in the step 2 folder so step 1 is optional.
 
-#### Example Procedure for Reproducing Simulation Data for figure 1
+#### Step 1 - Local EIH Simulation (optional)
+##### Code Structure
+The simulation code files are all stored under `./SimulationCode/` and are organized in a centralized fashion. `Ergodic-Information-Harvesting-Simulation.ipynb` is the only notebook file you need to run and you can use it to reproduce the raw simulation data used for all of the figures in the paper and Supplementary Information. Each dataset is organized in a per-figure fashion and the parameter supporting the simulation is stored under `/SimulationCode/FigParameters/` folder as `json` format.
+
+##### Example Procedure of Simulating Data for figure 1
 To simulate the raw data for a given figure, figure 1 for instance, you just need to specify `targetFigure = 'fig1'` in the `Ergodic-Information-Harvesting-Simulation.ipynb` which is further documented inside the notebook. Then run the entire notebook by selecting on the top menu `Cell -> Run All`. Depends on the size of the simulation and the number of thread you allow the program to use, it could take some time to finish. 
 
 Once completed (the program will display `All done! EOF at timestamp = ***` at the bottom), you can find the simulated data under `/SimulationCode/SimData/fig1/` (`/fig1` because we are simulating for figure 1 here). The raw data will be in `*.mat` MATLAB data format that can be loaded by MATLAB.
 
+#### Step 2 - Reproduce Figure Results
+##### Code Structure
+The figure code files are under `./Production-Figure-Code/`. Similarly, it is centralized in a single MATLAB file `makeFigurePanels.m`. Code for each figure panels are included under `./Production-Figure-Code/FigureCode/` alongside with the previously simulated data if step 1 is skipped.
+
+##### Example Procedure of Reproducing figure 1
