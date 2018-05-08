@@ -4,6 +4,7 @@ function makeFigurePanels
 % 
 % Chen Chen
 
+warning('off', 'MATLAB:MKDIR:DirectoryExists');
 %% Specify Target Figure to Plot (Change this as needed)
 % Target figure panel
 %    Choose one of the following:
@@ -14,10 +15,16 @@ function makeFigurePanels
 %                   copy them over from figure 2 data folders. Make sure
 %                   you have simulated figure 2 before using 
 %                   USE_PREV_DATASET = 0
-% 
+%      'sm-fig1' -  panels for supplement figure 1, note that the EIH 
+%                   simulation and behavioral data for electric fish and 
+%                   rat are taken from figure 2 and the function will try 
+%                   to copy them over from figure 2 data folders. Make sure 
+%                   you have simulated figure 2 before using 
+%                   USE_PREV_DATASET = 0
+%      'sm-fig2' -  panels for figure 3, note that the EIH simulation and
 %      'sm-fig4' - this is slightly more complicated than the rest.
 %                  In order to reproduce supplement figure 4, 
-targetFig = 'fig3';
+targetFig = 'sm-fig2';
 
 % Choose whether or not to use previously simulated dataset
 % Use
@@ -62,8 +69,8 @@ switch targetFig
                 FIG_DATA_PATH);
         end
         makeSMFig1Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
-    case 'sm-fig4'
-        
+    case 'sm-fig2'
+        makeSMFig2Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH, USE_PREV_DATASET);
     otherwise
         error('Target figure not found!');
 end

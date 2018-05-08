@@ -5,6 +5,7 @@ function makeSMFig1Plot(dataPath, savePath)
 % 4/21/2017
 
 warning('off', 'MATLAB:print:FigureTooLargeForPage');
+warning('off', 'MATLAB:MKDIR:DirectoryExists');
 GEN_DATA_PATH = @(fname) fullfile(dataPath, fname);
 GEN_BEHAVIOR_DATA_PATH = @(fname) fullfile(pwd, 'FigureCode', 'sm-fig1', 'BehaviorData', fname);
 GEN_SAVE_PATH = @(fname) fullfile(savePath, fname);
@@ -219,4 +220,4 @@ set(gca,  'Position', [5    1    3.2   2]);
 
 
 %% Print to file
-print(GEN_SAVE_PATH('fig9-FFT.pdf'),'-dpdf');
+print(GEN_SAVE_PATH('sm-fig1-FFT.pdf'),'-dpdf');
