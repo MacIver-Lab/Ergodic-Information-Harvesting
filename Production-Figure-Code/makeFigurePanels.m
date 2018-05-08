@@ -25,14 +25,13 @@ warning('off', 'MATLAB:MKDIR:DirectoryExists');
 %      'sm-fig3' -  panels for supplement figure 3, note that the EIH 
 %                   simulation for figure 2 is required to use
 %                   USE_PREV_DATASET = 0
+%      'sm-fig4' -  panels for supplement figure 4
 %      'sm-fig5' -  panels for supplement figure 5
 %      'sm-fig6' -  panels for supplement figure 6. Note that this figure 
 %                   does not require any simulation data and therefore
 %                   USE_PREV_DATASET will be ignored
-%      'sm-fig4' - this is slightly more complicated than the rest.
-%                  In order to reproduce supplement figure 4
 % 
-targetFig = 'sm-fig6';
+targetFig = 'sm-fig4';
 
 % Choose whether or not to use previously simulated dataset
 % Use
@@ -86,6 +85,8 @@ switch targetFig
                 FIG_DATA_PATH);
         end
         makeSMFig3Plots(FIG_DATA_PATH, FIG_OUTPUT_PATH);
+    case 'sm-fig4'
+        makeSMFig4Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'sm-fig5'
         makeSMFig5Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'sm-fig6'
