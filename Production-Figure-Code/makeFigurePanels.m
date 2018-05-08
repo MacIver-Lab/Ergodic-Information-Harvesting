@@ -21,10 +21,14 @@ warning('off', 'MATLAB:MKDIR:DirectoryExists');
 %                   to copy them over from figure 2 data folders. Make sure 
 %                   you have simulated figure 2 before using 
 %                   USE_PREV_DATASET = 0
-%      'sm-fig2' -  panels for figure 3, note that the EIH simulation and
+%      'sm-fig2' -  panels for supplement figure 2
+%      'sm-fig3' -  panels for supplement figure 3, note that the EIH 
+%                   simulation for figure 2 is required to use
+%                   USE_PREV_DATASET = 0
+%      'sm-fig5' -  panels for supplement figure 5
 %      'sm-fig4' - this is slightly more complicated than the rest.
 %                  In order to reproduce supplement figure 4, 
-targetFig = 'sm-fig2';
+targetFig = 'sm-fig5';
 
 % Choose whether or not to use previously simulated dataset
 % Use
@@ -71,6 +75,15 @@ switch targetFig
         makeSMFig1Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'sm-fig2'
         makeSMFig2Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH, USE_PREV_DATASET);
+    case 'sm-fig3'
+        if ~USE_PREV_DATASET
+            mkdir(FIG_DATA_PATH);
+            cpySimDataFiles('../SimulationCode/SimData/fig2/fig2-ErgodicHarvest-ElectricFish-SNR-30*', ...
+                FIG_DATA_PATH);
+        end
+        makeSMFig3Plots(FIG_DATA_PATH, FIG_OUTPUT_PATH);
+    case 'sm-fig5'
+        makeSMFig5Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     otherwise
         error('Target figure not found!');
 end

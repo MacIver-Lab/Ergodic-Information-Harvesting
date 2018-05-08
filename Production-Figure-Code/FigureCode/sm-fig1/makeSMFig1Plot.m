@@ -1,8 +1,6 @@
 function makeSMFig1Plot(dataPath, savePath)
-%% Plot SM figure 1
-% 
+%% Plot supplement figure 1
 % Chen Chen
-% 4/21/2017
 
 warning('off', 'MATLAB:print:FigureTooLargeForPage');
 warning('off', 'MATLAB:MKDIR:DirectoryExists');

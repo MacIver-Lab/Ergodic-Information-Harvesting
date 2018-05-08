@@ -1,6 +1,5 @@
 function makeSMFig2Plot(dataPath, savePath, usePrevDat)
 %% Plot supplement figure 2
-% 
 % Chen Chen
 
 warning('off', 'MATLAB:print:FigureTooLargeForPage');
