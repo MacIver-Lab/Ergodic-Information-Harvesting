@@ -4,7 +4,6 @@ function makeFig2Plots(dataPath, savePath)
 % be plotted separately into individual PDF files
 % 
 % Chen Chen
-% 4/21/2017
 
 warning('off', 'MATLAB:print:FigureTooLargeForPage');
 GEN_DATA_PATH = @(fname) fullfile(dataPath, fname);

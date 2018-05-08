@@ -1,13 +1,11 @@
 function makeFig1Plot(dataPath, savePath)
 %% Plot simulated trajectory in figure 1 d-e
-%
 % Chen Chen
-% 12/19/2017
 
 warning('off', 'MATLAB:print:FigureTooLargeForPage');
-%% Load data
 GEN_DATA_PATH = @(fname) fullfile(dataPath, fname);
 GEN_SAVE_PATH = @(fname) fullfile(savePath, fname);
+%% Load data
 EH_lSNR = load(GEN_DATA_PATH('fig1-ErgodicHarvest-SNR-10.mat'), 'oTrajList', 'sTrajList');
 EH_hSNR = load(GEN_DATA_PATH('fig1-ErgodicHarvest-SNR-60.mat'), 'oTrajList', 'sTrajList');
 IT_lSNR = load(GEN_DATA_PATH('fig1-Infotaxis-SNR-10.mat'), 'oTrajList', 'sTrajList');
