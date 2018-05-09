@@ -33,11 +33,15 @@ warning('off', 'MATLAB:MKDIR:DirectoryExists');
 % 
 targetFig = 'sm-fig4';
 
+% Maximum number of CPU thread dedicated for sm-fig4 simulation
+% Note that this is only used for sm-fig4
+nThread = 10;
+
 % Choose whether or not to use previously simulated dataset
 % Use
 %   USE_PREV_DATASET = 1; % if local simulation step is skipped
 %   USE_PREV_DATASET = 0; % if local simulation is done
-USE_PREV_DATASET = 1;
+USE_PREV_DATASET = 0;
 
 %% Internal parameters (do not change)
 if USE_PREV_DATASET
@@ -86,6 +90,13 @@ switch targetFig
         end
         makeSMFig3Plots(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'sm-fig4'
+        if ~USE_PREV_DATASET
+            mkdir(FIG_DATA_PATH);
+            cpySimDataFiles('../SimulationCode/SimData/fig2/fig2-ErgodicHarvest-ElectricFish-SNR-30*', ...
+                FIG_DATA_PATH);
+            % Proceed with simulation
+            SMFig4Sim(FIG_DATA_PATH, nThread);
+        end
         makeSMFig4Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'sm-fig5'
         makeSMFig5Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);

@@ -1,15 +1,15 @@
-function SMFig4Sim(srcPath)
+function SMFig4Sim(srcPath, nThreads)
 %% Batch simulation for supplement figure 4
 % Chen Chen
 
 %% Global Constants
 % Control Parameters
 USE_PARALLEL = 0;
-GEN_PYTHON_JOB_LIST = 0;
+GEN_PYTHON_JOB_LIST = 1;
 
 % Directory
-DIR_ROOT = './SimData/';
-DIR_TRIAL_PREFIX = 'SimBatch-';
+DIR_ROOT = fullfile(srcPath, 'SimData/');
+DIR_TRIAL_PREFIX = 'SimTrial-';
 DIR_TRIAL_SOURCE_TRAJ_PREFIX = 'SourceTraj/';
 DIR_TRIAL_ATTEN_TRAJ_PREFIX = 'AttenTraj/';
 DIR_TRIAL_SIM_TRAJ_PREFIX = 'SimTraj/';
@@ -26,14 +26,25 @@ Filter.RawTrajLPFHighCut = 1.75;
 EIH.MaxTime = 50;
 
 %% Initialization
+% Utility lambda function to replace directory separator to backslash
+REPDIR = @(d) strrep(d, '\', '/');
+
 % Determine Actual Folder Name
 dataFolders = dir([DIR_ROOT,DIR_TRIAL_PREFIX,'*']);
 dataFolders = dataFolders([dataFolders.isdir]);
 nTrials = 1;%length(dataFolders);
-DIR_TRIAL_ROOT = [DIR_ROOT, DIR_TRIAL_PREFIX, sprintf('%03d/',nTrials)];
+DIR_TRIAL_ROOT = REPDIR([DIR_ROOT, DIR_TRIAL_PREFIX, sprintf('%03d/',nTrials)]);
 % DIR_TRIAL_SOURCE_TRAJ = [DIR_TRIAL_ROOT, DIR_TRIAL_SOURCE_TRAJ_PREFIX];
-DIR_TRIAL_ATTEN_TRAJ = [DIR_TRIAL_ROOT, DIR_TRIAL_ATTEN_TRAJ_PREFIX];
-DIR_TRIAL_SIM_TRAJ = [DIR_TRIAL_ROOT, DIR_TRIAL_SIM_TRAJ_PREFIX];
+DIR_TRIAL_ATTEN_TRAJ = REPDIR([DIR_TRIAL_ROOT, DIR_TRIAL_ATTEN_TRAJ_PREFIX]);
+DIR_TRIAL_SIM_TRAJ = REPDIR([DIR_TRIAL_ROOT, DIR_TRIAL_SIM_TRAJ_PREFIX]);
+
+% Python Simulation API
+PYTHON_CODE_PATH = './FigureCode/sm-fig4/EIH_Sim_Main.py';
+PYTHON_JOB_LIST = REPDIR(fullfile(DIR_TRIAL_ROOT, 'SimJobList.txt'));
+EIH_API_SIM_TRACKING = @()system(sprintf('python %s %s %d', ...
+    PYTHON_CODE_PATH,PYTHON_JOB_LIST,nThreads));
+EIH_API_SIM_TRACKING_JOB_STRING = @(rs, src, ofile)sprintf('trackingOnly %d %s %s %s', ...
+    rs,src,ofile,DIR_TRIAL_SIM_TRAJ);
 
 % Make new data folders
 % mkdir(DIR_TRIAL_SOURCE_TRAJ);
@@ -42,11 +53,6 @@ mkdir(DIR_TRIAL_SIM_TRAJ);
 % [~, fname, ~] = fileparts(srcPath);
 % copy(srcPath, fullfile(DIR_TRIAL_SIM_TRAJ, fname, '.mat'));
 
-% EEDI API
-EEDI_API_ENTRY_SIM_TRACKING = @(rs, src, ofile)system(sprintf('python ./EEDI_API_Sim_Entropy.py trackingOnly %d %s %s %s', ...
-    rs,src,ofile,DIR_TRIAL_SIM_TRAJ));
-EEDI_API_ENTRY_SIM_TRACKING_STRING = @(rs, src, ofile)sprintf('trackingOnly %d %s %s %s', ...
-    rs,src,ofile,['./',DIR_TRIAL_SIM_TRAJ_PREFIX]);
 
 % (optional) Create parallel pool if using parallzation
 if USE_PARALLEL
@@ -56,7 +62,7 @@ end
 
 %% STEP #1 - Generate Attenuated Trajectories
 fprintf('********* STEP #2 - Generate Attenuated Trajectories *********\n');
-rawSimFileNameList = dir(srcPath);
+rawSimFileNameList = dir(fullfile(srcPath, 'fig2-ErgodicHarvest-ElectricFish-SNR-30*'));
 nRawSimFiles = length(rawSimFileNameList);
 
 nAttenSimFiles = nRawSimFiles * Filter.AttenuateGainSamps * length(Filter.AttenuateGainList);
@@ -154,7 +160,7 @@ if USE_PARALLEL
     parRandSeed = {attenTrialData.randSeed};
     parSimFileList = {attenTrialData.trackingSimFileNamePrefix};
     parfor idx = 1:nAttenSimFiles
-        EEDI_API_ENTRY_SIM_TRACKING(parRandSeed{idx}, ...
+        EIH_API_SIM_TRACKING(parRandSeed{idx}, ...
             [DIR_TRIAL_ATTEN_TRAJ, parFileList{idx}], ...
             [parSimFileList{idx}, '.mat']);
     end
@@ -168,21 +174,18 @@ else
 
     for idx = 1:nAttenSimFiles
         if GEN_PYTHON_JOB_LIST
-            fileCmd = EEDI_API_ENTRY_SIM_TRACKING_STRING(...
+            fileCmd = EIH_API_SIM_TRACKING_JOB_STRING(...
                 parRandSeed{idx}, ...
-                ['./', DIR_TRIAL_ATTEN_TRAJ_PREFIX, parFileList{idx}], ...
+                [DIR_TRIAL_ATTEN_TRAJ, parFileList{idx}], ...
                 [parSimFileList{idx}, '.mat']);
-            fprintf(fileID, [fileCmd, '\n']);
-        else
-            EEDI_API_ENTRY_SIM_TRACKING(parRandSeed{idx}, ...
-                [DIR_TRIAL_ATTEN_TRAJ, attenTrialData(idx).fileName], ...
-                [attenTrialData(idx).trackingSimFileNamePrefix, '.mat']);
+            fprintf(fileID, [REPDIR(fileCmd), '\n']);
         end
     end
     fclose(fileID);
 end
+% Submit simulation
+EIH_API_SIM_TRACKING();
 fprintf('--------- STEP #3 Success, %d attenuated trials simulated ---------\n', nAttenSimFiles);
-
 
 %% STEP #3 - Performance Evaluation
 fprintf('********* STEP #4 - Performance Evaluation *********\n');
