@@ -12,13 +12,15 @@ if usePrevDat
     load(GEN_DATA_PATH('sm-fig2-EH_IF_Data.mat'));
 else
     % TODO link data processing script
+    [snrErg, snrInf, RE_Erg, RE_Inf] = ...
+        SMFig2ProcessData(dataPath, savePath);
 end
 
 %% Plot result
 figure(1); clf;
-notBoxPlot(gainRatioErg, snrErg)
+notBoxPlot(RE_Erg, snrErg)
 hold on;
-notBoxPlot(gainRatioInf, snrInf, 'plotColor', 'b');
+notBoxPlot(RE_Inf, snrInf, 'plotColor', 'b');
 xlabel('SNR');
 ylabel('Relative Exploration');
 % title('Relative Exploration vs. SNR');
@@ -42,8 +44,8 @@ legend(gca, 'off');
 print(GEN_SAVE_PATH('sm-fig2-RelativeTrackingEffort.pdf'), '-dpdf');
 
 % Compute correlation coefficient and its 95% confidence interval
-[Rerg, ~, RLerg, RUerg] = corrcoef(double(snrErg), gainRatioErg);
-[Rinf, ~, RLinf, RUinf] = corrcoef(double(snrInf), gainRatioInf);
+[Rerg, ~, RLerg, RUerg] = corrcoef(double(snrErg), RE_Erg);
+[Rinf, ~, RLinf, RUinf] = corrcoef(double(snrInf), RE_Inf);
 figure(2); clf;
 errorbar(Rerg(2),1,RLerg(2)-Rerg(2),RUerg(2)-Rerg(2), 'Horizontal', 'o', 'LineWidth', 2, 'MarkerSize', 7); hold on;
 errorbar(Rinf(2),2,RLinf(2)-Rinf(2),RUinf(2)-Rinf(2), 'Horizontal', 'o', 'LineWidth', 2, 'MarkerSize', 7);

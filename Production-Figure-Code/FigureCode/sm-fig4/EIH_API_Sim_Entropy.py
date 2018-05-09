@@ -18,9 +18,6 @@ from os.path import exists
 def EIH_Sim(*argv):
     if len(argv) > 0:
         print(getcwd())
-        #argv = str(args).split()
-        for arg in argv:
-            print(arg)
         # Parameter Objects
         ergParam = ErgodicParameters()
         eidParam = EIDParameters()
