@@ -31,7 +31,7 @@ warning('off', 'MATLAB:MKDIR:DirectoryExists');
 %                   does not require any simulation data and therefore
 %                   USE_PREV_DATASET will be ignored
 % 
-targetFig = 'sm-fig1';
+targetFig = 'sm-fig2';
 
 % Maximum number of CPU thread dedicated for sm-fig4 simulation
 % Note that this is only used for sm-fig4
@@ -72,6 +72,8 @@ switch targetFig
         end
         makeFig3Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'sm-fig1'
+        makeSMFig1Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH, USE_PREV_DATASET);
+    case 'sm-fig2'
         if ~USE_PREV_DATASET
             mkdir(FIG_DATA_PATH);
             cpySimDataFiles('../SimulationCode/SimData/fig2/*ElectricFish*', ...
@@ -79,9 +81,7 @@ switch targetFig
             cpySimDataFiles('../SimulationCode/SimData/fig2/*Rat*', ...
                 FIG_DATA_PATH);
         end
-        makeSMFig1Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
-    case 'sm-fig2'
-        makeSMFig2Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH, USE_PREV_DATASET);
+        makeSMFig2Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'sm-fig3'
         if ~USE_PREV_DATASET
             mkdir(FIG_DATA_PATH);

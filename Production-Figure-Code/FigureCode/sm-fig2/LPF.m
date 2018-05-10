@@ -27,7 +27,7 @@ DC_data = data - Offset;
 
 %% Build LPF
 % Low-Pass Filter
-[B,A] = fir1(32,CutOffFreq/(Fs*.5));
+[B,A] = fir1(128,CutOffFreq/(Fs*.5));
 
 %% Filter Data
 out = filtfilt(B,A,DC_data) + Offset;
@@ -35,6 +35,6 @@ out = filtfilt(B,A,DC_data) + Offset;
 
 %% Plot
 if PlotMode
-    clf; plot(data,'b'), hold on; grid on;
+    figure,plot(data,'b'), hold on; grid on;
     plot(out,'r','LineWidth',2);
 end

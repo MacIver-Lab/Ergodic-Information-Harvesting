@@ -223,7 +223,6 @@ if HoldLines == false
             set(hp(ii)          , ...
                 'LineStyle'       , LineStyle{ii}, ...
                 'Marker'          , Marker,...
-                'Color'           , Colors(ii,:), ...
                 'LineWidth'       , LineWidth(ii));
         end
     end
@@ -453,10 +452,10 @@ set(haxis, ...
     'Units'              , 'inches',...
     'Position'           , BoxPos);
 % set the figure size and position
-% pos = get(hfig, 'Position');
-% outerpos = get(haxis, 'OuterPosition');
-% set(haxis, 'OuterPosition',[0, 0, outerpos(3), outerpos(4)]);
-% set(hfig, 'Position', [pos(1), pos(2), outerpos(3), outerpos(4)]);
+pos = get(hfig, 'Position');
+outerpos = get(haxis, 'OuterPosition');
+set(haxis, 'OuterPosition',[0, 0, outerpos(3), outerpos(4)]);
+set(hfig, 'Position', [pos(1), pos(2), outerpos(3), outerpos(4)]);
 % for paper position in the eps
 set(hfig, 'PaperPositionMode', 'auto');
 

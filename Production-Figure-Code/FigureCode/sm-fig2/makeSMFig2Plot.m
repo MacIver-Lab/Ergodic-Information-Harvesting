@@ -1,70 +1,221 @@
-function makeSMFig2Plot(dataPath, savePath, usePrevDat)
+function makeSMFig2Plot(dataPath, savePath)
 %% Plot supplement figure 2
 % Chen Chen
 
 warning('off', 'MATLAB:print:FigureTooLargeForPage');
 warning('off', 'MATLAB:MKDIR:DirectoryExists');
 GEN_DATA_PATH = @(fname) fullfile(dataPath, fname);
+GEN_BEHAVIOR_DATA_PATH = @(fname) fullfile(pwd, 'FigureCode', 'sm-fig2', 'BehaviorData', fname);
 GEN_SAVE_PATH = @(fname) fullfile(savePath, fname);
 
-%% Load data
-if usePrevDat
-    load(GEN_DATA_PATH('sm-fig2-EH_IF_Data.mat'));
-else
-    % TODO link data processing script
-    [snrErg, snrInf, RE_Erg, RE_Inf] = ...
-        SMFig2ProcessData(dataPath, savePath);
-end
+barColor = [72, 110, 181;...
+            50, 180, 74; ...
+            162, 0, 0] / 255;
+dFreq = 0.005;
+maxFreq = 2;
+fftEndIdx = floor(maxFreq/dFreq) + 1;
+freqTicks = dFreq:dFreq:maxFreq;
+simTrajHighCutFreq = 2.10;
+nFreqSamps = @(t) ceil((dFreq*t)^-1);
 
-%% Plot result
-figure(1); clf;
-notBoxPlot(RE_Erg, snrErg)
-hold on;
-notBoxPlot(RE_Inf, snrInf, 'plotColor', 'b');
-xlabel('SNR');
-ylabel('Relative Exploration');
-% title('Relative Exploration vs. SNR');
-baseLine = line([5, 56], [1, 1], 'LineStyle', '--', 'LineWidth', 2);
-hPatch = findobj(gca,'Type','patch');
-legend([hPatch(1), hPatch(end), baseLine], ...
-    {'Infotaxis', 'Ergodic Harvesting', 'Baseline'});
+%% Electric Fish Simulation
+% Load data
+EH_lSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-ElectricFish-SNR-30.mat'), ...
+    'oTrajList', 'sTrajList', 'dt');
+EH_hSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-ElectricFish-SNR-60.mat'), ...
+    'oTrajList', 'sTrajList', 'dt');
+
+% Load fish behavioral data
+fish.hSNR = load(GEN_BEHAVIOR_DATA_PATH('ElectricFish-StrongSignal-Sine.mat'));
+fish.lSNR = load(GEN_BEHAVIOR_DATA_PATH('ElectricFish-WeakSignal-Sine.mat'));
+
+% Filter trajectory
+EH_lSNR.sTrajList = LPF(EH_lSNR.sTrajList, 1/EH_lSNR.dt, simTrajHighCutFreq);
+EH_hSNR.sTrajList = LPF(EH_hSNR.sTrajList, 1/EH_hSNR.dt, simTrajHighCutFreq);
+
+% FFT
+%   sTraj - Sensor trajectory
+%   tTraj - Target trajectory
+fft_EH_hSNR_sTraj = fft(EH_hSNR.sTrajList-mean(EH_hSNR.sTrajList), nFreqSamps(EH_hSNR.dt));
+fft_EH_hSNR_tTraj = fft(EH_hSNR.oTrajList-mean(EH_hSNR.oTrajList), nFreqSamps(EH_hSNR.dt));
+fft_EH_hSNR_sTraj = abs(fft_EH_hSNR_sTraj(2:fftEndIdx));
+fft_EH_hSNR_tTraj = abs(fft_EH_hSNR_tTraj(2:fftEndIdx));
+fft_EH_lSNR_sTraj = fft(EH_lSNR.sTrajList-mean(EH_lSNR.sTrajList), nFreqSamps(EH_lSNR.dt));
+fft_EH_lSNR_tTraj = fft(EH_lSNR.oTrajList-mean(EH_lSNR.oTrajList), nFreqSamps(EH_lSNR.dt));
+fft_EH_lSNR_sTraj = abs(fft_EH_lSNR_sTraj(2:fftEndIdx));
+fft_EH_lSNR_tTraj = abs(fft_EH_lSNR_tTraj(2:fftEndIdx));
+fft_fish_lSNR_sTraj = fft(fish.lSNR.fishTraj-mean(fish.lSNR.fishTraj), nFreqSamps(1/fish.lSNR.FPS));
+fft_fish_lSNR_tTraj = fft(fish.lSNR.refugeTraj-mean(fish.lSNR.refugeTraj), nFreqSamps(1/fish.lSNR.FPS));
+fft_fish_lSNR_sTraj = abs(fft_fish_lSNR_sTraj(2:fftEndIdx));
+fft_fish_lSNR_tTraj = abs(fft_fish_lSNR_tTraj(2:fftEndIdx));
+fft_fish_hSNR_sTraj = fft(fish.hSNR.fishTraj-mean(fish.hSNR.fishTraj), nFreqSamps(1/fish.hSNR.FPS));
+fft_fish_hSNR_tTraj = fft(fish.hSNR.refugeTraj-mean(fish.hSNR.refugeTraj), nFreqSamps(1/fish.hSNR.FPS));
+fft_fish_hSNR_sTraj = abs(fft_fish_hSNR_sTraj(2:fftEndIdx));
+fft_fish_hSNR_tTraj = abs(fft_fish_hSNR_tTraj(2:fftEndIdx));
+
+%--------- Fish Sinusoidal Tracking ---------%
+figure(1);clf; hold on;
+plot(freqTicks, ...
+    fft_fish_lSNR_tTraj/max(fft_fish_lSNR_tTraj), ...
+    'LineWidth', 2, ...
+    'Color', barColor(1,:));
+plot(freqTicks, ...
+    fft_fish_hSNR_sTraj/max(fft_fish_hSNR_sTraj), ...
+    'LineWidth', 2, ...
+    'Color', barColor(2,:));
+plot(freqTicks, ...
+    fft_fish_lSNR_sTraj/max(fft_fish_lSNR_sTraj), ...
+    'LineWidth', 2, ...
+    'Color', barColor(3,:));
+xlabel('Frequency');
+ylabel('FFT Magnitude');
 opt = [];
-opt.BoxDim = [8,5];
+opt.BoxDim = [8,5] * 0.4;
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
 opt.YMinorTick = 'off'; 
-opt.XTick = [10:10:60];
-opt.YTick = [0:0.5:2.5];
-opt.XLim = [9, 57];
-% opt.FontSize = 10;
+opt.XTick = [];
+opt.YTick = [];
+opt.XLim = [0, 1];
+opt.FontSize = 12;
 opt.FontName = 'Helvetica';
+opt.Colors = barColor;
 setPlotProp(opt);
-baseLine.LineStyle = '--';
 legend(gca, 'off');
-print(GEN_SAVE_PATH('sm-fig2-RelativeTrackingEffort.pdf'), '-dpdf');
+set(gca,  'Position', [1    4    3.2   2]);
 
-% Compute correlation coefficient and its 95% confidence interval
-[Rerg, ~, RLerg, RUerg] = corrcoef(double(snrErg), RE_Erg);
-[Rinf, ~, RLinf, RUinf] = corrcoef(double(snrInf), RE_Inf);
-figure(2); clf;
-errorbar(Rerg(2),1,RLerg(2)-Rerg(2),RUerg(2)-Rerg(2), 'Horizontal', 'o', 'LineWidth', 2, 'MarkerSize', 7); hold on;
-errorbar(Rinf(2),2,RLinf(2)-Rinf(2),RUinf(2)-Rinf(2), 'Horizontal', 'o', 'LineWidth', 2, 'MarkerSize', 7);
-ylim([0.5, 2.5]);
-set(gca, 'YTick', [1,2]);
-set(gca, 'YTickLabel', {'Ergodic Harvesting', 'Infotaxis'});
-xlabel('Correlation Coefficient');
+% Ergodic Harvesting
+axes; hold on;
+plot(freqTicks, ...
+    fft_EH_hSNR_tTraj/max(fft_EH_hSNR_tTraj), ...
+    'LineWidth', 2, ...
+    'Color', barColor(1,:));
+plot(freqTicks, ...
+    fft_EH_hSNR_sTraj/max(fft_EH_hSNR_sTraj), ...
+    'LineWidth', 2, ...
+    'Color', barColor(2,:));
+plot(freqTicks, ...
+    fft_EH_lSNR_sTraj/max(fft_EH_lSNR_sTraj), ...
+    'LineWidth', 2, ...
+    'Color', barColor(3,:));
+xlabel('Frequency');
+ylabel('Fourier Magnitude');
 opt = [];
-opt.BoxDim = [8,5];
+opt.BoxDim = [8,5] * 0.4;
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
 opt.YMinorTick = 'off'; 
-opt.XTick = [-1:0.2:0.2];
-opt.XLim = [-1, 0.2];
-% opt.FontSize = 10;
+opt.XTick = [];
+opt.YTick = [];
+opt.XLim = [0, 0.5];
+opt.FontSize = 12;
 opt.FontName = 'Helvetica';
+opt.Colors = barColor;
 setPlotProp(opt);
 legend(gca, 'off');
-ytickangle(90);
-fig3Path = strrep(GEN_SAVE_PATH(''), 'sm-fig2', 'fig3');
-mkdir(fig3Path);
-print(fullfile(fig3Path,'fig3c-CoorelationCoefficient.pdf'), '-dpdf');
+set(gca,  'Position', [1    1    3.2   2]);
+
+
+%% Rat Odor Tracking
+% Load Data
+lSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Rat-WeakSignal.mat'));
+hSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Rat-StrongSignal.mat'));
+
+khan = load(GEN_BEHAVIOR_DATA_PATH('Khan12a_fig2.mat'));
+khan.lSNR.sTraj = khan.fig2b_nose;
+khan.lSNR.oTraj = khan.fig2b_trail;
+khan.hSNR.sTraj = khan.fig2a_nose;
+khan.hSNR.oTraj = khan.fig2a_trail;
+
+% Adjust time horizon to fit into the actual data length (provided in Khan12a)
+lSNR.dt = 7.8947 / length(lSNR.sTrajList);
+hSNR.dt = 6.8421 / length(hSNR.sTrajList);
+khan.lSNR.dt = 7.8947 / length(khan.lSNR.sTraj);
+khan.hSNR.dt = 6.8421 / length(khan.hSNR.sTraj);
+
+% FFT
+%   sTraj - Sensor trajectory
+%   tTraj - Target trajectory
+fft_EH_hSNR_sTraj = fft(hSNR.sTrajList-mean(hSNR.sTrajList), nFreqSamps(hSNR.dt));
+fft_EH_hSNR_tTraj = fft(hSNR.oTrajList-mean(hSNR.oTrajList), nFreqSamps(hSNR.dt));
+fft_EH_hSNR_sTraj = abs(fft_EH_hSNR_sTraj(2:fftEndIdx));
+fft_EH_hSNR_tTraj = abs(fft_EH_hSNR_tTraj(2:fftEndIdx));
+fft_EH_lSNR_sTraj = fft(lSNR.sTrajList-mean(lSNR.sTrajList), nFreqSamps(lSNR.dt));
+fft_EH_lSNR_tTraj = fft(lSNR.oTrajList-mean(lSNR.oTrajList), nFreqSamps(lSNR.dt));
+fft_EH_lSNR_sTraj = abs(fft_EH_lSNR_sTraj(2:fftEndIdx));
+fft_EH_lSNR_tTraj = abs(fft_EH_lSNR_tTraj(2:fftEndIdx));
+fft_rat_lSNR_sTraj = fft(khan.lSNR.sTraj-mean(khan.lSNR.sTraj), nFreqSamps(khan.lSNR.dt));
+fft_rat_lSNR_tTraj = fft(khan.lSNR.oTraj-mean(khan.lSNR.oTraj), nFreqSamps(khan.lSNR.dt));
+fft_rat_lSNR_sTraj = abs(fft_rat_lSNR_sTraj(2:fftEndIdx));
+fft_rat_lSNR_tTraj = abs(fft_rat_lSNR_tTraj(2:fftEndIdx));
+fft_rat_hSNR_sTraj = fft(khan.hSNR.sTraj-mean(khan.hSNR.sTraj), nFreqSamps(khan.hSNR.dt));
+fft_rat_hSNR_tTraj = fft(khan.hSNR.oTraj-mean(khan.hSNR.oTraj), nFreqSamps(khan.hSNR.dt));
+fft_rat_hSNR_sTraj = abs(fft_rat_hSNR_sTraj(2:fftEndIdx));
+fft_rat_hSNR_tTraj = abs(fft_rat_hSNR_tTraj(2:fftEndIdx));
+
+%--------- Rat Odor Tracking data from Khan12a ---------%
+% Strong Signal Trajectory plot
+axes; hold on;
+plot(freqTicks, ...
+    fft_rat_lSNR_tTraj/max(fft_rat_lSNR_tTraj), ...
+    'LineWidth', 2, ...
+    'Color', barColor(1,:));
+plot(freqTicks, ...
+    fft_rat_hSNR_sTraj/max(fft_rat_hSNR_sTraj), ...
+    'LineWidth', 2, ...
+    'Color', barColor(2,:));
+plot(freqTicks, ...
+    fft_rat_lSNR_sTraj/max(fft_rat_lSNR_sTraj), ...
+    'LineWidth', 2, ...
+    'Color', barColor(3,:));
+xlabel('Frequency');
+ylabel('FFT Magnitude');
+opt = [];
+opt.BoxDim = [8,5] * 0.4;
+opt.ShowBox = 'off';
+opt.XMinorTick = 'off';
+opt.YMinorTick = 'off'; 
+opt.XTick = [];
+opt.YTick = [];
+opt.XLim = [0, 1.8];
+opt.FontSize = 12;
+opt.FontName = 'Helvetica';
+opt.Colors = barColor;
+setPlotProp(opt);
+legend(gca, 'off');
+set(gca,  'Position', [5    4    3.2   2]);
+
+% Ergodic Harvesting
+axes; hold on;
+plot(freqTicks, ...
+    fft_EH_hSNR_tTraj/max(fft_EH_hSNR_tTraj), ...
+    'LineWidth', 2, ...
+    'Color', barColor(1,:));
+plot(freqTicks, ...
+    fft_EH_hSNR_sTraj/max(fft_EH_hSNR_sTraj), ...
+    'LineWidth', 2, ...
+    'Color', barColor(2,:));
+plot(freqTicks, ...
+    fft_EH_lSNR_sTraj/max(fft_EH_lSNR_sTraj), ...
+    'LineWidth', 2, ...
+    'Color', barColor(3,:));
+xlabel('Frequency');
+ylabel('Fourier Magnitude');
+opt = [];
+opt.BoxDim = [8,5] * 0.4;
+opt.ShowBox = 'off';
+opt.XMinorTick = 'off';
+opt.YMinorTick = 'off'; 
+opt.XTick = [];
+opt.YTick = [];
+opt.XLim = [0, 1.8];
+opt.FontSize = 12;
+opt.FontName = 'Helvetica';
+opt.Colors = barColor;
+setPlotProp(opt);
+legend(gca, 'off');
+set(gca,  'Position', [5    1    3.2   2]);
+
+
+%% Print to file
+print(GEN_SAVE_PATH('sm-fig2a-FFT.pdf'),'-dpdf');

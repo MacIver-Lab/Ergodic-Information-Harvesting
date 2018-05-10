@@ -1,4 +1,4 @@
-function [snrErg, snrInf, RE_Erg, RE_Inf] = SMFig2ProcessData(dataPath, savePath)
+function [snrErg, snrInf, RE_Erg, RE_Inf] = SMFig1ProcessData(dataPath, savePath)
 
 warning('off', 'MATLAB:print:FigureTooLargeForPage');
 warning('off', 'MATLAB:MKDIR:DirectoryExists');
@@ -8,7 +8,7 @@ GEN_SAVE_PATH = @(fname) fullfile(savePath, fname);
 eihTrials = dir(GEN_DATA_PATH('*ErgodicHarvest*.mat'));
 ifTrials = dir(GEN_DATA_PATH('*Infotaxis*.mat'));
 if isempty(eihTrials) || isempty(ifTrials)
-    error(['Cannot found simulation data, please make sure sm-fig2 ', ...
+    error(['Cannot found simulation data, please make sure sm-fig1 ', ...
            'simulation has finished or use USE_PREV_DATASET = 1']);
 end
 
@@ -23,7 +23,7 @@ snrInf = double(ifData.SNR);
 RE_Erg = eihData.RE;
 RE_Inf = ifData.RE;
 
-save(GEN_SAVE_PATH('sm-fig2-EH_IF_Data.mat'), ...
+save(GEN_SAVE_PATH('sm-fig1-EH_IF_Data.mat'), ...
     'snrErg', 'snrInf', 'gainRatioErg', 'gainRatioInf');
 
 function Perf = mEvalPerf(dat)
