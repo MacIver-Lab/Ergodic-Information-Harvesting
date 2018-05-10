@@ -9,7 +9,7 @@ GEN_BEHAVIOR_DATA_PATH = @(fname) fullfile(pwd, 'FigureCode', 'sm-fig5', 'Behavi
 GEN_SAVE_PATH = @(fname) fullfile(savePath, fname);
 sTrajHighCutFreq = 2.10; % Hz
 global PLOT_EER_BAND
-PLOT_EER_BAND = 0;
+PLOT_EER_BAND = 1;
 % SET this to 1 if you are having issues with creating vector graphic PDFs
 % it will save the complex EER band overlay into a separate tiff image
 USE_SPLIT_PRINT = 0;
