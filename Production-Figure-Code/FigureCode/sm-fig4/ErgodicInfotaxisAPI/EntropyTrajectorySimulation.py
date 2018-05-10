@@ -54,9 +54,11 @@ def TrajEIDSim(ergParam, eidParam, rawTraj, showMsg=True):
         pBList[:, :, it+1] = pB
         pLast = pB[:, -1]
         # Evaluate ergodicity
-        ergList[it] = erg.computeErgMeasure(traj, phi[:, -1])
+        if len(phi) > ergParam.res and phi.shape[1] > 0:
+            ergList[it] = erg.computeErgMeasure(traj, phi[:, -1])
         # Evaluate Entropy
-        enpList[it] = entropy(pLast)
+        if len(pLast) > 1:
+            enpList[it] = entropy(pLast)
         # Update trajectory list
         sTrajList = np.append(sTrajList, traj)
         oTrajList = np.append(oTrajList, objTraj)

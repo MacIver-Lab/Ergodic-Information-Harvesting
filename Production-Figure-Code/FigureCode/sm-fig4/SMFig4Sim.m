@@ -18,7 +18,7 @@ DIR_GET_FULL_PATH = @(l,idx)[l(idx).folder, '/', l(idx).name];
 
 % Filter Parameters
 Filter.AttenuateGainList = [5,10:20:150];
-Filter.AttenuateGainSamps = 8;
+Filter.AttenuateGainSamps = 1;
 Filter.AttenFreqWin = [0.15, 1.5];
 Filter.RawTrajLPFHighCut = 1.75;
 
@@ -184,6 +184,12 @@ else
     fclose(fileID);
 end
 % Submit simulation
+fprintf('Submitting simulation with %d attenuated trials using %d CPU threads\n', nAttenSimFiles, nThreads);
+disp(['Note that this process could take a LONG time to finish depends ', ...
+    'on the number of threads and CPU']);
+fprintf('%s\n%s\n%s\n',["And it's normal see the simulation running for a while without", ...
+    "any output in the MATLAB command window as MATLAB surpresses them.", ...
+    "They will show up eventually"]);
 EIH_API_SIM_TRACKING();
 fprintf('--------- STEP #3 Success, %d attenuated trials simulated ---------\n', nAttenSimFiles);
 
@@ -218,7 +224,7 @@ nTrackingSimTrials = length(attenTrialData);
 attenTrialData = rmfield(attenTrialData, 'srcObjPos');
 attenTrialData = rmfield(attenTrialData, 'trackingSimFileNamePrefix');
 
-fprintf('--------- STEP #4 Success, %d trials analyzed ---------\n', nTrackingSimTrials);
+fprintf('\n--------- STEP #4 Success, %d trials analyzed ---------\n', nTrackingSimTrials);
 
 %% STEP #4 - Group and Analyze Data
 fprintf('********* STEP #5 - Group and Analyze Data *********\n');
@@ -312,11 +318,8 @@ save(sprintf([DIR_TRIAL_ROOT,'BatchEEDISim-Trial%03d-Data.mat'],nTrials), ...
     'attenTrialData', 'FreqWin', '-v7.3');
 
 save(sprintf([DIR_TRIAL_ROOT,'BatchEEDISim-Trial%03d-Result.mat'],nTrials), 'PerfData', '-v7.3');
-
+save(fullfile(srcPath, 'sm-fig4-Data.mat'), 'PerfData', '-v7.3');
 fprintf('Success\n');
-
-%% Analyze Simulated Data
-
 
 function idx = strfindCell(cellIn, str)
 idx = find(contains(cellIn, str));

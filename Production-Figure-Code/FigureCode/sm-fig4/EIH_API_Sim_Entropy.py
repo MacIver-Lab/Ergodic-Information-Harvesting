@@ -33,15 +33,14 @@ def EIH_Sim(*argv):
         ergParam.timeHorizon = 1.0
         ergParam.time = linspace(0.0, ergParam.timeHorizon, ergParam.res)
         eidParam.res = 101 # Spatial resolution
-        eidParam.maxT = 50
+        eidParam.maxT = 60
         ergParam.wControl = 20
-        eidParam.Sigma = 0.06
         eidParam.pLSigmaAmp = 100
         eidParam.pLSigmaAmpBayesian = 100
         eidParam.pLSigmaAmpEID = 100
         eidParam.procNoiseSigma = 0.02
         eidParam.pLHistDepth = 1
-        eidParam.Sigma = 0.06
+        eidParam.Sigma = 0.05
         eidParam.objAmp = 0.20
         eidParam.blindIdx = False
         eidParam.blind = 'NA'
@@ -67,18 +66,18 @@ def EIH_Sim(*argv):
             eidParam.sTraj = sourceData['sTrajList'].flatten()
             eidParam.rawTraj = sourceData['oTrajList'].flatten()
             dt = sourceData['dt'].flatten()[0]
-            maxT = sourceData['maxTime'].flatten()[0]
+            #maxT = sourceData['maxTime'].flatten()[0]
             SNR = sourceData['SNR'].flatten()[0]
             wControl = sourceData['wControl'].flatten()[0]
             objAmp = sourceData['objAmp'].flatten()[0]
-            Sigma = sourceData['Sigma'].flatten()[0]
+            #Sigma = sourceData['Sigma'].flatten()[0]
             eidParam.attenMetrics = sourceData['AttenuateMetrics']
 
             # Conditions to simulate
-            eidParam.maxT = float(maxT)
+            #eidParam.maxT = float(maxT)
             eidParam.sInitPos = eidParam.sTraj[0]
             eidParam.SNR = float(SNR)
-            eidParam.Sigma = Sigma
+            #eidParam.Sigma = Sigma
             eidParam.objAmp = objAmp
             ergParam.wControl = float(wControl)
             ergParam.dt = dt

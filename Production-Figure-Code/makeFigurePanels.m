@@ -31,7 +31,7 @@ warning('off', 'MATLAB:MKDIR:DirectoryExists');
 %                   does not require any simulation data and therefore
 %                   USE_PREV_DATASET will be ignored
 % 
-targetFig = 'sm-fig2';
+targetFig = 'sm-fig1';
 
 % Maximum number of CPU thread dedicated for sm-fig4 simulation
 % Note that this is only used for sm-fig4
@@ -41,7 +41,7 @@ nThread = 10;
 % Use
 %   USE_PREV_DATASET = 1; % if local simulation step is skipped
 %   USE_PREV_DATASET = 0; % if local simulation is done
-USE_PREV_DATASET = 0;
+USE_PREV_DATASET = 1;
 
 %% Internal parameters (do not change)
 if USE_PREV_DATASET
