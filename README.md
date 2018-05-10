@@ -34,9 +34,10 @@ Once the environment is setup, you can launch the simulation through a `jupyter 
   - If using Linux or MacOS, simply run this command in a terminal: `jupyter notebook` 
 - A new browser tab should pop up. Find and open `Ergodic-Information-Harvesting-Simulation.ipynb` under the file list. Note that Jupyter notebook will use the current directory of your command prompt as the working directory: if you don't see the code folder, that means your command window is in a different folder and you need to navigate to `/SimulationCode/` before running `jupyter notebook`
 - Once opened, you should see the code for simulation and you are now good to go to reproduce the results of our study.
+- **NOTE**: Depending on your operating system, you **may need to prevent your system from going to sleep**. This is necessary with MacOS. With MacOS, there are two ways to do this: 1. Open a terminal, and type `caffeinate` and hit return. Your system will be prevented from sleeping until you hit Control-C. 1. Go to System Preferences, Energy Saver panel, and click the box that says "Prevent computer from sleeping automatically when the display is off".
 
 ### How to Reproduce Figure Results
-To reproduce the figure results, first follow the simulation section below to run EIH simulation trials. Then proceed to the figure plotting code to reproduce the figure results. As it can take several days to run the hundreds of simulations needed for all the results, previously simulated data has been included for a more expedient but less thorough regeneration of the results if desired.
+To reproduce the figure results, first follow the simulation section below to run EIH simulation trials. Then proceed to the figure plotting code to reproduce the figure results. As it can take several days to run the hundreds of simulations needed for all the results, previously simulated data has been included for a more expedient but less thorough regeneration of the results if desired, and for comparison between our published results and any that you generate.
 
 #### Step 1 - Local EIH Simulation (optional)
 ##### Code Structure
