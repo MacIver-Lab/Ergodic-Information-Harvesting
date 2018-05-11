@@ -31,7 +31,7 @@ warning('off', 'MATLAB:MKDIR:DirectoryExists');
 %                   does not require any simulation data and therefore
 %                   USE_PREV_DATASET will be ignored
 % 
-targetFig = 'fig2';
+targetFig = 'fig3';
 
 % Maximum number of CPU thread dedicated for sm-fig4 simulation
 % Note that this is only used for sm-fig4
@@ -39,12 +39,12 @@ nThread = 10;
 
 % Choose whether or not to use previously simulated dataset
 % Use
-%   USE_PREV_DATASET = 1; % if local simulation step is skipped
-%   USE_PREV_DATASET = 0; % if local simulation is done
-USE_PREV_DATASET = 1;
+%   USE_PUBLISHED_DATASET = 1; % if local simulation step is skipped
+%   USE_PUBLISHED_DATASET = 0; % if local simulation is done
+USE_PUBLISHED_DATASET = 1;
 
 %% Internal parameters (do not change)
-if USE_PREV_DATASET
+if USE_PUBLISHED_DATASET
     DATA_PATH = './FigureCode/';
     FIG_DATA_PATH = sprintf([DATA_PATH,'%s/Data/'], targetFig);
 else
@@ -63,7 +63,7 @@ switch targetFig
     case 'fig2'
         makeFig2Plots(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'fig3'
-        if ~USE_PREV_DATASET
+        if ~USE_PUBLISHED_DATASET
             mkdir(FIG_DATA_PATH);
             cpySimDataFiles('../SimulationCode/SimData/fig2/*ElectricFish*', ...
                 FIG_DATA_PATH);
@@ -72,9 +72,9 @@ switch targetFig
         end
         makeFig3Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'sm-fig1'
-        makeSMFig1Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH, USE_PREV_DATASET);
+        makeSMFig1Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH, USE_PUBLISHED_DATASET);
     case 'sm-fig2'
-        if ~USE_PREV_DATASET
+        if ~USE_PUBLISHED_DATASET
             mkdir(FIG_DATA_PATH);
             cpySimDataFiles('../SimulationCode/SimData/fig2/*ElectricFish*', ...
                 FIG_DATA_PATH);
@@ -83,14 +83,14 @@ switch targetFig
         end
         makeSMFig2Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'sm-fig3'
-        if ~USE_PREV_DATASET
+        if ~USE_PUBLISHED_DATASET
             mkdir(FIG_DATA_PATH);
             cpySimDataFiles('../SimulationCode/SimData/fig2/fig2-ErgodicHarvest-ElectricFish-SNR-30*', ...
                 FIG_DATA_PATH);
         end
         makeSMFig3Plots(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'sm-fig4'
-        if ~USE_PREV_DATASET
+        if ~USE_PUBLISHED_DATASET
             mkdir(FIG_DATA_PATH);
             cpySimDataFiles('../SimulationCode/SimData/fig2/fig2-ErgodicHarvest-ElectricFish-SNR-30*', ...
                 FIG_DATA_PATH);
