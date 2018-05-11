@@ -92,9 +92,9 @@ figure(1); clf; hold on;
 hBoxPlot = notBoxPlot([reStrongSignalFish',reWeakSignalFish'], ...
     [ones(1,length(reStrongSignalFish)), 2*ones(1,length(reWeakSignalFish))]);
 opt = [];
-opt.BoxDim = [8,5];
+opt.BoxDim = [10,5.1]*0.82;
 opt.YLabel = 'Relative Exploration'; % ylabel
-opt.YLim = [0.75, 3.5];
+opt.YLim = [0.75, 3];
 opt.YTick = [1, 2, 3];
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
@@ -188,9 +188,9 @@ figure(2); clf;
 hBoxPlot = notBoxPlot([reBlk,reNrm], ...
     [2*ones(1,length(reBlk)), 1*ones(1,length(reNrm))]);
 opt = [];
-opt.BoxDim = [8,5];
+opt.BoxDim = [10,5.2]*0.82;
 opt.YLabel = 'Relative Exploration'; % ylabel
-opt.YLim = [1, 7];
+opt.YLim = [1, 6];
 opt.YTick = [1, 2, 4, 6];
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
