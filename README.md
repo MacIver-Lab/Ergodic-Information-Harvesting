@@ -57,7 +57,7 @@ To reproduce figure 1 for example, use the following procedures:
 - Launch `./Production-Figure-Code/makeFigurePanels.m` using MATLAB. Note that the code has been tested with MATLAB `R2017a` and `R2018a`.
 - Specify input parameters
   - Set `targetFig = 'fig1'` to select figure 1 as the target
-  - Set `USE_PREV_DATASET = 1` to use previously simulated dataset. Alternatively, use `USE_PREV_DATASET = 0` if simulation data for figure 1 has been created through step 1
+  - Set `USE_PUBLISHED_DATASET = 1` to show the data we published. Alternatively, use `USE_PUBLISHED_DATASET = 0` if the simulation data for figure 1 has been created through step 1
 - Run the MATLAB code
 
 You should see new MATLAB figure panel pops up contains figure 1 panels and PDF(s) will be saved under `./FigureOutput/fig1/`.
