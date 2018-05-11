@@ -4,6 +4,8 @@ warning('off', 'MATLAB:print:FigureTooLargeForPage');
 GEN_DATA_PATH = @(fname) fullfile(dataPath, fname);
 GEN_BEHAVIOR_DATA_PATH = @(fname) fullfile(pwd, 'FigureCode', 'fig3', 'BehaviorData', fname);
 GEN_SAVE_PATH = @(fname) fullfile(savePath, fname);
+% Lock random number generator seed
+rng(1);
 
 %% Electric Fish Behavioral Trials
 FPS = 60;
