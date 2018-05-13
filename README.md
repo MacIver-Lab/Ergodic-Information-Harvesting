@@ -1,4 +1,4 @@
-# Code and data to reproduce results from "Ergodic information harvesting as a behavioral strategy for complex environments"
+# Code and data to reproduce results from "Ergodic information harvesting as a behavioral strategy for complex environments" by Chen Chen, Todd D. Murphey, and Malcolm A. MacIver, Northwestern University, Evanston IL, USA
 
 ## Ergodic Information Harvesting (EIH) Tutorial
 To ease the effort of understanding how EIH works, we have included an interactive tutorial in Jupyter as well as a video published for a prior publication (["Ergodic Exploration of Distributed Information"](https://nxr.northwestern.edu/sites/default/files/publications/Mill16a_ergodic_control_distributed_info.pdf), Miller et al., IEEE Trans. Robotics, 2016) paper. 
