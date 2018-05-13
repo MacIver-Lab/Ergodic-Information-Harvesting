@@ -3,7 +3,7 @@
 ## Ergodic Information Harvesting (EIH) Tutorial
 To ease the effort of understanding how EIH works, we have included an interactive tutorial in Jupyter as well as a video published for a prior publication ("Ergodic Exploration of Distributed Information", Miller et al., IEEE Trans. Robotics, 2016) paper. You can find the link to them below:
 - Interactive Jupyter notebook tutorial [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/MacIver-Lab/Ergodic-Information-Harvesting/master?filepath=Tutorial%2FErgodic_Information_Harvesting_Tutorial.ipynb)
-- Video of how EIH works in a two-dimensional tracking case using Fisher Information instead of entropy. [Click here to watch the video on YouTube](https://youtu.be/QZ9fGYmJ0G0)
+- Video of how EIH works (Two differences from study: 1. Object to be found is not moving; 2. Uses Fisher Information instead of entropy.) [Click here to watch the video on YouTube](https://youtu.be/QZ9fGYmJ0G0)
 
 ## Steps to reproduce the results shown in the EIH paper
 All of the simulation code is written with Python 3.6 using [Jupyter Notebook](http://jupyter.org/). All of the figure plotting files are written in MATLAB (2017). The code can be run on:
@@ -60,4 +60,4 @@ To reproduce figure 1 for example, use the following procedures:
   - Set `USE_PUBLISHED_DATASET = 1` to show the data we published. Alternatively, use `USE_PUBLISHED_DATASET = 0` if the simulation data for figure 1 has been created through step 1
 - Run the MATLAB code
 
-You should see new MATLAB figure panel pops up contains figure 1 panels and PDF(s) will be saved under `./FigureOutput/fig1/`.
+You should see a new MATLAB figure containing Figure 1 panels. PDF(s) will be saved under `./FigureOutput/fig1/`.
