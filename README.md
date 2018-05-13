@@ -8,7 +8,7 @@ To ease the effort of understanding how EIH works, we have included an interacti
 ## Steps to reproduce the results shown in the EIH paper
 All of the simulation code is written with Python 3.6 using [Jupyter Notebook](http://jupyter.org/). All of the figure plotting files are written in MATLAB (2017). The code can be run on:
 - A local computer, which is very easy to set up but limited by the number of accessible CPU cores.
-- Cloud computing virtual servers throug any popular Infrastructure as a Service (IaaS) provider, *e.g.* [Amazon Elastic Compute Cloud](https://aws.amazon.com/ec2/) or [Google Cloud Compute Engine](https://cloud.google.com/compute/). CLoud computing is easy to setup and provides a way to scale up the total number of running threads (*e.g.* Google Cloud Compute Engine allows up to 96 CPU threads per instance).
+- Cloud computing virtual servers throug any popular Infrastructure as a Service (IaaS) provider, *e.g.* [Amazon Elastic Compute Cloud](https://aws.amazon.com/ec2/) or [Google Cloud Compute Engine](https://cloud.google.com/compute/). Cloud computing is easy to setup and provides a way to scale up the total number of running threads (*e.g.* Google Cloud Compute Engine allows up to 96 CPU threads per instance).
 
 ### Setting up the runtime environment
 The results generation system uses Jupyter as the environment for interaction. Jupyter is very easy to set up if you have not used it before.
