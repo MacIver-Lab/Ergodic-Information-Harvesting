@@ -117,6 +117,8 @@ set(gca,'XTickLabel',{'Strong Signal','Weak Signal'})
 set(gca,'YTickLabel',{'1x', '2x', '3x'})
 print(gcf,'-dpdf',GEN_SAVE_PATH('fish-RE.pdf'));
 
+fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));
+
 
 %% Mole behavioral data
 cumAngularDist = @(x) sum(abs(diff(x)));

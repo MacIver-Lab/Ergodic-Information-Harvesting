@@ -216,6 +216,6 @@ setPlotProp(opt);
 legend(gca, 'off');
 set(gca,  'Position', [5    1    3.2   2]);
 
-
 %% Print to file
-print(GEN_SAVE_PATH('sm-fig2a-FFT.pdf'),'-dpdf');
+print(GEN_SAVE_PATH('sm-fig2a-FFT.pdf'),'-dpdf', '-bestfit');
+fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));
