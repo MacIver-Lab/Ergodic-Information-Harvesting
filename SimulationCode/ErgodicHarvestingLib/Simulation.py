@@ -47,6 +47,7 @@ def EIDSim(ergParam, eidParam, showPlot=True, showLivePlot=False, plt_UseBlit=Tr
         enpList = np.empty(eidParam.maxIter)
         pLast = np.ones([ergParam.res, 1])
     elif eidParam.simType == 'IF':
+        eidParam.maxIter = np.int(np.round(eidParam.maxT / ergParam.dt))
         eidList = np.ones([eidParam.res, eidParam.maxIter])
         sTrajList = np.array([eidParam.sInitPos])
         oTrajList = np.empty(0)
@@ -190,11 +191,11 @@ def EIDSim(ergParam, eidParam, showPlot=True, showLivePlot=False, plt_UseBlit=Tr
     matDict['blindIdx'] = eidParam.blindIdx
     matDict['blindType'] = eidParam.blind
     matDict['timeDone'] = strftime("%b-%d-%H-%M-%S")
+    matDict['enpList'] = enpList
     if eidParam.simType == 'EH':
         matDict['ergList'] = ergList
     elif eidParam.simType == 'IF':
         matDict['StepSize'] = eidParam.stepSize
         matDict['planDepth'] = eidParam.planDepth
-        matDict['enpList'] = enpList
     
     save2mat(eidParam.filename,matDict, path=eidParam.saveDir, appendIdx=False)

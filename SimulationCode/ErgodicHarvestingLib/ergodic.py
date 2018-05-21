@@ -14,7 +14,7 @@ from scipy.interpolate import interp1d
 
 
 class ProjectionBasedOpt(object):
-    def __init__(self, nx, nu, R, odeSolver, time, uinit):
+    def __init__(self, nx, nu, R, odeSolver, time, Quinit):
         '''
         Class to represent an optimization problem for a system with dynamic constraints.
         :nx dimension of state
@@ -28,7 +28,7 @@ class ProjectionBasedOpt(object):
 
         self.Q = np.eye(self.nx)
         self.R = R * np.eye(self.nu)
-        self.uinit = uinit
+        self.Quinit = Quinit  # weight for the initial control
         
         self.P1 = 1.0
         self.Qn = 1.0
@@ -194,8 +194,7 @@ class ProjectionBasedOpt(object):
         dldul = np.empty((time.shape[0], 1))
         for tindex,_ in np.ndenumerate(time):
             dldul[tindex,:] = self.dldu_pointwise(X[tindex],U[tindex])
-        #dldul[0,:] += self.uinit * self.Quinit
-        dldul[0,:] += self.uinit * self.R[0]
+        dldul[0,:] += self.uinit * self.Quinit # initial control
         self.b_current = dldul
         return dldul
 
@@ -327,7 +326,7 @@ class ErgodicOpt(ProjectionBasedOpt):
 
     def __init__(self, nx, nu, ergParam, uinit):
 
-        super().__init__(nx, nu, R=ergParam.wControl, odeSolver=ergParam.odeIntegrator, time=ergParam.time, uinit=ergParam.wInitCtrl) 
+        super().__init__(nx, nu, R=ergParam.wControl, odeSolver=ergParam.odeIntegrator, time=ergParam.time, Quinit=ergParam.wInitCtrl) 
 
         self.barrcost = ergParam.wBarrCost
         self.ergcost = ergParam.wErgCost
