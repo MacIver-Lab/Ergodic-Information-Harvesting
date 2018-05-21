@@ -23,15 +23,20 @@ end
 
 %% Plot
 figure(1); clf; hold on;
-% First segment - pass band
-hdl = plot(AttenuateMetrics{1}.magResponseFreqIdx(1:AttenuateMetrics{1}.cutoffIdx), ...
-    AttenuateMetrics{1}.magResponsedB(1:AttenuateMetrics{1}.cutoffIdx), 'LineWidth', 2); hold on;
+lineColors = [247 148 29; ...
+              11  146 70; ...
+              43  57  144] / 255.0;
+hdl = line([0, freqWin(2)], [0, 0], ...
+    'LineWidth', 2, 'Color', lineColors(1, :)); hold on;
 hLine = line([freqWin(1), freqWin(1)], [-150, 0], ...
-    'LineStyle', '--', 'LineWidth', 2);
+    'LineStyle', '--', 'LineWidth', 2, ...
+    'Color', [236 29 39]/255.0);
 % Second segment - attenuated freq band
 for i = 1:length(attenSamp)
     hdl = [hdl, plot(AttenuateMetrics{i}.magResponseFreqIdx(AttenuateMetrics{i}.cutoffIdx:end), ...
-        AttenuateMetrics{i}.magResponsedB(AttenuateMetrics{i}.cutoffIdx:end), 'LineWidth', 2)];
+        AttenuateMetrics{i}.magResponsedB(AttenuateMetrics{i}.cutoffIdx:end), ...
+        'LineWidth', 2, ...
+        'Color', lineColors(i+1, :))];
 end
 
 opt = [];
@@ -52,13 +57,13 @@ ytickangle(45);
 legend(hdl, 'Original', sprintf('Filtered (Attenuation = %ddB)', attenSamp(1)), ...
     sprintf('Filtered (Attenuation = %ddB)', attenSamp(2)),...
     'Location', 'Best');
-print(GEN_SAVE_PATH('sm-fig3a-MagResponse.pdf'),'-dpdf');
+print(GEN_SAVE_PATH('sm-fig3a-MagResponse.pdf'), '-dpdf', '-bestfit');
 
 figure(2); clf;
 simTimestamp = (1:length(sPos)) * dt;
-plot(simTimestamp, sPos, 'LineWidth',2); hold on;
+plot(simTimestamp, sPos, 'LineWidth',2, 'Color', lineColors(1, :)); hold on;
 for i = 1:length(attenSamp)
-    plot(simTimestamp, sPosOut{i}, 'LineWidth',2);
+    plot(simTimestamp, sPosOut{i}, 'LineWidth', 2, 'Color', lineColors(i+1, :));
 end
 legend('Original', sprintf('Filtered (Attenuation = %ddB)', attenSamp(1)), ...
     sprintf('Filtered (Attenuation = %ddB)', attenSamp(2)), ...
@@ -77,19 +82,19 @@ opt.YLabel = 'Position';
 opt.YTick = [];
 opt.FontName = 'Helvetica';
 setPlotProp(opt);
-print(GEN_SAVE_PATH('sm-fig3b-Traj.pdf'),'-dpdf');
+print(GEN_SAVE_PATH('sm-fig3b-Traj.pdf'), '-dpdf', '-bestfit');
 
 figure(3); clf;
 plot(AttenuateMetrics{1}.FreqResolution:AttenuateMetrics{1}.FreqResolution:freqWin(2), ...
     abs(AttenuateMetrics{1}.sPosFFT(2:freqWin(2)/AttenuateMetrics{1}.FreqResolution+1)),...
-    'LineWidth',2); hold on;
+    'LineWidth', 2, 'Color', lineColors(1, :)); hold on;
 for i = 1:length(attenSamp)
     plot(AttenuateMetrics{i}.FreqResolution:AttenuateMetrics{i}.FreqResolution:freqWin(2), ...
         abs(AttenuateMetrics{i}.sPosFiltFFT(2:freqWin(2)/AttenuateMetrics{i}.FreqResolution+1)),...
-        'LineWidth',2);
+        'LineWidth', 2, 'Color', lineColors(i+1, :));
 end
 hLine = line([freqWin(1), freqWin(1)], [0, 180], ...
-    'LineStyle', '--', 'LineWidth', 2);
+    'LineStyle', '--', 'LineWidth', 2, 'Color', [236 29 39]/255.0);
 legend('Original', sprintf('Filtered (Attenuation = %ddB)', attenSamp(1)), ...
     sprintf('Filtered (Attenuation = %ddB)', attenSamp(2)), ...
     'Location', 'Best');
@@ -109,4 +114,6 @@ opt.XLim = [0, 1];
 opt.FontName = 'Helvetica';
 setPlotProp(opt);
 hLine.LineStyle = '--';
-print(GEN_SAVE_PATH('sm-fig3c-FFT.pdf'),'-dpdf');
+print(GEN_SAVE_PATH('sm-fig3c-FFT.pdf'), '-dpdf', '-bestfit');
+
+fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));
