@@ -64,4 +64,5 @@ setPlotProp(opt);
 legend(gca, 'off');
 set(gca,  'Position', [4, 1, 4.8, 3]);
 
-print(GEN_SAVE_PATH('fig1-de.pdf'), '-dpdf');
+print(GEN_SAVE_PATH('fig1-de.pdf'), '-dpdf', '-bestfit');
+fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));

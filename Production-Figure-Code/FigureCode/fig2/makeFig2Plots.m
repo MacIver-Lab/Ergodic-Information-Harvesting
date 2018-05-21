@@ -19,7 +19,7 @@ cumDist = @(x) sum(abs(diff(x)));
 % note that due to the complexity of EER bands, it's can be fairly slow 
 % to plot the EER bands
 global PLOT_EER_BAND
-PLOT_EER_BAND = 0;
+PLOT_EER_BAND = 1;
 % Use split plot method to generate vector graphic plots
 % This is a workaround for the buffer issue in MATLAB due
 % to the EER patch is too complex for the interal save
@@ -224,8 +224,8 @@ end
 % Load Data
 lSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Rat-WeakSignal.mat'));
 hSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Rat-StrongSignal.mat'));
-lSNR.eidList = flattenResultList(lSNR.phi(:,:,2:end))';
-hSNR.eidList = flattenResultList(hSNR.phi(:,:,2:end))';
+lSNR.eidList = flattenResultList(lSNR.phi(:,:,1:end-1))';
+hSNR.eidList = flattenResultList(hSNR.phi(:,:,1:end-1))';
 
 khan = load(GEN_BEHAVIOR_DATA_PATH('/Khan12a_fig2.mat'));
 khan.lSNR.sTraj = khan.fig2b_nose;
@@ -307,7 +307,7 @@ set(trajAxes,  'Position', [4.5    4    2.8320    1.4160]);
 barAxes = axes; hold on;
 barData = [1, dist_rat_hSNR_Sensor/dist_rat_hSNR_Trail, dist_rat_lSNR_Sensor/dist_rat_lSNR_Trail];
 for i = 1:3
-    bar(i, barData(i), 0.4, 'BaseValue', -2, ...
+    bar(i, barData(i), 0.4, 'BaseValue', -1, ...
         'FaceColor', barColor(i,:));
 end
 opt = [];
@@ -316,12 +316,12 @@ opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
 opt.YMinorTick = 'off'; 
 opt.XTick = [1, 2, 3];
-opt.YTick = [1, 7];
-opt.YLim = [-2, 7];
+opt.YTick = [1, 5];
+opt.YLim = [-1, 5];
 opt.FontSize = 10;
 opt.FontName = 'Helvetica';
 setAxesProp(opt, barAxes);
-set(gca,'YTickLabel', {'1x', '7x'});
+set(gca,'YTickLabel', {'1x', '5x'});
 set(gca,'XTickLabel', {'Target', 'Strong Signal', 'Weak Signal'});
 legend(gca, 'off');
 set(barAxes, 'Position', [8    4    2.8320    1.7700]);
@@ -383,7 +383,7 @@ set(trajAxes,  'Position', [4.5    1    2.8320    1.4160]);
 barAxes = axes; hold on;
 barData = [1, dist_hSNR_Sensor/dist_hSNR_Trail, dist_lSNR_Sensor/dist_lSNR_Trail];
 for i = 1:3
-    bar(i, barData(i), 0.4, 'BaseValue', -2, ...
+    bar(i, barData(i), 0.4, 'BaseValue', -1, ...
         'FaceColor', barColor(i,:));
 end
 opt = [];
@@ -392,12 +392,12 @@ opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
 opt.YMinorTick = 'off'; 
 opt.XTick = [1, 2, 3];
-opt.YTick = [1, 7];
-opt.YLim = [-2, 7];
+opt.YTick = [1, 5];
+opt.YLim = [-1, 5];
 opt.FontSize = 10;
 opt.FontName = 'Helvetica';
 setAxesProp(opt, barAxes);
-set(gca,'YTickLabel', {'1x', '7x'});
+set(gca,'YTickLabel', {'1x', '5x'});
 set(gca,'XTickLabel', {'Target', 'Strong Signal', 'Weak Signal'});
 legend(gca, 'off');
 set(barAxes,  'Position', [8    1    2.8320    1.7700]);
@@ -422,8 +422,8 @@ mole.lSNR = load(GEN_BEHAVIOR_DATA_PATH('Mole-WeakSignal.mat'));
 hSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Mole-StrongSignal.mat'));
 lSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Mole-WeakSignal.mat'));
 
-lSNR.eidList = flattenResultList(lSNR.phi(:,:,2:end))';
-hSNR.eidList = flattenResultList(hSNR.phi(:,:,2:end))';
+lSNR.eidList = flattenResultList(lSNR.phi(:,:,1:end))';
+hSNR.eidList = flattenResultList(hSNR.phi(:,:,1:end))';
 
 % Relative exploration
 cumAngularDist = @(x) sum(abs(diff(x)));
@@ -607,6 +607,7 @@ else
     print(GEN_SAVE_PATH('fig2-Mole.pdf'),'-dpdf');
 end
 
+fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));
 
 function mPlotContinuousEID(dat)
 global PLOT_EER_BAND
@@ -614,7 +615,7 @@ if ~PLOT_EER_BAND
     return;
 end
 %% Plot Parameters
-tScale = 10;   % Interval of EID plot update, set to 1 will plot all of the EID map
+tScale = 5;   % Interval of EID plot update, set to 1 will plot all of the EID map
 nBins = 80;   % Color resolution in the y axis
 alpha = 0.5;  % Transparency of the EID color
 % cmap = lines(10);
