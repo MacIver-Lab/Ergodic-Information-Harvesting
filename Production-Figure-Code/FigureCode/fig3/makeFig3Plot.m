@@ -41,7 +41,7 @@ reWeakSignalFish = weakSig(:,1) ./ weakSig(:, 2);
 
 % Compute statistics
 % Ranksum test, right tail = median of rteWeakSignal is greater than median of rteStrongSignal
-[P, ~] = ranksum(reWeakSignalFish, reStrongSignalFish,...
+[P, ~, Stats] = ranksum(reWeakSignalFish, reStrongSignalFish,...
     'tail', 'right');
 fprintf('Wilcoxon rank sum test (one-sided) - p = %.4f\n', P);
 
@@ -89,6 +89,8 @@ fprintf(['\t\t\tRelative exploration\n', ...
 
 % Plot group data
 figure(1); clf; hold on;
+hL = line([0,3], [1,1], 'LineStyle', '--', ...
+    'Color', [140,140,140]/255.0, 'LineWidth',4);
 hBoxPlot = notBoxPlot([reStrongSignalFish',reWeakSignalFish'], ...
     [ones(1,length(reStrongSignalFish)), 2*ones(1,length(reWeakSignalFish))]);
 opt = [];
@@ -102,16 +104,21 @@ opt.YMinorTick = 'off';
 opt.FontName = 'Helvetica';
 setAxesProp(opt);
 hLine = findobj(gca,'Type','line');
+hL.Color = [140,140,140]/255.0;
+hL.LineWidth = 4;
+hL.LineStyle = '--';
 hLine(1).LineStyle = 'none';
 hLine(3).LineStyle = 'none';
 hLine(1).Marker = '.';
 hLine(3).Marker = '.';
-hLine(1).MarkerEdgeColor = 'b';
-hLine(1).MarkerSize = 26;
-hLine(3).MarkerSize = 26;
-hLine = line([0,3],[1,1]);
-hLine.LineStyle = '--';
-hLine.LineWidth = 2;
+hLine(1).MarkerEdgeColor = 'k';
+hLine(3).MarkerEdgeColor = 'k';
+hLine(1).MarkerSize = 30;
+hLine(3).MarkerSize = 30;
+hLine(2).LineWidth = 5;
+hLine(4).LineWidth = 5;
+hLine(2).Color = [162,0,0]/255.0;
+hLine(4).Color = [50,180,74]/255.0;
 legend(gca, 'off');
 set(gca,'XTickLabel',{'Strong Signal','Weak Signal'})
 set(gca,'YTickLabel',{'1x', '2x', '3x'})
@@ -148,7 +155,7 @@ fprintf('Weak signal trials, n = %d\n', length(reBlk));
 % Compute statistics
 % Ranksum test, right tail = median of reBlk is greater than 
 % median of reNrm
-[P, ~, ~] = ranksum(reBlk, reNrm,...
+[P, ~, Stats] = ranksum(reBlk, reNrm,...
     'tail', 'right');
 fprintf('Wilcoxon rank sum test (one-sided) - p = %.4f\n', P);
 
@@ -204,12 +211,18 @@ hLine(1).LineStyle = 'none';
 hLine(3).LineStyle = 'none';
 hLine(1).Marker = '.';
 hLine(3).Marker = '.';
-hLine(1).MarkerEdgeColor = 'b';
-hLine(1).MarkerSize = 26;
-hLine(3).MarkerSize = 26;
+hLine(1).MarkerEdgeColor = 'k';
+hLine(3).MarkerEdgeColor = 'k';
+hLine(1).MarkerSize = 30;
+hLine(3).MarkerSize = 30;
+hLine(2).LineWidth = 5;
+hLine(4).LineWidth = 5;
+hLine(2).Color = [162,0,0]/255.0;
+hLine(4).Color = [50,180,74]/255.0;
 legend(gca, 'off');
-set(gca,'XTickLabel',{'Strong Signal','Weak Signal'})
+set(gca,'XTickLabel',{'Strong Signal','Weak Signal'});
 set(gca,'YTickLabel',{'1x', '2x', '4x', '6x'})
+
 print(gcf,'-dpdf',GEN_SAVE_PATH('mole-RE.pdf'));
 
 

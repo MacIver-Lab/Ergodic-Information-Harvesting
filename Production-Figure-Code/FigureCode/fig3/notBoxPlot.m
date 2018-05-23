@@ -344,9 +344,9 @@ function [h,statsOut]=myPlotter(X,Y)
      thisY=thisY(~isnan(thisY));    
      thisX=repmat(X(k),1,length(thisY));
 
-     if strcmp(style,'patch') 
-       h(k).sdPtch=patchMaker(SD(k),[0.6,0.6,1]);
-     end
+%      if strcmp(style,'patch') 
+%        h(k).sdPtch=patchMaker(SD(k),[0.6,0.6,1]);
+%      end
 
      %For optional command line output
      statsOut(k).mu = mu(k);
@@ -356,7 +356,7 @@ function [h,statsOut]=myPlotter(X,Y)
 
      if strcmp(style,'patch') || strcmp(style,'sdline')
        %Plot mean and SEM (and optionally the median)
-       h(k).semPtch=patchMaker(SEM(k),[1,0.6,0.6]);
+       h(k).semPtch=patchMaker(SEM(k),[140,140,140]/255.0);
        h(k).mu=plot([X(k)-jitScale,X(k)+jitScale],[mu(k),mu(k)],'-r',...
             'linewidth',2);
        if markMedian
@@ -370,18 +370,18 @@ function [h,statsOut]=myPlotter(X,Y)
      C=cols(k,:);
      J=(rand(size(thisX))-0.5)*jitter;
         
-     h(k).data=plot(thisX+J, thisY, 'o', 'color', C,...
-                   'markerfacecolor', C+(1-C)*0.65);
+     h(k).data=plot(thisX+J, thisY, 'o', 'color', 'k',...
+                   'markerfacecolor', 'k');
  end
 
- if strcmp(style,'line') || strcmp(style,'sdline')
-   for k=1:length(X)    
-     %Plot SD
-     h(k).sd=plot([X(k),X(k)],[mu(k)-SD(k),mu(k)+SD(k)],...
-                  '-','color',[0.2,0.2,1],'linewidth',2);
-     set(h(k).sd,'ZData',[1,1]*-1)
-   end
- end
+%  if strcmp(style,'line') || strcmp(style,'sdline')
+%    for k=1:length(X)    
+%      %Plot SD
+%      h(k).sd=plot([X(k),X(k)],[mu(k)-SD(k),mu(k)+SD(k)],...
+%                   '-','color',[0.2,0.2,1],'linewidth',2);
+%      set(h(k).sd,'ZData',[1,1]*-1)
+%    end
+%  end
 
  if strcmp(style,'line')
      for k=1:length(X)     

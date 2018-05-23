@@ -9,7 +9,7 @@ GEN_BEHAVIOR_DATA_PATH = @(fname) fullfile(pwd, 'FigureCode', 'sm-fig5', 'Behavi
 GEN_SAVE_PATH = @(fname) fullfile(savePath, fname);
 sTrajHighCutFreq = 2.10; % Hz
 global PLOT_EER_BAND
-PLOT_EER_BAND = 1;
+PLOT_EER_BAND = 0;
 % SET this to 1 if you are having issues with creating vector graphic PDFs
 % it will save the complex EER band overlay into a separate tiff image
 USE_SPLIT_PRINT = 0;
@@ -19,11 +19,12 @@ USE_SPLIT_PRINT = 0;
 % Ergodic Harvesting data
 dat = load(GEN_DATA_PATH('sm-fig5-ErgodicHarvest-Rat.mat'), ...
     'dt', 'oTrajList', 'sTrajList', 'phi');
-sTraj = dat.sTrajList(1:2301);
-oTraj = dat.oTrajList(1:2301);
+sTraj = dat.sTrajList(1:end);
+oTraj = dat.oTrajList(1:end);
 dat.eidList = flattenResultList(dat.phi(:,:,2:end))';
 dt = dat.dt;
 blindIdx = [820, 1710];
+% blindIdx = [900, 1510];
 % Filter Sensor Trajectory
 sTraj = LPF(sTraj, 1/dt, sTrajHighCutFreq);
 

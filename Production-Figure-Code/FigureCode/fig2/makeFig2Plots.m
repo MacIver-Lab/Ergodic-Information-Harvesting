@@ -19,7 +19,7 @@ cumDist = @(x) sum(abs(diff(x)));
 % note that due to the complexity of EER bands, it's can be fairly slow 
 % to plot the EER bands
 global PLOT_EER_BAND
-PLOT_EER_BAND = 1;
+PLOT_EER_BAND = 0;
 % Use split plot method to generate vector graphic plots
 % This is a workaround for the buffer issue in MATLAB due
 % to the EER patch is too complex for the interal save
