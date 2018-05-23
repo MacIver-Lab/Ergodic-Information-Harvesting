@@ -46,9 +46,13 @@ print(GEN_SAVE_PATH('sm-fig1-RelativeTrackingEffort.pdf'), '-dpdf');
 % Compute correlation coefficient and its 95% confidence interval
 [Rerg, ~, RLerg, RUerg] = corrcoef(double(snrErg), RE_Erg);
 [Rinf, ~, RLinf, RUinf] = corrcoef(double(snrInf), RE_Inf);
-figure(2); clf;
-errorbar(Rerg(2),1,RLerg(2)-Rerg(2),RUerg(2)-Rerg(2), 'Horizontal', 'o', 'LineWidth', 2, 'MarkerSize', 7); hold on;
-errorbar(Rinf(2),2,RLinf(2)-Rinf(2),RUinf(2)-Rinf(2), 'Horizontal', 'o', 'LineWidth', 2, 'MarkerSize', 7);
+figure(2); clf; hold on;
+errorbar(Rerg(2),1,RLerg(2)-Rerg(2),RUerg(2)-Rerg(2), ...
+    'Horizontal', '.', 'LineWidth', 4, 'MarkerSize', 50, ...
+    'Color', 'k', 'CapSize', 20); 
+errorbar(Rinf(2),2,RLinf(2)-Rinf(2),RUinf(2)-Rinf(2), ...
+    'Horizontal', '.', 'LineWidth', 4, 'MarkerSize', 50, ...
+    'Color', 'k', 'CapSize', 20);
 ylim([0.5, 2.5]);
 set(gca, 'YTick', [1,2]);
 set(gca, 'YTickLabel', {'Ergodic Harvesting', 'Infotaxis'});
