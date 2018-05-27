@@ -20,7 +20,7 @@ def SimulationMain(dataFile, nThread=1):
         makedirs(eidParam.saveDir)
 
     # Permutate conditions
-    simParam = list(product(SNR,procNoiseSigma,pLSigmaAmp,Sigma,objAmp,dt,wControl,randSeed,tRes))
+    simParam = list(product(SNR,procNoiseSigma,pLSigmaAmp,Sigma,objAmp,dt,wControl,randSeed))
     nSimTrials = len(simParam)
     
     # Limit pool size when job size is smaller than total available threads 
@@ -31,7 +31,7 @@ def SimulationMain(dataFile, nThread=1):
     pool = Pool(processes=nThread)
     jobs = []
     
-    for it in range(nThread):
+    for it in range(nSimTrials):
         # Determine if thread is already done by any previous session
         eidParam.SNR = simParam[it][0]
         eidParam.procNoiseSigma = simParam[it][1]
@@ -46,7 +46,6 @@ def SimulationMain(dataFile, nThread=1):
             eidParam.maxIter = round(eidParam.maxT / ergParam.dt)
         ergParam.wControl = simParam[it][6]
         eidParam.randSeed = simParam[it][7]
-        ergParam.tRes = simParam[it][8]
         ergParam.time = linspace(0.0, ergParam.timeHorizon, ergParam.tRes)
         ergParam.eidTime = linspace(0.0, ergParam.timeHorizon, eidParam.res)
         
