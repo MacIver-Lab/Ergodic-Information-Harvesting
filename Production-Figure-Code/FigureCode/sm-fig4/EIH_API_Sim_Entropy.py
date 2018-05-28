@@ -22,6 +22,7 @@ def EIH_Sim(*argv):
         ergParam = ErgodicParameters()
         eidParam = EIDParameters()
 
+        #argv = argv[0]
         simType = argv[0]
         eidParam.randSeed = int(argv[1])
 
@@ -31,14 +32,16 @@ def EIH_Sim(*argv):
 
         # Conditions to simulate
         ergParam.timeHorizon = 1.0
-        ergParam.time = linspace(0.0, ergParam.timeHorizon, ergParam.res)
         eidParam.res = 101 # Spatial resolution
-        eidParam.maxT = 60
-        ergParam.wControl = 20
-        eidParam.pLSigmaAmp = 100
-        eidParam.pLSigmaAmpBayesian = 100
-        eidParam.pLSigmaAmpEID = 100
-        eidParam.procNoiseSigma = 0.02
+        ergParam.tRes = 101 # Time resolution
+        ergParam.time = linspace(0.0, ergParam.timeHorizon, ergParam.tRes)
+        ergParam.eidTime = linspace(0.0, ergParam.timeHorizon, eidParam.res)
+        eidParam.maxT = 50
+        ergParam.wControl = 15
+        eidParam.pLSigmaAmp = 200
+        eidParam.pLSigmaAmpBayesian = 200
+        eidParam.pLSigmaAmpEID = 200
+        eidParam.procNoiseSigma = 0.011
         eidParam.pLHistDepth = 1
         eidParam.Sigma = 0.05
         eidParam.objAmp = 0.20
@@ -66,21 +69,21 @@ def EIH_Sim(*argv):
             eidParam.sTraj = sourceData['sTrajList'].flatten()
             eidParam.rawTraj = sourceData['oTrajList'].flatten()
             dt = sourceData['dt'].flatten()[0]
-            #maxT = sourceData['maxTime'].flatten()[0]
+            maxT = sourceData['maxTime'].flatten()[0]
             SNR = sourceData['SNR'].flatten()[0]
             wControl = sourceData['wControl'].flatten()[0]
             objAmp = sourceData['objAmp'].flatten()[0]
-            #Sigma = sourceData['Sigma'].flatten()[0]
+            Sigma = sourceData['Sigma'].flatten()[0]
             eidParam.attenMetrics = sourceData['AttenuateMetrics']
 
             # Conditions to simulate
-            #eidParam.maxT = float(maxT)
+            eidParam.maxT = float(maxT)
             eidParam.sInitPos = eidParam.sTraj[0]
             eidParam.SNR = float(SNR)
-            #eidParam.Sigma = Sigma
-            eidParam.objAmp = objAmp
+            eidParam.Sigma = float(Sigma)
+            eidParam.objAmp = float(objAmp)
             ergParam.wControl = float(wControl)
-            ergParam.dt = dt
+            ergParam.dt = float(dt)
             eidParam.UpdateDeltaT(ergParam.dt)
 
             filename += '-gAttn-' + str(eidParam.attenMetrics['attenGain'].flatten()[0][0][0])
@@ -91,3 +94,7 @@ def EIH_Sim(*argv):
     else:
         print(getcwd())
         print('Invalid input parameters! len={0}, param={1}'.format(len(argv),argv))
+
+#param = 'trackingOnly 0 ../../SimData/SimTrial-001/AttenTraj/EIH-SNR-25-gAttn-5-RawTraj.mat EIH-SNR-25-gAttn-5-RandSeed-0.mat ../../SimData/SimTrial-001/SimTraj/'
+#param = param.split()
+#EIH_Sim(param)

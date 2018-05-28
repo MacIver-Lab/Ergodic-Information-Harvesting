@@ -17,7 +17,7 @@ class Ergodicity(object):
         wlimit = float(1)
         self.wlimit = float(1)
         self.res = ergParam.res # Spatial Resolution
-        self.time = np.linspace(0.0, 1.0, self.res)
+        self.time = ergParam.time
         self.xlist = np.linspace(0.0, 1.0, self.res)
 
         # set up a grid over the frequency

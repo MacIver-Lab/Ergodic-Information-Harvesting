@@ -54,7 +54,7 @@ def TrajEIDSim(ergParam, eidParam, rawTraj, showMsg=True):
         pBList[:, :, it+1] = pB
         pLast = pB[:, -1]
         # Evaluate ergodicity
-        if len(phi) > ergParam.res and phi.shape[1] > 0:
+        if phi.size >= ergParam.res and phi.shape[1] > 0:
             ergList[it] = erg.computeErgMeasure(traj, phi[:, -1])
         # Evaluate Entropy
         if len(pLast) > 1:

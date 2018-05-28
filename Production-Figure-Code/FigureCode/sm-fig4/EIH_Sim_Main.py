@@ -20,7 +20,7 @@ if __name__ == '__main__':
 
         # Submit simulations
         if nThread > cpu_count():
-            nThread = cpu_count
+            nThread = cpu_count()
         if nSimTrials < nThread:
             nThread = nSimTrials
         # Start a new parallel pool  
@@ -28,7 +28,7 @@ if __name__ == '__main__':
         pool = Pool(processes=nThread)
         jobs = []
         for it in range(nSimTrials):
-        # Wait for all the thread to finish if the pool is full
+            # Wait for all the thread to finish if the pool is full
             if len(jobs) == nThread:
                 print("All thread used, waiting until finish... ...")
                 # Wait until all the active thread to finish
