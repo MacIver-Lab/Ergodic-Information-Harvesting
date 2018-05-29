@@ -38,6 +38,7 @@ class ProjectionBasedOpt(object):
         
         self.odeSolver = odeSolver
         self.time = time
+        self.odeDeltaT = time[1]-time[0]
         
     def peqns(self,t,pp,Al,Bl,Rn,Qn):
         pp = pp.reshape(self.nx,self.nx)
@@ -64,7 +65,7 @@ class ProjectionBasedOpt(object):
     def Ksol(self, X, U):
         time=self.time
         P1 = 1.0
-        solver = ode(self.peqns).set_integrator(self.odeSolver)
+        solver = ode(self.peqns).set_integrator(self.odeSolver, max_step=self.odeDeltaT)
         solver.set_initial_value(P1,time[0]).set_f_params(self.A_interp,
                                                           self.B_interp,
                                                           self.Rk,
@@ -88,7 +89,7 @@ class ProjectionBasedOpt(object):
     def Psol(self, X, U, time):
  
         P1 = 1.0
-        solver = ode(self.peqns).set_integrator(self.odeSolver)
+        solver = ode(self.peqns).set_integrator(self.odeSolver, max_step=self.odeDeltaT)
         solver.set_initial_value(P1,time[0]).set_f_params(self.A_interp,
             self.B_interp, self.Rn, self.Qn)
         k = 0
@@ -106,7 +107,7 @@ class ProjectionBasedOpt(object):
         rinit2 = np.array([0])
         Qn = 1.0
         Rn = 1.0
-        solver = ode(self.reqns).set_integrator(self.odeSolver)
+        solver = ode(self.reqns).set_integrator(self.odeSolver, max_step=self.odeDeltaT)
         solver.set_initial_value(rinit2,time[0]).set_f_params(self.A_interp,
             self.B_interp,self.a_interp,self.b_interp,P_interp, Rn,Qn)
         
@@ -225,7 +226,7 @@ class ProjectionBasedOpt(object):
 
         zinit = -matmult( P_interp(0)**-1, r_interp(0) )
         #initialize the 4th order Runge-Kutta solver
-        solver = ode(self.zeqns).set_integrator(self.odeSolver)
+        solver = ode(self.zeqns).set_integrator(self.odeSolver, max_step=self.odeDeltaT)
         #initial value
         solver.set_initial_value(zinit,time[0]).set_f_params(self.A_interp, self.B_interp,
                                                             self.a_interp, self.b_interp,
@@ -254,7 +255,7 @@ class ProjectionBasedOpt(object):
         
         U_interp = interp1d(time, U.T)
         # # initialize the 4th order Runge-Kutta solver
-        solver = ode(self.fofx).set_integrator(self.odeSolver)
+        solver = ode(self.fofx).set_integrator(self.odeSolver, max_step=self.odeDeltaT)
         # # initial value
         solver.set_initial_value(X0,time[0]).set_f_params(U_interp)
         #ppsol = odeint(pkeqns,P1,time,args=(A_interp,B_interp))
@@ -291,7 +292,7 @@ class ProjectionBasedOpt(object):
         K_interp = interp1d(time, Ks.T)
         mu_interp = interp1d(time, mu.T)
         alpha_interp = interp1d(time, alpha.T)
-        solver = ode(self.proj).set_integrator(self.odeSolver)
+        solver = ode(self.proj).set_integrator(self.odeSolver, max_step=self.odeDeltaT)
         # # initial value
         solver.set_initial_value(X0,time[0]).set_f_params(K_interp,mu_interp,alpha_interp)
         #ppsol = odeint(pkeqns,P1,time,args=(A_interp,B_interp))

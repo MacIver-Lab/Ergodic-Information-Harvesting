@@ -24,7 +24,7 @@ class ErgodicParameters(SimParameters):
     # ODE Integrater
     #   Using explicit runge-kutta method choose either dopri5 (5th order)
     #   or dop853 (8th order)
-    odeIntegrator = 'dop853'
+    odeIntegrator = 'dopri5'
     tRes = 101 # Time resolution for ODE
     # Armijo Line Search Parameters
     alpha = 0.4
