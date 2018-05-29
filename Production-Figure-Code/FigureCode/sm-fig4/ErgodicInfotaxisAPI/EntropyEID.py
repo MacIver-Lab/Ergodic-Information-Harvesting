@@ -12,7 +12,6 @@ Created on Wed Jan 17 13:32:35 2018
 # Import required libraries
 import numpy as np
 from scipy.stats import norm, entropy
-import matplotlib.pyplot as plt
 
 def EntropyEID(prior, wsRes, sigmaM, sigmaL):
     """Computes Entropy EID map

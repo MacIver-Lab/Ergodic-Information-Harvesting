@@ -7,7 +7,6 @@ Created on Wed Mar 15 11:53:25 2017
 
 # Import basic packages
 import numpy as np
-import matplotlib.pyplot as plt
 # Import Ergodic packages
 from ErgodicInfotaxisAPI.EID import EID
 from ErgodicInfotaxisAPI.Ergodicity import Ergodicity
@@ -15,7 +14,6 @@ from ErgodicInfotaxisAPI.Ergodicity import Ergodicity
 from time import strftime
 # Save to .mat file
 from ErgodicInfotaxisAPI.save2mat import save2mat
-from IPython import display
 from time import sleep
 # Entropy
 from scipy.stats import entropy

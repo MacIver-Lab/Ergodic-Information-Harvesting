@@ -6,7 +6,6 @@ Created on Wed Nov 29 10:54:01 2017
 
 """
 from ErgodicInfotaxisAPI.SimParameters import ErgodicParameters, EIDParameters
-from ErgodicInfotaxisAPI.Simulation import EIDSim
 from ErgodicInfotaxisAPI.EntropyTrajectorySimulation import TrajEIDSim
 from scipy.io import loadmat
 from sys import argv
@@ -37,13 +36,13 @@ def EIH_Sim(*argv):
         ergParam.time = linspace(0.0, ergParam.timeHorizon, ergParam.tRes)
         ergParam.eidTime = linspace(0.0, ergParam.timeHorizon, eidParam.res)
         eidParam.maxT = 50
-        ergParam.wControl = 15
+        ergParam.wControl = 20
         eidParam.pLSigmaAmp = 200
         eidParam.pLSigmaAmpBayesian = 200
         eidParam.pLSigmaAmpEID = 200
-        eidParam.procNoiseSigma = 0.011
+        eidParam.procNoiseSigma = 0.02
         eidParam.pLHistDepth = 1
-        eidParam.Sigma = 0.05
+        eidParam.Sigma = 0.06
         eidParam.objAmp = 0.20
         eidParam.blindIdx = False
         eidParam.blind = 'NA'
