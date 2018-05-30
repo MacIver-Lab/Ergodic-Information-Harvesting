@@ -28,13 +28,13 @@ The code below assumes the cloud instance runs on Linux (Ubuntu 14.04 or higher)
   c.NotebookApp.port = 5123
   ```
 - Install `git` (for cloning this repo) and `tmux` (to session management)
-```bash
-sudo apt install git tmux
-```
-or use `yum` if you are using Amazon Linux
-```bash
-sudo yum install git tmux
-```
+  ```bash
+  sudo apt install git tmux
+  ```
+  or use `yum` if you are using Amazon Linux
+  ```bash
+  sudo yum install git tmux
+  ```
 - Clone this repository (make you have `git`)
   ```bash
   git clone https://github.com/MacIver-Lab/Ergodic-Information-Harvesting ./EIH
