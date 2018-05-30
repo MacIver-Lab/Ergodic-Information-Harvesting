@@ -224,6 +224,7 @@ set(gca,'XTickLabel',{'Strong Signal','Weak Signal'});
 set(gca,'YTickLabel',{'1x', '2x', '4x', '6x'})
 
 print(gcf,'-dpdf',GEN_SAVE_PATH('mole-RE.pdf'));
+fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));
 
 
 function dist = calcSumLength2D(path)

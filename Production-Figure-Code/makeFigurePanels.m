@@ -14,27 +14,28 @@ warning('off', 'MATLAB:MKDIR:DirectoryExists');
 %                   is shared for figure 2 and the function will try to
 %                   copy them over from figure 2 data folders. Make sure
 %                   you have simulated figure 2 before using 
-%                   USE_PREV_DATASET = 0
+%                   USE_PUBLISHED_DATASET = 0
 %      'sm-fig1' -  panels for supplement figure 1, note that the EIH 
 %                   simulation and behavioral data for electric fish and 
 %                   rat are taken from figure 2 and the function will try 
-%                   to copy them over from figure 2 data folders. Make sure 
-%                   you have simulated figure 2 before using 
-%                   USE_PREV_DATASET = 0
+%                   to copy them over from figure 2 data folders if using
+%                   USE_PUBLISHED_DATASET = 1. Make sure you have simulated 
+%                   figure 2 before using 
 %      'sm-fig2' -  panels for supplement figure 2
 %      'sm-fig3' -  panels for supplement figure 3, note that the EIH 
 %                   simulation for figure 2 is required to use
-%                   USE_PREV_DATASET = 0
+%                   USE_PUBLISHED_DATASET = 0
 %      'sm-fig4' -  panels for supplement figure 4
 %      'sm-fig5' -  panels for supplement figure 5
 %      'sm-fig6' -  panels for supplement figure 6. Note that this figure 
 %                   does not require any simulation data and therefore
-%                   USE_PREV_DATASET will be ignored
+%                   USE_PUBLISHED_DATASET will be ignored
 % 
-targetFig = 'sm-fig1';
+targetFig = 'sm-fig6';
 
 % Maximum number of CPU thread dedicated for sm-fig4 simulation
-% Note that this is only used for sm-fig4
+% Note that this is only used for sm-fig4 and the number will automatically
+% be capped at the total number of detectable threads available
 nThread = 10;
 
 % Choose whether or not to use previously simulated dataset

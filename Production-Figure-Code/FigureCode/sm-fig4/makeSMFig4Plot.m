@@ -195,4 +195,4 @@ setPlotProp(opt);
 set(gca,'YTickLabel', strcat(num2str((opt.YTick)'),'%'));
 legend('off');
 print(GEN_SAVE_PATH('sm-fig4c-MeanTrackingError_vs_Attenuation.pdf'),'-dpdf');
-
+fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));
