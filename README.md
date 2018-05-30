@@ -46,6 +46,8 @@ There are two stages required to reproduce the published figure results. First, 
 #### Code Structure
 The simulation code files are all stored under `./SimulationCode/` and are organized in a centralized fashion. `Ergodic-Information-Harvesting-Simulation.ipynb` is the only notebook file you need to run and you can use it to reproduce the raw simulation data used for all of the figures in the paper and Supplementary Information. Each dataset is organized in a per-figure fashion and the parameter supporting the simulation is stored under `/SimulationCode/FigParameters/` folder in `json` format.
 
+All of the data used in published figures will be simulated through this step except for `sm-fig4` which requires both MATLAB and Python running together and therefore included in Step 2 code.
+
 #### Example Procedure of Simulating Data for figure 1
 To simulate the raw data for a given figure, figure 1 for instance, you just need to:
 - specify `targetFigure = ['fig1']` in the `Ergodic-Information-Harvesting-Simulation.ipynb` which is further documented inside the notebook. To run multiple figures, simply append the list with the desired figures, *e.g. * `
