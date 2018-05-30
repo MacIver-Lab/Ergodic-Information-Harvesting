@@ -40,7 +40,7 @@ Once the environment is setup, you can launch the simulation through a `jupyter 
 ## How to Reproduce Figure Results
 There are two stages required to reproduce the published figure results. First, follow the simulation section below to run EIH simulation trials to reproduce the data required for figures. Then proceed to the figure plotting code to reproduce the figure results. 
 
-**It is worth mentioning that the estimated total running time to simulate all of the data is around 80+ hours for an benchmark desktop system (iMac 2015, Intel i7 Quad Core with 4.4GHz turboboost, running with `nThreads = 4`). Therefore, in addition to the full simulation code provided and detailed in Step 1, we have also included previously simulated dataset which can be viewed by setting a flag in the figure generation code in Step 2 below, which allows immediate reproduction of published figures. This also provides a baseline of comparison for results that you generate.**
+**The total run time to simulate all of the data is around 80+ hours for a 2015 MacOS desktop system (iMac 2015, Intel i7 Quad Core with 4.4GHz turboboost, running with `nThreads = 4`). Therefore, in addition to the full simulation code provided and detailed in Step 1, we have also included previously simulated dataset which can be viewed by setting a flag in the figure generation code in Step 2 below, which allows immediate reproduction of published figures. This also provides a baseline of comparison for results that you generate.**
 
 ### Step 1 - Local EIH Simulation (optional)
 #### Code Structure
