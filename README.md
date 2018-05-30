@@ -7,12 +7,12 @@ For a prior publication (["Ergodic Exploration of Distributed Information"](http
 
 
 ## Steps to reproduce the results shown in the EIH paper
-All of the simulation code is written with Python 3.6 using [Jupyter Notebook](http://jupyter.org/). All of the figure plotting files are written in MATLAB (2017). The code can be run on:
+All of the simulation code is written with Python 3.6 using [Jupyter Notebook](http://jupyter.org/). All of the figure plotting files are written in MATLAB (R2017a). The code can be run on:
 - A local computer, which is very easy to set up but limited by the number of accessible CPU cores.
 - Cloud computing virtual servers throug any popular Infrastructure as a Service (IaaS) provider, *e.g.* [Amazon Elastic Compute Cloud](https://aws.amazon.com/ec2/) or [Google Cloud Compute Engine](https://cloud.google.com/compute/). Cloud computing is easy to setup and provides a way to scale up the total number of running threads (*e.g.* Google Cloud Compute Engine allows up to 96 CPU threads per instance).
 
 ### Setting up the runtime environment
-The results generation system uses Jupyter as the environment for interaction. Jupyter is very easy to set up if you have not used it before.
+The results generation system uses Jupyter as the environment for interaction. Jupyter is very easy to set up if you have not used it before. Below is a quick start for those who does not yet have Jupyter environment setup locally.
 
 #### Install Anaconda 
 [Anaconda](https://www.anaconda.com/download/) is the required Python environment. It runs on MacOS, Unix, and Windows environments and provide easy package management for setting up the runtime environments for the simulation. To download, go to [https://www.anaconda.com/download/](https://www.anaconda.com/download/) and install Anaconda.
@@ -20,11 +20,11 @@ The results generation system uses Jupyter as the environment for interaction. J
 Once installed, open the Anaconda Prompt or bash and run the following code to install all of the dependencies.
 The required packages are `scipy` and `numpy`. Note that a specific version has been specified to avoid issues due to any future update to these packages that may cause a backward incompatibility with our code. Most of the other dependencies, such as `jupyter` and `IPython`, has been satisfied by the Anaconda bundle already and are thus not included in the code below.
 ```bash
-conda install scipy=1.0.1 numpy=1.14.2
+conda install scipy=1.0.1 numpy=1.14.3
 ```
 Alternatively, if you prefer `pip`, you could use the code below instead.
 ```bash
-pip install scipy==1.0.1 numpy==1.14.2
+pip install scipy==1.0.1 numpy==1.14.3
 ```
 
 #### Launch Jupyter
@@ -38,7 +38,9 @@ Once the environment is setup, you can launch the simulation through a `jupyter 
 - **NOTE**: Depending on your operating system, you **may need to prevent your system from going to sleep**. This is necessary with MacOS. With MacOS, there are two ways to do this: 1. Open a terminal, and type `caffeinate` and hit return. Your system will be prevented from sleeping until you hit Control-C. 2. Go to System Preferences, Energy Saver panel, and click the box that says "Prevent computer from sleeping automatically when the display is off".
 
 ### How to Reproduce Figure Results
-To reproduce the figure results, first follow the simulation section below to run EIH simulation trials. Then proceed to the figure plotting code to reproduce the figure results. As it can take several days to run the hundreds of simulations needed for the computational results we show in the paper, these data have been included and can be viewed by setting a flag in the figure generation code in Step 2 below. This also provides a baseline of comparison for results that you generate.
+There are two stages required to reproduce the published figure results. First, follow the simulation section below to run EIH simulation trials to reproduce the data required for figures. Then proceed to the figure plotting code to reproduce the figure results. 
+
+The estimated total running time to simulate all of the data is around 80+ hours for an benchmark desktop system (MacOS with Intel 4 core CPU running 4 simulation threads). Therefore, in addition to the full simulation code provided and detailed in Step 1, we have also included previously simulated dataset which can be viewed by setting a flag in the figure generation code in Step 2 below, which allows immediate reproduction of published figures. This also provides a baseline of comparison for results that you generate.
 
 #### Step 1 - Local EIH Simulation (optional)
 ##### Code Structure
