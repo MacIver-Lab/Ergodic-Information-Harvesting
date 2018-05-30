@@ -7,9 +7,12 @@ GEN_SAVE_PATH = @(fname) fullfile(savePath, fname);
 %% Load data
 eihTrials = dir(GEN_DATA_PATH('*ErgodicHarvest*.mat'));
 ifTrials = dir(GEN_DATA_PATH('*Infotaxis*.mat'));
-if isempty(eihTrials) || isempty(ifTrials)
+if isempty(eihTrials) || isempty(ifTrials) || ...      
     error(['Cannot found simulation data, please make sure sm-fig1 ', ...
-           'simulation has finished or use USE_PREV_DATASET = 1']);
+           'simulation has finished or use USE_PREV_DATASET = 1'])
+elseif length(eihTrials) ~= length(ifTrials)
+    error(['Inconsistent number of EIH and Infotaxis simulation trials, ', ...
+        'did the sm-fig1 simulation finished completely? '])
 end
 
 %% Process data

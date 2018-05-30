@@ -40,7 +40,7 @@ def EIH_Sim(*argv):
         eidParam.pLSigmaAmp = 200
         eidParam.pLSigmaAmpBayesian = 200
         eidParam.pLSigmaAmpEID = 200
-        eidParam.procNoiseSigma = 0.02
+        eidParam.procNoiseSigma = 0.011
         eidParam.pLHistDepth = 1
         eidParam.Sigma = 0.06
         eidParam.objAmp = 0.20

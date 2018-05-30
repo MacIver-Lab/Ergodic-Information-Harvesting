@@ -15,13 +15,13 @@ warning('off', 'MATLAB:MKDIR:DirectoryExists');
 %                   copy them over from figure 2 data folders. Make sure
 %                   you have simulated figure 2 before using 
 %                   USE_PUBLISHED_DATASET = 0
-%      'sm-fig1' -  panels for supplement figure 1, note that the EIH 
-%                   simulation and behavioral data for electric fish and 
-%                   rat are taken from figure 2 and the function will try 
-%                   to copy them over from figure 2 data folders if using
-%                   USE_PUBLISHED_DATASET = 1. Make sure you have simulated 
-%                   figure 2 before using 
-%      'sm-fig2' -  panels for supplement figure 2
+%      'sm-fig1' -  panels for supplement figure 1. Simulation will be 
+%                   submitted if using USE_PUBLISHED_DATASET = 0 and 
+%                   simulation data for figure 2 is required. The
+%                   simulation consists a total of 80 trials and will
+%                   normally take around 12 hours to finish.
+%      'sm-fig2' -  panels for supplement figure 2, fig2 simulation data 
+%                   are required to use USE_PUBLISHED_DATASET = 0
 %      'sm-fig3' -  panels for supplement figure 3, note that the EIH 
 %                   simulation for figure 2 is required to use
 %                   USE_PUBLISHED_DATASET = 0
@@ -31,7 +31,7 @@ warning('off', 'MATLAB:MKDIR:DirectoryExists');
 %                   does not require any simulation data and therefore
 %                   USE_PUBLISHED_DATASET will be ignored
 % 
-targetFig = 'sm-fig6';
+targetFig = 'fig1';
 
 % Maximum number of CPU thread dedicated for sm-fig4 simulation
 % Note that this is only used for sm-fig4 and the number will automatically
@@ -66,10 +66,14 @@ switch targetFig
     case 'fig3'
         if ~USE_PUBLISHED_DATASET
             mkdir(FIG_DATA_PATH);
-            cpySimDataFiles('../SimulationCode/SimData/fig2/*ElectricFish*', ...
-                FIG_DATA_PATH);
-            cpySimDataFiles('../SimulationCode/SimData/fig2/*Mole*', ...
-                FIG_DATA_PATH);
+            try
+                cpySimDataFiles('../SimulationCode/SimData/fig2/*ElectricFish*', ...
+                    FIG_DATA_PATH);
+                cpySimDataFiles('../SimulationCode/SimData/fig2/*Mole*', ...
+                    FIG_DATA_PATH);
+            catch
+                error('Cannot find fig2 simulation data, did fig2 simulation completed?');
+            end
         end
         makeFig3Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'sm-fig1'
@@ -77,24 +81,36 @@ switch targetFig
     case 'sm-fig2'
         if ~USE_PUBLISHED_DATASET
             mkdir(FIG_DATA_PATH);
-            cpySimDataFiles('../SimulationCode/SimData/fig2/*ElectricFish*', ...
-                FIG_DATA_PATH);
-            cpySimDataFiles('../SimulationCode/SimData/fig2/*Rat*', ...
-                FIG_DATA_PATH);
+            try
+                cpySimDataFiles('../SimulationCode/SimData/fig2/*ElectricFish*', ...
+                    FIG_DATA_PATH);
+                cpySimDataFiles('../SimulationCode/SimData/fig2/*Rat*', ...
+                    FIG_DATA_PATH);
+            catch
+                error('Cannot find fig2 simulation data, did fig2 simulation completed?');
+            end
         end
         makeSMFig2Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'sm-fig3'
         if ~USE_PUBLISHED_DATASET
             mkdir(FIG_DATA_PATH);
-            cpySimDataFiles('../SimulationCode/SimData/fig2/fig2-ErgodicHarvest-ElectricFish-SNR-30*', ...
-                FIG_DATA_PATH);
+            try
+                cpySimDataFiles('../SimulationCode/SimData/fig2/fig2-ErgodicHarvest-ElectricFish-SNR-30*', ...
+                    FIG_DATA_PATH);
+            catch
+                error('Cannot find fig2 simulation data, did fig2 simulation completed?');
+            end
         end
         makeSMFig3Plots(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'sm-fig4'
         if ~USE_PUBLISHED_DATASET
             mkdir(FIG_DATA_PATH);
-            cpySimDataFiles('../SimulationCode/SimData/fig2/fig2-ErgodicHarvest-ElectricFish-SNR-30*', ...
-                FIG_DATA_PATH);
+            try
+                cpySimDataFiles('../SimulationCode/SimData/fig2/fig2-ErgodicHarvest-ElectricFish-SNR-30*', ...
+                    FIG_DATA_PATH);
+            catch
+                error('Cannot find fig2 simulation data, did fig2 simulation completed?');
+            end
             % Proceed with simulation
             SMFig4Sim(FIG_DATA_PATH, nThread);
         end

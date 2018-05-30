@@ -11,7 +11,7 @@ GEN_SAVE_PATH = @(fname) fullfile(savePath, fname);
 if usePrevDat
     load(GEN_DATA_PATH('sm-fig1-EH_IF_Data.mat'));
 else
-    % TODO link data processing script
+    % Search for simulated data in the working directory
     [snrErg, snrInf, RE_Erg, RE_Inf] = ...
         SMFig1ProcessData(dataPath, savePath);
 end
