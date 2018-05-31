@@ -1,15 +1,15 @@
-# Use Cloud to Accelerate EIH Simulation
-Cloud computing virtual servers can be used to accelerate EIH simulation by providing more available threads through any popular Infrastructure as a Service (IaaS) provider, *e.g.* [Amazon Elastic Compute Cloud](https://aws.amazon.com/ec2/) or [Google Cloud Compute Engine](https://cloud.google.com/compute/) (AWS now allows up to 128 CPU threads and Google Cloud Compute Engine allows up to 96 CPU threads per instance).
+# Use Cloud Computing to Accelerate EIH Simulations
+Cloud computing virtual servers can be used to accelerate the EIH simulations by providing more available threads through any popular Infrastructure as a Service (IaaS) provider, *e.g.* [Amazon Elastic Compute Cloud](https://aws.amazon.com/ec2/) or [Google Cloud Compute Engine](https://cloud.google.com/compute/) (AWS now allows up to 128 CPU threads and Google Cloud Compute Engine allows up to 96 CPU threads per instance).
 
 ### Setting up runtime environment
-The code below assumes the cloud instance runs on Linux (Ubuntu 14.04 or higher). Please follow Google or AWS's tutorial on how to start a virtual server instance and connect to it. Once you have connected to the instance, follow the steps below to setup EIH environment for simulation.
+The code below assumes the cloud instance runs on Linux (Ubuntu 14.04 or higher). Please follow Google or AWS's tutorial on how to start a virtual server instance and connect to it. Once you have connected to the instance, follow the steps below to set up the EIH environment for simulation.
 
-- Install Anaconda3, make sure you answer `yes` when asked whether to Anaconda to the path or not.
+- Install Anaconda3, make sure you answer `yes` when asked whether to add Anaconda to the path or not.
   ```bash
   wget "https://repo.continuum.io/archive/Anaconda3-5.1.0-Linux-x86_64.sh"
   bash ./Anaconda3-5.1.0-Linux-x86_64.sh
   ```
-- Refresh shell to take effect and update conda
+- Refresh shell and update conda
   ```bash
   source ~/.bashrc
   conda update -n base conda
@@ -20,7 +20,7 @@ The code below assumes the cloud instance runs on Linux (Ubuntu 14.04 or higher)
   ```bash
   jupyter notebook --generate-config
   ```
-  2. append the following line to the configuration file. Note that `c.NotebookApp.port = 5123` specifies the desired port for Jupyter Notebook is `5123` and hence it needs to be allowed in the firewall for inbound traffic, and `5123` is just an arbitrary port to work with.
+  2. append the following line to the configuration file. Note that `c.NotebookApp.port = 5123` specifies that the desired port for Jupyter Notebook is `5123` and hence it needs to be allowed in the firewall for inbound traffic, and `5123` is just an arbitrary port to work with.
   ```python
   c = get_config()
   c.NotebookApp.ip = '*'
@@ -35,7 +35,7 @@ The code below assumes the cloud instance runs on Linux (Ubuntu 14.04 or higher)
   ```bash
   sudo yum install git tmux
   ```
-- Clone this repository (make you have `git`)
+- Clone this repository (make sure you have `git` installed)
   ```bash
   git clone https://github.com/MacIver-Lab/Ergodic-Information-Harvesting ./EIH
   cd EIH
