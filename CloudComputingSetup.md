@@ -1,4 +1,4 @@
-# Use Cloud Computing to Accelerate EIH Simulations
+# Using Cloud Computing to Accelerate EIH Simulations
 Cloud computing virtual servers can be used to accelerate the EIH simulations by providing more available threads through any popular Infrastructure as a Service (IaaS) provider, *e.g.* [Amazon Elastic Compute Cloud](https://aws.amazon.com/ec2/) or [Google Cloud Compute Engine](https://cloud.google.com/compute/) (AWS now allows up to 128 CPU threads and Google Cloud Compute Engine allows up to 96 CPU threads per instance).
 
 ### Setting up runtime environment
