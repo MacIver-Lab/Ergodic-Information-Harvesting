@@ -50,7 +50,7 @@ All of the data used in published figures will be simulated through this step ex
 
 #### Example Procedure of Simulating Data for figure 1
 To simulate the raw data for a given figure, figure 1 for instance, you just need to:
-- specify `targetFigure = ['fig1']` in the `Ergodic-Information-Harvesting-Simulation.ipynb` which is further documented inside the notebook. To run multiple figures, simply append the list with the desired figures, *e.g. * `
+- specify `targetFigure = ['fig1']` in the `Ergodic-Information-Harvesting-Simulation.ipynb` which is further documented inside the notebook. To run multiple figures, simply append the list with the desired figures, *e.g.* `
 targetFiguretargetF  = ['fig1', 'fig2', 'fig3', 'sm-fig1']`.
 - specify `nThreads` parameter based on the number of CPU threads available on your machine. Use `nThreads = cpu_count()` will ensure the best performance but will slow down your machine significantly on some figures which utilize all of the threads. Use `nThreads = cpu_count() - 1` to leave 1 thread for your normal workflow.
 - run the entire notebook by selecting on the top menu `Cell -> Run All`. 
