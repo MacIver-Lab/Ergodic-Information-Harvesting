@@ -7,6 +7,7 @@ GEN_DATA_PATH = @(fname) fullfile(dataPath, fname);
 GEN_SAVE_PATH = @(fname) fullfile(savePath, fname);
 %% Load Dataset
 load(GEN_DATA_PATH('sm-fig4-Data.mat'));
+% load(GEN_DATA_PATH('BatchEEDISim-Trial001-Result.mat'));
 targetTrajAmp = 0.2; % Amplitude of the target trajectory
 gAtten = PerfData.gAtten;
 % meanEstErrorMeanBelief 
@@ -136,8 +137,10 @@ legend(legHdl, 'No Attenuation', 'Low Attenuation', ...
 % Prettify figure
 opt = [];
 opt.BoxDim = [8,5];
-opt.YLim = [64, 85];
-opt.YTick = 65:5:85;
+opt.YLim = [45, 75];
+opt.YTick = 45:10:75;
+opt.XLim = [0.21, 0.37];
+opt.XTick = 0.21:0.04:0.37;
 opt.XMinorTick = 'off';
 opt.YMinorTick = 'off';
 opt.ShowBox = 'off';
@@ -159,7 +162,8 @@ ylabel('Distance from Ergodicity');
 % Prettify figure
 opt = [];
 opt.BoxDim = [8,5];
-opt.YLim = [0.15, 0.45];
+opt.YLim = [0.205, 0.37];
+opt.YTick = 0.21:0.04:0.37;
 opt.XLim = [min(gAtten), max(gAtten)+5];
 opt.XTick = [0, 25:25:150];
 opt.XMinorTick = 'off';
@@ -183,9 +187,9 @@ ylabel('Mean Relative Tracking Error');
 % Prettify figure
 opt = [];
 opt.BoxDim = [8,5];
-opt.YLim = [64, 85];
+opt.YLim = [45, 75];
 opt.XLim = [min(gAtten), max(gAtten)+5];
-opt.YTick = 65:5:85;
+opt.YTick = 45:10:75;
 opt.XTick = [0, 25:25:150];
 opt.XMinorTick = 'off';
 opt.YMinorTick = 'off';
@@ -195,4 +199,4 @@ setPlotProp(opt);
 set(gca,'YTickLabel', strcat(num2str((opt.YTick)'),'%'));
 legend('off');
 print(GEN_SAVE_PATH('sm-fig4c-MeanTrackingError_vs_Attenuation.pdf'),'-dpdf');
-fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));
+

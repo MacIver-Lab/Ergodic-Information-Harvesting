@@ -4,6 +4,7 @@ function SMFig4Sim(srcPath, nThreads)
 
 %% Global Constants
 % Control Parameters
+USE_PARALLEL = 0;
 GEN_PYTHON_JOB_LIST = 1;
 
 % Directory
@@ -33,6 +34,7 @@ dataFolders = dir([DIR_ROOT,DIR_TRIAL_PREFIX,'*']);
 dataFolders = dataFolders([dataFolders.isdir]);
 nTrials = 1;%length(dataFolders);
 DIR_TRIAL_ROOT = REPDIR([DIR_ROOT, DIR_TRIAL_PREFIX, sprintf('%03d/',nTrials)]);
+% DIR_TRIAL_SOURCE_TRAJ = [DIR_TRIAL_ROOT, DIR_TRIAL_SOURCE_TRAJ_PREFIX];
 DIR_TRIAL_ATTEN_TRAJ = REPDIR([DIR_TRIAL_ROOT, DIR_TRIAL_ATTEN_TRAJ_PREFIX]);
 DIR_TRIAL_SIM_TRAJ = REPDIR([DIR_TRIAL_ROOT, DIR_TRIAL_SIM_TRAJ_PREFIX]);
 
@@ -45,10 +47,18 @@ EIH_API_SIM_TRACKING_JOB_STRING = @(rs, src, ofile)sprintf('trackingOnly %d %s %
     rs,src,ofile,DIR_TRIAL_SIM_TRAJ);
 
 % Make new data folders
+% mkdir(DIR_TRIAL_SOURCE_TRAJ);
 mkdir(DIR_TRIAL_ATTEN_TRAJ);
 mkdir(DIR_TRIAL_SIM_TRAJ);
+% [~, fname, ~] = fileparts(srcPath);
+% copy(srcPath, fullfile(DIR_TRIAL_SIM_TRAJ, fname, '.mat'));
 
 
+% (optional) Create parallel pool if using parallzation
+if USE_PARALLEL
+    Parallel.pObj = gcp;
+    Parallel.pSize = Parallel.pObj.NumWorkers;
+end
 
 %% STEP #1 - Generate Attenuated Trajectories
 fprintf('********* STEP #1 - Generate Attenuated Trajectories *********\n');
@@ -140,27 +150,39 @@ for idx = 1:nRawSimFiles
     fprintf('File %s created, attenuation gain %d\n', fileName, 0);
 end
 nAttenSimFiles = length(attenTrialData);
+
 fprintf('--------- STEP #1 Success, %d attenuated trials generated ---------\n', nAttenSimFiles);
 
 %% STEP #2 - Tracking Simulation
 fprintf('********* STEP #2 - Tracking Simulation *********\n');
-if GEN_PYTHON_JOB_LIST
-    fileID = fopen([DIR_TRIAL_ROOT, 'SimJobList.txt'], 'w');
-end
-parFileList = {attenTrialData.fileName};
-parRandSeed = {attenTrialData.randSeed};
-parSimFileList = {attenTrialData.trackingSimFileNamePrefix};
-
-for idx = 1:nAttenSimFiles
-    if GEN_PYTHON_JOB_LIST
-        fileCmd = EIH_API_SIM_TRACKING_JOB_STRING(...
-            parRandSeed{idx}, ...
+if USE_PARALLEL
+    parFileList = {attenTrialData.fileName};
+    parRandSeed = {attenTrialData.randSeed};
+    parSimFileList = {attenTrialData.trackingSimFileNamePrefix};
+    parfor idx = 1:nAttenSimFiles
+        EIH_API_SIM_TRACKING(parRandSeed{idx}, ...
             [DIR_TRIAL_ATTEN_TRAJ, parFileList{idx}], ...
             [parSimFileList{idx}, '.mat']);
-        fprintf(fileID, [REPDIR(fileCmd), '\n']);
     end
+else
+    if GEN_PYTHON_JOB_LIST
+        fileID = fopen([DIR_TRIAL_ROOT, 'SimJobList.txt'], 'w');
+    end
+    parFileList = {attenTrialData.fileName};
+    parRandSeed = {attenTrialData.randSeed};
+    parSimFileList = {attenTrialData.trackingSimFileNamePrefix};
+
+    for idx = 1:nAttenSimFiles
+        if GEN_PYTHON_JOB_LIST
+            fileCmd = EIH_API_SIM_TRACKING_JOB_STRING(...
+                parRandSeed{idx}, ...
+                [DIR_TRIAL_ATTEN_TRAJ, parFileList{idx}], ...
+                [parSimFileList{idx}, '.mat']);
+            fprintf(fileID, [REPDIR(fileCmd), '\n']);
+        end
+    end
+    fclose(fileID);
 end
-fclose(fileID);
 % Submit simulation
 fprintf('Submitting simulation with %d attenuated trials using %d CPU threads\n', nAttenSimFiles, nThreads);
 disp(['Note that this process could take a LONG time to finish depends ', ...
@@ -201,7 +223,8 @@ nTrackingSimTrials = length(attenTrialData);
 % Remove unnecessary fields
 attenTrialData = rmfield(attenTrialData, 'srcObjPos');
 attenTrialData = rmfield(attenTrialData, 'trackingSimFileNamePrefix');
-fprintf('\n--------- STEP #3 Success, %d trials evaluated ---------\n', nTrackingSimTrials);
+
+fprintf('\n--------- STEP #3 Success, %d trials analyzed ---------\n', nTrackingSimTrials);
 
 %% STEP #4 - Group and Analyze Data
 fprintf('********* STEP #4 - Group and Analyze Data *********\n');
@@ -278,18 +301,37 @@ for idx = 1:nRawSimFiles
     PerfData(idx).rmsEntropy = rmsEntropy(sortIdx);
     PerfData(idx).varEntropy = varEntropy(sortIdx);
 end
+
 fprintf('--------- STEP #4 Success, %d trials analyzed ---------\n', nTrackingSimTrials);
 
+
 %% Clean up and save data
+FreqWin = Filter.AttenFreqWin;
+
 % Save data
 fprintf('All done, saving data... ');
-save(sprintf([DIR_TRIAL_ROOT,'BatchEEDISim-Trial%03d-Result.mat'],nTrials), 'PerfData', '-v7.3');
+% save(sprintf([DIR_TRIAL_ROOT,'BatchEEDISim-Trial%03d-AllData.mat'],nTrials), ...
+%     'attenTrialData', 'FreqWin', '-v7.3');
+% Slim file, only save performance data
+attenTrialData = rmfield(attenTrialData, 'simData');
+% save(sprintf([DIR_TRIAL_ROOT,'BatchEEDISim-Trial%03d-Data.mat'],nTrials), ...
+%     'attenTrialData', 'FreqWin', '-v7.3');
+% 
+% save(sprintf([DIR_TRIAL_ROOT,'BatchEEDISim-Trial%03d-Result.mat'],nTrials), 'PerfData', '-v7.3');
 save(fullfile(srcPath, 'sm-fig4-Data.mat'), 'PerfData', '-v7.3');
-fprintf('Simulation done, success\n');
-
+fprintf('Success\n');
 
 function idx = strfindCell(cellIn, str)
 idx = find(contains(cellIn, str));
+
+function [d1, d2, n] = permVec2(a,b)
+[A,B] = meshgrid(a,b);
+c = cat(2,A',B');
+d = reshape(c,[],2);
+
+d1 = d(:,1);
+d2 = d(:,2);
+n = size(d, 1);
 
 function Perf = mCalcPerf(pB, phi, erg, enp, objPos)
 SampleGrid = linspace(0,1,size(phi,1))';
