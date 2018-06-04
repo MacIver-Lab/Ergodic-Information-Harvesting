@@ -4,13 +4,11 @@ function SMFig4Sim(srcPath, nThreads)
 
 %% Global Constants
 % Control Parameters
-USE_PARALLEL = 0;
 GEN_PYTHON_JOB_LIST = 1;
 
 % Directory
 DIR_ROOT = fullfile(srcPath, 'SimData/');
 DIR_TRIAL_PREFIX = 'SimTrial-';
-DIR_TRIAL_SOURCE_TRAJ_PREFIX = 'SourceTraj/';
 DIR_TRIAL_ATTEN_TRAJ_PREFIX = 'AttenTraj/';
 DIR_TRIAL_SIM_TRAJ_PREFIX = 'SimTraj/';
 DIR_FIND_MATFILE = @(d)dir([d,'*.mat']);
@@ -34,7 +32,6 @@ dataFolders = dir([DIR_ROOT,DIR_TRIAL_PREFIX,'*']);
 dataFolders = dataFolders([dataFolders.isdir]);
 nTrials = 1;%length(dataFolders);
 DIR_TRIAL_ROOT = REPDIR([DIR_ROOT, DIR_TRIAL_PREFIX, sprintf('%03d/',nTrials)]);
-% DIR_TRIAL_SOURCE_TRAJ = [DIR_TRIAL_ROOT, DIR_TRIAL_SOURCE_TRAJ_PREFIX];
 DIR_TRIAL_ATTEN_TRAJ = REPDIR([DIR_TRIAL_ROOT, DIR_TRIAL_ATTEN_TRAJ_PREFIX]);
 DIR_TRIAL_SIM_TRAJ = REPDIR([DIR_TRIAL_ROOT, DIR_TRIAL_SIM_TRAJ_PREFIX]);
 
@@ -47,18 +44,9 @@ EIH_API_SIM_TRACKING_JOB_STRING = @(rs, src, ofile)sprintf('trackingOnly %d %s %
     rs,src,ofile,DIR_TRIAL_SIM_TRAJ);
 
 % Make new data folders
-% mkdir(DIR_TRIAL_SOURCE_TRAJ);
 mkdir(DIR_TRIAL_ATTEN_TRAJ);
 mkdir(DIR_TRIAL_SIM_TRAJ);
-% [~, fname, ~] = fileparts(srcPath);
-% copy(srcPath, fullfile(DIR_TRIAL_SIM_TRAJ, fname, '.mat'));
 
-
-% (optional) Create parallel pool if using parallzation
-if USE_PARALLEL
-    Parallel.pObj = gcp;
-    Parallel.pSize = Parallel.pObj.NumWorkers;
-end
 
 %% STEP #1 - Generate Attenuated Trajectories
 fprintf('********* STEP #1 - Generate Attenuated Trajectories *********\n');
@@ -155,34 +143,23 @@ fprintf('--------- STEP #1 Success, %d attenuated trials generated ---------\n',
 
 %% STEP #2 - Tracking Simulation
 fprintf('********* STEP #2 - Tracking Simulation *********\n');
-if USE_PARALLEL
-    parFileList = {attenTrialData.fileName};
-    parRandSeed = {attenTrialData.randSeed};
-    parSimFileList = {attenTrialData.trackingSimFileNamePrefix};
-    parfor idx = 1:nAttenSimFiles
-        EIH_API_SIM_TRACKING(parRandSeed{idx}, ...
+if GEN_PYTHON_JOB_LIST
+    fileID = fopen([DIR_TRIAL_ROOT, 'SimJobList.txt'], 'w');
+end
+parFileList = {attenTrialData.fileName};
+parRandSeed = {attenTrialData.randSeed};
+parSimFileList = {attenTrialData.trackingSimFileNamePrefix};
+
+for idx = 1:nAttenSimFiles
+    if GEN_PYTHON_JOB_LIST
+        fileCmd = EIH_API_SIM_TRACKING_JOB_STRING(...
+            parRandSeed{idx}, ...
             [DIR_TRIAL_ATTEN_TRAJ, parFileList{idx}], ...
             [parSimFileList{idx}, '.mat']);
+        fprintf(fileID, [REPDIR(fileCmd), '\n']);
     end
-else
-    if GEN_PYTHON_JOB_LIST
-        fileID = fopen([DIR_TRIAL_ROOT, 'SimJobList.txt'], 'w');
-    end
-    parFileList = {attenTrialData.fileName};
-    parRandSeed = {attenTrialData.randSeed};
-    parSimFileList = {attenTrialData.trackingSimFileNamePrefix};
-
-    for idx = 1:nAttenSimFiles
-        if GEN_PYTHON_JOB_LIST
-            fileCmd = EIH_API_SIM_TRACKING_JOB_STRING(...
-                parRandSeed{idx}, ...
-                [DIR_TRIAL_ATTEN_TRAJ, parFileList{idx}], ...
-                [parSimFileList{idx}, '.mat']);
-            fprintf(fileID, [REPDIR(fileCmd), '\n']);
-        end
-    end
-    fclose(fileID);
 end
+fclose(fileID);
 % Submit simulation
 fprintf('Submitting simulation with %d attenuated trials using %d CPU threads\n', nAttenSimFiles, nThreads);
 disp(['Note that this process could take a LONG time to finish depends ', ...
@@ -323,15 +300,6 @@ fprintf('Success\n');
 
 function idx = strfindCell(cellIn, str)
 idx = find(contains(cellIn, str));
-
-function [d1, d2, n] = permVec2(a,b)
-[A,B] = meshgrid(a,b);
-c = cat(2,A',B');
-d = reshape(c,[],2);
-
-d1 = d(:,1);
-d2 = d(:,2);
-n = size(d, 1);
 
 function Perf = mCalcPerf(pB, phi, erg, enp, objPos)
 SampleGrid = linspace(0,1,size(phi,1))';

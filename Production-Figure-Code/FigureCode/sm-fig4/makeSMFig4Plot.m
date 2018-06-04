@@ -5,9 +5,10 @@ function makeSMFig4Plot(dataPath, savePath)
 warning('off', 'MATLAB:print:FigureTooLargeForPage');
 GEN_DATA_PATH = @(fname) fullfile(dataPath, fname);
 GEN_SAVE_PATH = @(fname) fullfile(savePath, fname);
+% Override random seed
+rng(0);
 %% Load Dataset
 load(GEN_DATA_PATH('sm-fig4-Data.mat'));
-% load(GEN_DATA_PATH('BatchEEDISim-Trial001-Result.mat'));
 targetTrajAmp = 0.2; % Amplitude of the target trajectory
 gAtten = PerfData.gAtten;
 % meanEstErrorMeanBelief 
@@ -199,4 +200,4 @@ setPlotProp(opt);
 set(gca,'YTickLabel', strcat(num2str((opt.YTick)'),'%'));
 legend('off');
 print(GEN_SAVE_PATH('sm-fig4c-MeanTrackingError_vs_Attenuation.pdf'),'-dpdf');
-
+fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));
