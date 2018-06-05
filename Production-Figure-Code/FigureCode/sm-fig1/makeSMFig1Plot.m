@@ -18,16 +18,16 @@ end
 
 %% Plot result
 figure(1); clf;
-notBoxPlot(RE_Erg, snrErg)
+notBoxPlot(RE_Inf, snrInf)
 hold on;
-notBoxPlot(RE_Inf, snrInf, 'plotColor', 'b');
+notBoxPlot(RE_Erg, snrErg, 'plotColor', 'b');
 xlabel('SNR');
 ylabel('Relative Exploration');
 % title('Relative Exploration vs. SNR');
 baseLine = line([5, 56], [1, 1], 'LineStyle', '--', 'LineWidth', 2);
 hPatch = findobj(gca,'Type','patch');
 legend([hPatch(1), hPatch(end), baseLine], ...
-    {'Infotaxis', 'Ergodic Harvesting', 'Baseline'});
+    {'Ergodic Harvesting', 'Infotaxis', 'Baseline'});
 opt = [];
 opt.BoxDim = [8,5];
 opt.ShowBox = 'off';
@@ -40,7 +40,6 @@ opt.XLim = [9, 57];
 opt.FontName = 'Helvetica';
 setPlotProp(opt);
 baseLine.LineStyle = '--';
-legend(gca, 'off');
 print(GEN_SAVE_PATH('sm-fig1-RelativeTrackingEffort.pdf'), '-dpdf');
 
 % Compute correlation coefficient and its 95% confidence interval
