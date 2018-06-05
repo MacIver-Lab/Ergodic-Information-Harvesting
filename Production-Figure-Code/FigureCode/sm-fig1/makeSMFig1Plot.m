@@ -72,3 +72,4 @@ ytickangle(90);
 fig3Path = strrep(GEN_SAVE_PATH(''), 'sm-fig1', 'fig3');
 mkdir(fig3Path);
 print(fullfile(fig3Path,'fig3c-CoorelationCoefficient.pdf'), '-dpdf');
+fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));

@@ -7,12 +7,9 @@ GEN_SAVE_PATH = @(fname) fullfile(savePath, fname);
 %% Load data
 eihTrials = dir(GEN_DATA_PATH('*ErgodicHarvest*.mat'));
 ifTrials = dir(GEN_DATA_PATH('*Infotaxis*.mat'));
-if isempty(eihTrials) || isempty(ifTrials) || ...      
+if isempty(eihTrials) || isempty(ifTrials)
     error(['Cannot found simulation data, please make sure sm-fig1 ', ...
-           'simulation has finished or use USE_PREV_DATASET = 1'])
-elseif length(eihTrials) ~= length(ifTrials)
-    error(['Inconsistent number of EIH and Infotaxis simulation trials, ', ...
-        'did the sm-fig1 simulation finished completely? '])
+           'simulation has finished or use USE_PREV_DATASET = 1']);
 end
 
 %% Process data
@@ -21,13 +18,12 @@ end
 
 %% Plot result
 snrErg = double(eihData.SNR);
-% eihData.SNR(mod(eihData.SNR, 5) ~= 0) = eihData.SNR(mod(eihData.SNR, 5) ~= 0) - 0.5;
 snrInf = double(ifData.SNR);
 RE_Erg = eihData.RE;
 RE_Inf = ifData.RE;
 
 save(GEN_SAVE_PATH('sm-fig1-EH_IF_Data.mat'), ...
-    'snrErg', 'snrInf', 'gainRatioErg', 'gainRatioInf');
+    'snrErg', 'snrInf', 'RE_Erg', 'RE_Inf');
 
 function Perf = mEvalPerf(dat)
 % Estimate target position using mean belief
@@ -55,7 +51,7 @@ binEdges = linspace(0.2, 0.8, 21);
 [Perf.posHistTarget.N, Perf.posHistTarget.edges] = histcounts(dat.oTrajList, binEdges);
 
 % FFT
-dat.sTrajList = movmean(dat.sTrajList, 5);
+% dat.sTrajList = movmean(dat.sTrajList, 5);
 dat.sTrajList = LPF(dat.sTrajList, 1/dat.dt, 2);
 Perf.RE = sum(abs(diff(dat.sTrajList))) / sum(abs(diff(dat.oTrajList)));
 
@@ -74,6 +70,7 @@ snrData.posHistSensor = [];
 snrData.posHistSensorData = [];
 snrData.posHistTarget = [];
 snrData.posHistTargetData = [];
+snrData.pcentStill = [];
 snrData.RE = [];
 for i = 1:length(trials)
     dat = load([trials(i).folder, '/', trials(i).name]);
@@ -92,8 +89,8 @@ for i = 1:length(trials)
     snrData.posHistSensorData = [snrData.posHistSensorData; Perf.posHistSensor.N];
     snrData.posHistTarget = [snrData.posHistTarget, Perf.posHistTarget];
     snrData.posHistTargetData = [snrData.posHistTargetData; Perf.posHistTarget.N];
+    snrData.pcentStill = [snrData.pcentStill, calcPcentStationary(dat.sTrajList)];
     snrData.RE = [snrData.RE, Perf.RE];
-    
     if size(dat.pB, 2) == 1
         % InfoMax trial
         snrData.meanEntropy = [snrData.meanEntropy, mean(dat.enpList(1:end-1))];
@@ -101,6 +98,16 @@ for i = 1:length(trials)
         snrData.varEntropy = [snrData.varEntropy, var(dat.enpList(1:end-1))];
     else
         % ErgInfo trial
+        if ~isfield(dat, 'enpList')
+            dat.enpList = zeros(1, size(dat.pB, 2) * (size(dat.pB, 3)-1));
+            idx = 1;
+            for iter = 1:(size(dat.pB, 3)-1)
+                for samp = 1:size(dat.pB, 2)
+                    dat.enpList(idx) = entropydist(dat.pB(:, samp, iter));
+                    idx = idx + 1;
+                end
+            end
+        end
         snrData.meanEntropy = [snrData.meanEntropy, mean(dat.enpList(2:end))];
         snrData.rmsEntropy = [snrData.rmsEntropy, rms(dat.enpList(2:end))];
         snrData.varEntropy = [snrData.varEntropy, var(dat.enpList(2:end))];    
@@ -125,6 +132,7 @@ snrStruct(nSamps).posHistSensorData = [];
 snrStruct(nSamps).posHistSensorDataMean = [];
 snrStruct(nSamps).posHistTargetData = [];
 snrStruct(nSamps).posHistTargetDataMean = [];
+snrStruct(nSamps).pcentStill = [];
 snrStruct(nSamps).RE = [];
 
 for i = 1:nSamps
@@ -137,6 +145,7 @@ for i = 1:nSamps
     snrStruct(i).varEntropy = snrData.varEntropy(snrData.SNR == SNRsamps(i));
     snrStruct(i).posErrHist = snrData.posErrHist(snrData.SNR == SNRsamps(i));
     snrStruct(i).posErrHistData = snrData.posErrHistData(snrData.SNR == SNRsamps(i),:);
+    snrStruct(i).pcentStill = snrData.pcentStill(snrData.SNR == SNRsamps(i));
     snrStruct(i).RE = snrData.RE(snrData.SNR == SNRsamps(i));
     if size(snrData.posErrHistData(snrData.SNR == SNRsamps(i),:),1) > 1
         snrStruct(i).posErrHistDataMean = mean(snrData.posErrHistData(snrData.SNR == SNRsamps(i),:));
@@ -154,4 +163,40 @@ for i = 1:nSamps
         snrStruct(i).posHistTargetDataMean = snrData.posHistTargetData(snrData.SNR == SNRsamps(i),:);
     end
 
+end
+
+function ps = calcPcentStationary(traj)
+%% Compute percentage stationary for infotaxis trials
+debug = 0;
+% filter trajectory using moving average filter
+filtTraj = movmean(traj,6);
+% Find consecutive stationary moves
+sMoves = abs(diff(filtTraj)) < 1e-12;
+% Find the length of each consecutive stationary moves
+strIdx = strfind([0,sMoves==1],[0 1]);
+endIdx = strfind([sMoves==1,0],[1 0]);
+sLength = endIdx - strIdx + 1;
+% Filter short stationary moves (those last no more than 2 iterations)
+validIdx = sLength > 2;
+sLength = sLength(validIdx);
+% Compute the overall number of iterations that the sensor is stationary
+sCount = sum(sLength);
+% Compute percentage of moves that are qualified as stationary
+ps = 100.0 * sCount / length(filtTraj);
+
+%% for debug - plot
+if debug
+    figure(2); clf;
+    plot(traj); hold on;
+    plot(filtTraj, 'LineWidth', 2);
+    pltIdx = zeros(1, length(filtTraj));
+    for i = 1:length(strIdx)
+        if validIdx(i)
+            pltIdx(strIdx(i):endIdx(i)) = 1;
+        end
+    end
+    filtTraj(~pltIdx) = NaN;
+    plot(filtTraj, '.');
+    legend('Traj', 'Filtered', 'Stationary');
+    pause(0.1);
 end
