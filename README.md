@@ -52,6 +52,14 @@ There are two stages required to reproduce the published figure results. First, 
 | `sm-fig4` |             10             |
 | `sm-fig5` |             1.1            |
 
+### Additional Note for Unix (MacOS) Users
+#### Prevent System from Sleeping During Simulation
+Because the simulation takes a relative long time to finish, we have found that MacOS usually automatically sleeps in the middle of a simulation session, which halted the simulation trials. To prevent MacOS from sleeping, use `caffeinate` command before submitting any local simulation.
+
+#### Be Sure to Use the Right Python
+Since Linux and Unix has built-in python in addition to Anaconda. Please be sure to add Anaconda to system's path and use the python that comes with Anaconda instead of the system's default python. For `sm-fig4`, python simulation is handled through MATLAB using the `system()` command to invoke bash commands. We have found for some systems, calling `system('python -V');` in MATLAB will invoke the default python instead of Anaconda's python.
+
+
 ### Step 1 - Local EIH Simulation (optional)
 #### Code Structure
 The simulation code files are all stored under `./SimulationCode/` and are organized in a centralized fashion. `Ergodic-Information-Harvesting-Simulation.ipynb` is the only notebook file you need to run and you can use it to reproduce the raw simulation data used for all of the figures in the paper and Supplementary Information. Each dataset is organized in a per-figure fashion and the parameter supporting the simulation is stored under `/SimulationCode/FigParameters/` folder in `json` format.
@@ -72,6 +80,8 @@ Once completed (the program will display `All done! EOF at ...` at the bottom), 
 ### Step 2 - Reproduce Figure Results
 #### Code Structure
 The figure code files are under `./Production-Figure-Code/`. Similarly, it is centralized in a single MATLAB file `makeFigurePanels.m`. Code for each figure panels are included under `./Production-Figure-Code/FigureCode/` along with the previously simulated data if step 1 is skipped.
+
+Note that running `sm-fig4` with `USE_PUBLISHED_DATASET = 0` (which uses locally reproduced dataset instead of the previously simulated) will start batch simulation before making figure panels. The trajectory simulation took around 10 hours on the benchmark machine.
 
 #### Example Procedure of Reproducing figure 1
 To reproduce figure 1 for example, use the following procedures:
