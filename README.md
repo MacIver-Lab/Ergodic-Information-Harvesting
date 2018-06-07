@@ -52,7 +52,7 @@ There are two stages required to reproduce the published figure results. First, 
 | `sm-fig4` |             10             |
 | `sm-fig5` |             1.1            |
 
-### Additional Note for Unix (MacOS) Users
+### Additional Note for Unix (MacOS) and Linux Users
 #### Prevent System from Sleeping During Simulation
 Because the simulation takes a relative long time to finish, we have found that MacOS usually automatically sleeps in the middle of a simulation session, which halted the simulation trials. To prevent MacOS from sleeping, use `caffeinate` command before submitting any local simulation.
 
