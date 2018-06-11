@@ -35,13 +35,13 @@ Once the environment is setup, you can launch the simulation through a `jupyter 
   - If using Linux or MacOS, simply run this command in a terminal: `jupyter notebook` 
 - A new browser tab should pop up. Find and open `Ergodic-Information-Harvesting-Simulation.ipynb` under the file list. Note that Jupyter notebook will use the current directory of your command prompt as the working directory: if you don't see the code folder, that means your command window is in a different folder and you need to navigate to `/SimulationCode/` before running `jupyter notebook`
 - Once opened, you should see the code for simulation and you are now good to go to reproduce the results of our study.
-- **NOTE**: Depending on your operating system, you **may need to prevent your system from going to sleep**. This is necessary with MacOS. With MacOS, there are two ways to do this: 1. Open a terminal, and type `caffeinate` and hit return. Your system will be prevented from sleeping until you hit Control-C. 2. Go to System Preferences, Energy Saver panel, and click the box that says "Prevent computer from sleeping automatically when the display is off".
+- **NOTE**: Depending on your operating system, you **may need to prevent your system from going to sleep**. This is necessary with MacOS. With MacOS: Open a terminal, and type `caffeinate` and hit return. Your system will be prevented from sleeping until you hit Control-C.
 
 ## How to Reproduce Figure Results
 There are two stages required to reproduce the published figure results. First, follow the simulation section below to run EIH simulation trials to reproduce the data required for figures. Then proceed to the figure plotting code to reproduce the figure results. 
 
 ### Benchmark Running Time
-**The total run time to run both the simulation and figure plotting code is 45.6 hours for a 2015 MacOS desktop system (iMac 2015, Intel i7 Quad Core with 4.4GHz turboboost, running with `nThreads = 8`). Most of this time is for Supplementary Figures 1 and 4, which have close to 200 simulations. Therefore, in addition to the full simulation code provided and detailed in Step 1, we have also included previously simulated dataset which can be viewed by setting a flag in the figure generation code in Step 2 below, which allows immediate reproduction of published figures. This also provides a baseline of comparison for results that you generate.**
+**The total run time to run both the simulation and figure plotting code is 45.6 hours for a 2015 MacOS desktop system (iMac 2015, Intel i7 Quad Core with 4.4GHz turboboost, running with `nThreads = 8`). Most of this time is for Supplementary Figures 1 and 4, which have close to 200 simulations. Therefore, in addition to the full simulation code provided and detailed in Step 1, we have also included our published dataset which can be viewed by setting a flag in the figure generation code in Step 2 below, which allows immediate reproduction of published figures. This also provides a baseline of comparison for results that you generate.**
 
 |   Figure  | Total Running Time (Hours) |
 |:---------:|:--------------------------:|
@@ -52,16 +52,16 @@ There are two stages required to reproduce the published figure results. First, 
 | `sm-fig4` |             10             |
 | `sm-fig5` |             1.1            |
 
-### Additional Note for Unix (MacOS) and Linux Users
+### Additional Note for Linux and MacOS Users
 #### Prevent System from Sleeping During Simulation
-Because the simulation takes a relative long time to finish, we have found that MacOS usually automatically sleeps in the middle of a simulation session, which halted the simulation trials. To prevent MacOS from sleeping, use `caffeinate` command before submitting any local simulation.
+As noted above, sleeping causes the Jupyter notebook to lose connection and stops the simulation. To prevent MacOS from sleeping, use `caffeinate` at a Terminal window before submitting any local simulation.
 
 #### Be Sure to Use the Right Version of Python
-For `sm-fig4`, we used MATLAB to initiate batch python simulation which might requires additional care. For some systems you might see errors while reproducing `sm-fig4` in MATLAB. This is due to python version mismatch which is detailed in the paragraph below (for those who want to know why this happens):
+For `sm-fig4`, we use MATLAB to initiate batch python simulations which might requires additional care. For some systems you might see errors while reproducing `sm-fig4` in MATLAB. This is due to python version mismatch which is detailed in the paragraph below (for those who want to know why this happens):
 
-> Since Linux and Unix has built-in python in addition to Anaconda. Please be sure to add Anaconda to system's path and use the python that comes with Anaconda instead of the system's default python. For `sm-fig4`, python simulation is handled through MATLAB using the `system()` command to invoke bash commands. We have found for some systems, calling `system('python -V');` in MATLAB will invoke the default system python under `/usr/lib/python*` instead of Anaconda's python which typically located under `$HOME/anaconda/bin`.
+> Since Linux and Unix has built-in python in addition to Anaconda, please be sure to add Anaconda to the system's path and use the python that comes with Anaconda instead of the system's default python. For `sm-fig4`, the python simulation is handled through MATLAB using the `system()` command to invoke bash commands. We have found for some systems, calling `system('python -V');` in MATLAB will invoke the default system python under `/usr/lib/python*` instead of Anaconda's python, which is typically located under `$HOME/anaconda/bin`.
 
-The solution is simple. Find the path where you installed Anaconda. If you have added Anaconda to system's PATH you can find it easily with `which conda`, which will Anaconda's install path. If the previous command did not run, that means you either have not installed Anaconda or it has not yet been added to your PATH. In the former case, please install Anaconda and be sure to say `yes` when asked whether or not to add Anaconda to system's PATH. In the latter case, you need to first find where Anaconda's python was installed (the default path is `$HOME/anaconda/bin`), then use `export PATH="$HOME/anaconda/bin:$PATH"` to add to system's path.
+The solution is simple. Find the path where you installed Anaconda. If you have added Anaconda to the system's PATH you can find it easily with `which conda`, which will be Anaconda's install path. If the previous command did not run, that means you either have not installed Anaconda or it has not yet been added to your PATH. In the former case, please install Anaconda and be sure to say `yes` when asked whether or not to add Anaconda to system's PATH. In the latter case, you need to first find where Anaconda's python was installed (the default path is `$HOME/anaconda/bin`), then use `export PATH="$HOME/anaconda/bin:$PATH"` to add to system's path.
 
 ### Step 1 - Local EIH Simulation (optional)
 #### Code Structure
