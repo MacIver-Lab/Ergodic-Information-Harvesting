@@ -56,12 +56,12 @@ There are two stages required to reproduce the published figure results. First, 
 #### Prevent System from Sleeping During Simulation
 As noted above, sleeping causes the Jupyter notebook to lose connection and stops the simulation. To prevent MacOS from sleeping, use `caffeinate` at a Terminal window before submitting any local simulation.
 
-#### Be Sure to Use the Right Version of Python
+#### Using the Correct Version of Python
 For `sm-fig4`, we use MATLAB to initiate batch python simulations which might requires additional care. For some systems you might see errors while reproducing `sm-fig4` in MATLAB. This is due to python version mismatch which is detailed in the paragraph below (for those who want to know why this happens):
 
 > Since Linux and Unix has built-in python in addition to Anaconda, please be sure to add Anaconda to the system's path and use the python that comes with Anaconda instead of the system's default python. For `sm-fig4`, the python simulation is handled through MATLAB using the `system()` command to invoke bash commands. We have found for some systems, calling `system('python -V');` in MATLAB will invoke the default system python under `/usr/lib/python*` instead of Anaconda's python, which is typically located under `$HOME/anaconda/bin`.
 
-The solution is simple. Find the path where you installed Anaconda. If you have added Anaconda to the system's PATH you can find it easily with `which conda`, which will be Anaconda's install path. If the previous command did not run, that means you either have not installed Anaconda or it has not yet been added to your PATH. In the former case, please install Anaconda and be sure to say `yes` when asked whether or not to add Anaconda to system's PATH. In the latter case, you need to first find where Anaconda's python was installed (the default path is `$HOME/anaconda/bin`), then use `export PATH="$HOME/anaconda/bin:$PATH"` to add to system's path.
+The solution is simple. For MacOS, call MATLAB from a terminal command window (this causes MALTAB to use the correct path that installing Anaconda will set on your system). To do this: 1) Run matlab as usual and note the output of the command `matlabroot`. 2) open a terminal and enter `cd [output of matlabroot]/bin' (for example, if matlabroot returns '/Applications/MATLAB_R2017b.app' do 'cd /Applications/MATLAB_R2017b.app/bin'. 3) type 'matlab' and return; this will open the usual MATLAB gui and you can proceed as normal.
 
 ### Step 1 - Local EIH Simulation (optional)
 #### Code Structure
