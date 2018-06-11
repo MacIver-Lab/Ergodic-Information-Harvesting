@@ -54,7 +54,7 @@ There are two stages required to reproduce the published figure results. First, 
 
 ### Additional Note for Linux and MacOS Users
 #### Prevent System from Sleeping During Simulation
-As noted above, sleeping causes the Jupyter notebook to lose connection and stops the simulation. To prevent MacOS from sleeping, use `caffeinate` at a Terminal window before submitting any local simulation.
+As noted above, sleeping causes the Jupyter notebook to lose connection and stops the simulation. Also, 'sm-fig4' is a ten hour run in MATLAB to regenerate simulation results. To prevent MacOS from sleeping in these instances, use `caffeinate` at a Terminal window before starting the Jupyter notebook or before regenerating 'sm-fig4' within MATLAB.
 
 #### Using the Correct Version of Python
 For `sm-fig4`, we use MATLAB to initiate batch python simulations which may require additional care. This is due to a python version mismatch which is detailed in the paragraph below (for those who want to know why this happens):
