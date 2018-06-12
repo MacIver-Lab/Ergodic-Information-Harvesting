@@ -15,34 +15,37 @@ warning('off', 'MATLAB:MKDIR:DirectoryExists');
 %                   copy them over from figure 2 data folders. Make sure
 %                   you have simulated figure 2 before using 
 %                   USE_PUBLISHED_DATASET = 0
-%      'sm-fig1' -  panels for supplement figure 1. Simulation will be 
-%                   submitted if using USE_PUBLISHED_DATASET = 0 and 
-%                   simulation data for figure 2 is required. The
-%                   simulation consists a total of 80 trials and will
-%                   normally take around 12 hours to finish.
+%      'sm-fig1' -  panels for supplement figure 1.
 %      'sm-fig2' -  panels for supplement figure 2, fig2 simulation data 
 %                   are required to use USE_PUBLISHED_DATASET = 0
 %      'sm-fig3' -  panels for supplement figure 3, note that the EIH 
 %                   simulation for figure 2 is required to use
 %                   USE_PUBLISHED_DATASET = 0
-%      'sm-fig4' -  panels for supplement figure 4
+%      'sm-fig4' -  panels for supplement figure 4.  Simulation will be 
+%                   submitted if no available locally simulated data were 
+%                   found when using USE_PUBLISHED_DATASET = 0, or forced
+%                   running new simulation using USE_PUBLISHED_DATASET = 2
+%                   The simulation consists a total of 80 trials and will
+%                   normally take around 12 hours to finish.
 %      'sm-fig5' -  panels for supplement figure 5
 %      'sm-fig6' -  panels for supplement figure 6. Note that this figure 
 %                   does not require any simulation data and therefore
 %                   USE_PUBLISHED_DATASET will be ignored
 % 
-targetFig = 'sm-fig1';
+targetFig = 'sm-fig4';
 
 % Maximum number of CPU thread dedicated for sm-fig4 simulation
 % Note that this is only used for sm-fig4 and the number will automatically
 % be capped at the total number of detectable threads available
 nThread = 10;
 
-% Choose whether or not to use previously simulated dataset
-% Use
-%   USE_PUBLISHED_DATASET = 1; % if local simulation step is skipped
-%   USE_PUBLISHED_DATASET = 0; % if local simulation is done
-USE_PUBLISHED_DATASET = 1;
+% Control whether or not to use previously simulated dataset
+% Use flag (USE_PUBLISHED_DATASET = flag)
+%   2 | (only available for sm-fig4) force sm-fig4 to submit new simulation
+%   1 | use previouly published dataset (default)
+%   0 | use locally simulated data if possible, otherwise proceed with new
+%       simulation (sm-fig4)
+USE_PUBLISHED_DATASET = 2;
 
 %% Internal parameters (do not change)
 if USE_PUBLISHED_DATASET
@@ -103,16 +106,21 @@ switch targetFig
         end
         makeSMFig3Plots(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'sm-fig4'
-        if ~USE_PUBLISHED_DATASET
-            mkdir(FIG_DATA_PATH);
-            try
-                cpySimDataFiles('../SimulationCode/SimData/fig2/fig2-ErgodicHarvest-ElectricFish-SNR-30*', ...
-                    FIG_DATA_PATH);
-            catch
-                error('Cannot find fig2 simulation data, did fig2 simulation completed?');
+        if USE_PUBLISHED_DATASET == 0 || USE_PUBLISHED_DATASET == 2
+            if isempty(dir([FIG_DATA_PATH, 'sm-fig4-Data.mat'])) || USE_PUBLISHED_DATASET == 2
+                if USE_PUBLISHED_DATASET ~= 2
+                    warning('No previously simulated data were found, submitting new simulation...');
+                end
+                mkdir(FIG_DATA_PATH);
+                try
+                    cpySimDataFiles('../SimulationCode/SimData/fig2/fig2-ErgodicHarvest-ElectricFish-SNR-30*', ...
+                        FIG_DATA_PATH);
+                catch
+                    error('Cannot find fig2 simulation data, did fig2 simulation completed?');
+                end
+                % Proceed with simulation
+                SMFig4Sim(FIG_DATA_PATH, nThread);
             end
-            % Proceed with simulation
-            SMFig4Sim(FIG_DATA_PATH, nThread);
         end
         makeSMFig4Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'sm-fig5'
