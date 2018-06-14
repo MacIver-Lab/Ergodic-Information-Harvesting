@@ -45,7 +45,7 @@ nThread = 10;
 %   1 | use previouly published dataset (default)
 %   0 | use locally simulated data if possible, otherwise proceed with new
 %       simulation (sm-fig4)
-USE_PUBLISHED_DATASET = 0;
+USE_PUBLISHED_DATASET = 1;
 
 %% Internal parameters (do not change)
 if USE_PUBLISHED_DATASET
