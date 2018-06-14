@@ -12,7 +12,7 @@ global PLOT_EER_BAND
 PLOT_EER_BAND = 1;
 % SET this to 1 if you are having issues with creating vector graphic PDFs
 % it will save the complex EER band overlay into a separate tiff image
-USE_SPLIT_PRINT = 0;
+USE_SPLIT_PRINT = 1;
 
 %% Re-engage searching
 % Load and Process Data
@@ -21,9 +21,9 @@ dat = load(GEN_DATA_PATH('sm-fig5-ErgodicHarvest-Rat.mat'), ...
     'dt', 'oTrajList', 'sTrajList', 'phi');
 sTraj = dat.sTrajList(1:end);
 oTraj = dat.oTrajList(1:end);
-dat.eidList = flattenResultList(dat.phi(:,:,2:end))';
+dat.eidList = flattenResultList(dat.phi(:,:,1:end-1))';
 dt = dat.dt;
-blindIdx = [820, 1710];
+blindIdx = [810, 1510];
 % blindIdx = [900, 1510];
 % Filter Sensor Trajectory
 sTraj = LPF(sTraj, 1/dt, sTrajHighCutFreq);
@@ -50,7 +50,7 @@ mPlotContinuousEID(dat);
 opt = [];
 opt.BoxDim = [8,4] * 0.5;
 opt.YLim = [0, 1];
-opt.XLim = [0, length(sTraj)];
+opt.XLim = [130, length(sTraj)];
 opt.XTick = [];
 opt.YTick = [];
 opt.XMinorTick = 'off';
@@ -75,7 +75,7 @@ rectangle('Position',[180, mean(ratDat.rat(:, 2))-120, 80, 240], ...
 opt = [];
 opt.BoxDim = [8,4] * 0.5;
 opt.YLim = [mean(ratDat.rat(:, 2))-120, mean(ratDat.rat(:, 2))+120];
-opt.XLim = [min(ratDat.rat(:, 1)), max(ratDat.rat(:, 1))];
+opt.XLim = [min(ratDat.rat(:, 1)), max(ratDat.rat(:, 1))-10];
 opt.XTick = [];
 opt.YTick = [];
 opt.XMinorTick = 'off';
@@ -108,7 +108,7 @@ dat = load(GEN_DATA_PATH('sm-fig5-ErgodicHarvest-Mole.mat'), ...
     'dt', 'oTrajList', 'sTrajList', 'phi');
 sTraj = dat.sTrajList(1:1860);
 oTraj = dat.oTrajList(1:1860);
-dat.eidList = flattenResultList(dat.phi(:,:,2:end))';
+dat.eidList = flattenResultList(dat.phi(:,:,1:end-1))';
 % dat.eidList = dat.eidList(:, 1:1860);
 dt = dat.dt;
 % Filter Sensor Trajectory
