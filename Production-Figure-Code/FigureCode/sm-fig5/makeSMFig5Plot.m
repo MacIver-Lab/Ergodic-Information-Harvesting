@@ -23,7 +23,7 @@ sTraj = dat.sTrajList(1:end);
 oTraj = dat.oTrajList(1:end);
 dat.eidList = flattenResultList(dat.phi(:,:,1:end-1))';
 dt = dat.dt;
-blindIdx = [810, 1510];
+blindIdx = [810, 1500];
 % blindIdx = [900, 1510];
 % Filter Sensor Trajectory
 sTraj = LPF(sTraj, 1/dt, sTrajHighCutFreq);
@@ -69,7 +69,7 @@ hS = plot(ratDat.rat(:, 1), ratDat.rat(:, 2), 'LineWidth', 2, ...
     'Color', [238, 46, 47]/255.0);
 hO = plot(ratDat.odor(:, 1), ratDat.odor(:, 2), 'LineWidth', 2, ...
     'Color', [57, 83, 164]/255.0);
-rectangle('Position',[180, mean(ratDat.rat(:, 2))-120, 80, 240], ...
+rectangle('Position',[180, mean(ratDat.rat(:, 2))-120, 76, 240], ...
     'LineWidth', 4, 'EdgeColor', [15, 136, 64]/255.0);
 % Prettify Figure
 opt = [];
