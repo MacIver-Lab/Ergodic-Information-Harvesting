@@ -32,7 +32,7 @@ warning('off', 'MATLAB:MKDIR:DirectoryExists');
 %                   does not require any simulation data and therefore
 %                   USE_PUBLISHED_DATASET will be ignored
 % 
-targetFig = 'sm-fig4';
+targetFig = 'sm-fig1';
 
 % Maximum number of CPU thread dedicated for sm-fig4 simulation
 % Note that this is only used for sm-fig4 and the number will automatically
@@ -45,7 +45,7 @@ nThread = 10;
 %   1 | use previouly published dataset (default)
 %   0 | use locally simulated data if possible, otherwise proceed with new
 %       simulation (sm-fig4)
-USE_PUBLISHED_DATASET = 2;
+USE_PUBLISHED_DATASET = 1;
 
 %% Internal parameters (do not change)
 if USE_PUBLISHED_DATASET
