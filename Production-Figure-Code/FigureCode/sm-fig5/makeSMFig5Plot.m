@@ -12,7 +12,7 @@ global PLOT_EER_BAND
 PLOT_EER_BAND = 1;
 % SET this to 1 if you are having issues with creating vector graphic PDFs
 % it will save the complex EER band overlay into a separate tiff image
-USE_SPLIT_PRINT = 1;
+USE_SPLIT_PRINT = 0;
 
 %% Re-engage searching
 % Load and Process Data
