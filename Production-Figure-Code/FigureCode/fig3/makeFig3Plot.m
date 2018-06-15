@@ -225,6 +225,7 @@ set(gca,'YTickLabel',{'1x', '2x', '4x', '6x'})
 
 print(gcf,'-dpdf',GEN_SAVE_PATH('mole-RE.pdf'));
 fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));
+fprintf('Please note that panel C relys on the simulated data from sm-fig1, \nplease run sm-fig1 figure code to get fig3C reproduced. \n(It will be copied over to fig3 folder automatically.)\n');
 
 
 function dist = calcSumLength2D(path)
