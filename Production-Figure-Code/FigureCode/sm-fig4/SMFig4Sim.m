@@ -5,7 +5,7 @@ function SMFig4Sim(srcPath, nThreads)
 %% Python version check
 % Ensure that Anaconda install of python is in path
 
-if ~strcmp('anaconda', getenv('PATH'))
+if ~strfind(getenv('PATH'),'anaconda')
     error('Non-Anaconda Python detected, please make sure Anaconda is installed and follow the instructions in the README file to make sure you have added it to system''s path and run MATLAB from the command line if using Linux or MacOS');
 end   
 
