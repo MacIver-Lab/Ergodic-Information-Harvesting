@@ -91,6 +91,11 @@ highAttenTrials.meanErgodicityStd = std([attenDataSet(AttenConditions>AttenThres
 % Show Plot
 colorMap = lines(4);
 figure(1); clf; hold on;
+set(gcf, ...
+    'units','normalized','outerposition',[0 0 1 1], ...
+    'PaperPositionMode','auto', ...
+    'PaperOrientation','landscape', ...
+    'PaperSize', [12 8]);
 % Reference
 legHdl(1) = line([refTrial.meanErgodicityMean,refTrial.meanErgodicityMean],...
     [refTrial.meanEstErrMean-refTrial.meanEstErrStd, refTrial.meanEstErrMean+refTrial.meanEstErrStd],...
@@ -148,11 +153,20 @@ opt.ShowBox = 'off';
 opt.FontName = 'Helvetica';
 setPlotProp(opt);
 set(gca,'YTickLabel', strcat(num2str((opt.YTick)'),'%'));
+set(gca, 'units', 'normalized');
+axesPosition = get(gca, 'Position');
+axesPosition(1:2) = [0.3, 0.25];
+set(gca, 'Position', axesPosition);
 legend('off');
 print(GEN_SAVE_PATH('sm-fig4a-Ergodicity_vs_TrackingErr.pdf'),'-dpdf');
 
 %% Boxplot - Ergodic Metric vs. Attenuation
 figure(2); clf;
+set(gcf, ...
+    'units','normalized','outerposition',[0 0 1 1], ...
+    'PaperPositionMode','auto', ...
+    'PaperOrientation','landscape', ...
+    'PaperSize', [12 8]);
 notBoxPlot(meanErgodicity(gAtten ~= 0), gAtten(gAtten ~= 0), ...
     'jitter', 8, 'plotRawData', true), hold on;
 line([-5, max(gAtten)+1], [refTrial.meanErgodicityMean,refTrial.meanErgodicityMean], ...
@@ -173,10 +187,19 @@ opt.ShowBox = 'off';
 opt.FontName = 'Helvetica';
 setPlotProp(opt);
 legend('off');
+set(gca, 'units', 'normalized');
+axesPosition = get(gca, 'Position');
+axesPosition(1:2) = [0.3, 0.25];
+set(gca, 'Position', axesPosition);
 print(GEN_SAVE_PATH('sm-fig4b-Ergodicity_vs_Attenuation.pdf'),'-dpdf');
 
 %% Boxplot - Mean Tracking Error vs. Attenuation
 figure(3); clf;
+set(gcf, ...
+    'units','normalized','outerposition',[0 0 1 1], ...
+    'PaperPositionMode','auto', ...
+    'PaperOrientation','landscape', ...
+    'PaperSize', [12 8]);
 notBoxPlot(meanEstErrorMeanBelief(gAtten ~= 0), gAtten(gAtten ~= 0), ...
     'jitter', 8, 'plotRawData', true), hold on;
 line([-5, max(gAtten)+1], [refTrial.meanEstErrMean,refTrial.meanEstErrMean], ...
@@ -199,5 +222,9 @@ opt.FontName = 'Helvetica';
 setPlotProp(opt);
 set(gca,'YTickLabel', strcat(num2str((opt.YTick)'),'%'));
 legend('off');
+set(gca, 'units', 'normalized');
+axesPosition = get(gca, 'Position');
+axesPosition(1:2) = [0.3, 0.25];
+set(gca, 'Position', axesPosition);
 print(GEN_SAVE_PATH('sm-fig4c-MeanTrackingError_vs_Attenuation.pdf'),'-dpdf');
 fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));

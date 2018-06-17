@@ -64,7 +64,7 @@ set(gcf, ...
     'units','normalized','outerposition',[0 0 1 1], ...
     'PaperPositionMode','auto', ...
     'PaperOrientation','landscape', ...
-    'PaperSize', [20 10]);
+    'PaperSize', [13 8]);
 plot(fish.hSNR.refugeTraj, ...
     'LineWidth', 2, ...
     'Color', barColor(1,:));
@@ -87,7 +87,11 @@ opt.FontName = 'Helvetica';
 opt.Colors = barColor(1:2,:);
 setPlotProp(opt);
 legend(gca, 'off');
-set(gca,  'Position', [1    4    2.8320    1.4160]);
+set(gca,  'Position', [1    4    2.8320    1.7700]);
+set(gca, 'units', 'normalized');
+axesPosition = get(gca, 'Position');
+axesPosition(1:2) = [0.2, 0.6];
+set(gca, 'Position', axesPosition);
 % Weak Signal Trajectory
 trajAxes = axes; hold on;
 plot(fish.lSNR.refugeTraj, ...
@@ -112,7 +116,9 @@ opt.FontName = 'Helvetica';
 opt.Colors = barColor([1,3],:);
 setAxesProp(opt, trajAxes);
 legend(gca, 'off');
-set(trajAxes,  'Position', [4.5    4    2.8320    1.4160]);
+set(gca, 'units', 'normalized');
+axesPosition(1:2) = [0.4, 0.6];
+set(gca, 'Position', axesPosition);
 % Relative Exploration bar plot
 barAxes = axes; hold on;
 barData = [1, fish.hSNR.sDist/fish.hSNR.oDist, fish.lSNR.sDist/fish.lSNR.oDist];
@@ -128,13 +134,15 @@ opt.YMinorTick = 'off';
 opt.XTick = [1, 2, 3];
 opt.YTick = [1, 2];
 opt.YLim = [0.5, 2];
-opt.FontSize = 10;
+opt.FontSize = 8;
 opt.FontName = 'Helvetica';
 setAxesProp(opt, barAxes);
 set(barAxes,'YTickLabel', {'1x', '2x'});
 set(barAxes,'XTickLabel', {'Target', 'Strong Signal', 'Weak Signal'});
 legend(gca, 'off');
-set(barAxes, 'Position', [8    4    2.8320    1.7700])
+set(gca, 'units', 'normalized');
+axesPosition(1:2) = [0.6, 0.6];
+set(gca, 'Position', axesPosition);
 
 %--------- Ergodic Harvesting Simulation Trajectory ---------%
 % Strong Signal Trajectory plot
@@ -162,7 +170,9 @@ opt.Colors = barColor(1:2,:);
 setAxesProp(opt, trajAxes);
 legend(gca, 'off');
 mPlotContinuousEID(EH_hSNR);
-set(trajAxes,  'Position', [1    1    2.8320    1.4160]);
+set(gca, 'units', 'normalized');
+axesPosition(1:2) = [0.2, 0.3];
+set(gca, 'Position', axesPosition);
 % Weak Signal Trajectory
 trajAxes = axes; hold on;
 plot(EH_lSNR.oTrajList, ...
@@ -188,7 +198,9 @@ opt.Colors = barColor([1,3],:);
 setAxesProp(opt, trajAxes);
 legend(gca, 'off');
 mPlotContinuousEID(EH_lSNR);
-set(trajAxes,  'Position', [4.5    1    2.8320    1.4160]);
+set(gca, 'units', 'normalized');
+axesPosition(1:2) = [0.4, 0.3];
+set(gca, 'Position', axesPosition);
 % Bar plot
 barAxes = axes; hold on;
 barData = [1, EH_hSNR.sDist/EH_hSNR.oDist, EH_lSNR.sDist/EH_lSNR.oDist];
@@ -204,13 +216,15 @@ opt.YMinorTick = 'off';
 opt.XTick = [1, 2, 3];
 opt.YTick = [1, 2];
 opt.YLim = [0.5, 2];
-opt.FontSize = 10;
+opt.FontSize = 8;
 opt.FontName = 'Helvetica';
 setAxesProp(opt, barAxes);
 set(barAxes,'YTickLabel', {'1x', '2x'});
 set(barAxes,'XTickLabel', {'Target', 'Strong Signal', 'Weak Signal'});
 legend(gca, 'off');
-set(barAxes,  'Position', [8    1    2.8320   1.7700]);
+set(gca, 'units', 'normalized');
+axesPosition(1:2) = [0.6, 0.3];
+set(barAxes, 'Position', axesPosition);
 
 % All set, now print the first section into PDF
 if SPLIT_PLOT
@@ -264,7 +278,7 @@ set(gcf, ...
     'units','normalized','outerposition',[0 0 1 1], ...
     'PaperPositionMode','auto', ...
     'PaperOrientation','landscape', ...
-    'PaperSize', [20 10]);
+    'PaperSize', [13 8]);
 plot(khan.hSNR.oTraj, ...
     'LineWidth', 2, ...
     'Color', barColor(1,:));
@@ -287,7 +301,11 @@ opt.FontName = 'Helvetica';
 opt.Colors = barColor(1:2,:);
 setPlotProp(opt);
 legend(gca, 'off');
-set(gca,  'Position', [1    4    2.8320    1.4160]);
+set(gca,  'Position', [1    4    2.8320    1.7700]);
+set(gca, 'units', 'normalized');
+axesPosition = get(gca, 'Position');
+axesPosition(1:2) = [0.2, 0.6];
+set(gca, 'Position', axesPosition);
 % Weak Signal Trajectory
 trajAxes = axes; hold on;
 plot(khan.lSNR.oTraj, ...
@@ -312,7 +330,9 @@ opt.FontName = 'Helvetica';
 opt.Colors = barColor([1,3],:);
 setAxesProp(opt, trajAxes);
 legend(gca, 'off');
-set(trajAxes,  'Position', [4.5    4    2.8320    1.4160]);
+set(gca, 'units', 'normalized');
+axesPosition(1:2) = [0.4, 0.6];
+set(gca, 'Position', axesPosition);
 % Relative Exploration bar plot
 barAxes = axes; hold on;
 barData = [1, dist_rat_hSNR_Sensor/dist_rat_hSNR_Trail, dist_rat_lSNR_Sensor/dist_rat_lSNR_Trail];
@@ -328,13 +348,15 @@ opt.YMinorTick = 'off';
 opt.XTick = [1, 2, 3];
 opt.YTick = [1, 5];
 opt.YLim = [-1, 5];
-opt.FontSize = 10;
+opt.FontSize = 8;
 opt.FontName = 'Helvetica';
 setAxesProp(opt, barAxes);
 set(gca,'YTickLabel', {'1x', '5x'});
 set(gca,'XTickLabel', {'Target', 'Strong Signal', 'Weak Signal'});
 legend(gca, 'off');
-set(barAxes, 'Position', [8    4    2.8320    1.7700]);
+set(gca, 'units', 'normalized');
+axesPosition(1:2) = [0.6, 0.6];
+set(gca, 'Position', axesPosition);
 
 %--------- Ergodic Harvesting Simulation Trajectory ---------%
 % Strong Signal Trajectory plot
@@ -362,7 +384,9 @@ opt.Colors = barColor(1:2,:);
 setAxesProp(opt, trajAxes);
 legend(gca, 'off');
 mPlotContinuousEID(hSNR);
-set(trajAxes,  'Position', [1    1    2.8320    1.4160]);
+set(gca, 'units', 'normalized');
+axesPosition(1:2) = [0.2, 0.3];
+set(gca, 'Position', axesPosition);
 % Weak Signal Trajectory
 trajAxes = axes; hold on;
 plot(lSNR.oTrajList, ...
@@ -388,7 +412,9 @@ opt.Colors = barColor([1,3],:);
 setAxesProp(opt, trajAxes);
 legend(gca, 'off');
 mPlotContinuousEID(lSNR);
-set(trajAxes,  'Position', [4.5    1    2.8320    1.4160]);
+set(gca, 'units', 'normalized');
+axesPosition(1:2) = [0.4, 0.3];
+set(gca, 'Position', axesPosition);
 % Bar plot
 barAxes = axes; hold on;
 barData = [1, dist_hSNR_Sensor/dist_hSNR_Trail, dist_lSNR_Sensor/dist_lSNR_Trail];
@@ -404,13 +430,15 @@ opt.YMinorTick = 'off';
 opt.XTick = [1, 2, 3];
 opt.YTick = [1, 5];
 opt.YLim = [-1, 5];
-opt.FontSize = 10;
+opt.FontSize = 8;
 opt.FontName = 'Helvetica';
 setAxesProp(opt, barAxes);
 set(gca,'YTickLabel', {'1x', '5x'});
 set(gca,'XTickLabel', {'Target', 'Strong Signal', 'Weak Signal'});
 legend(gca, 'off');
-set(barAxes,  'Position', [8    1    2.8320    1.7700]);
+set(gca, 'units', 'normalized');
+axesPosition(1:2) = [0.6, 0.3];
+set(gca, 'Position', axesPosition);
 
 % All set, now print the first section into PDF
 if SPLIT_PLOT
@@ -453,7 +481,7 @@ set(gcf, ...
     'units','normalized','outerposition',[0 0 1 1], ...
     'PaperPositionMode','auto', ...
     'PaperOrientation','landscape', ...
-    'PaperSize', [20 10]);
+    'PaperSize', [13 8]);
 hLine = line([0, length(mole.hSNR.angleData)], [0, 0], ...
     'LineStyle', '--', ...
     'LineWidth', 2, ...
@@ -478,7 +506,11 @@ opt.Colors = [0, 0, 0; barColor(2,:)];
 setPlotProp(opt);
 legend(gca, 'off');
 hLine.LineStyle = '--';
-set(gca,  'Position', [1    4    2.8320    1.4160]);
+set(gca,  'Position', [1    4    2.8320    1.7700]);
+set(gca, 'units', 'normalized');
+axesPosition = get(gca, 'Position');
+axesPosition(1:2) = [0.2, 0.6];
+set(gca, 'Position', axesPosition);
 % Weak Signal Trajectory
 trajAxes = axes; hold on;
 hLine = line([0, length(mole.lSNR.angleData)], [0, 0], ...
@@ -505,7 +537,9 @@ opt.Colors = [0, 0, 0; barColor(3,:)];
 setPlotProp(opt);
 legend(gca, 'off');
 hLine.LineStyle = '--';
-set(trajAxes,  'Position', [4.5    4    2.8320    1.4160]);
+set(gca, 'units', 'normalized');
+axesPosition(1:2) = [0.4, 0.6];
+set(gca, 'Position', axesPosition);
 % Relative Exploration bar plot
 barAxes = axes; hold on;
 barData = [0, 1, mole.lSNR.moleDist/mole.hSNR.moleDist];
@@ -521,13 +555,15 @@ opt.YMinorTick = 'off';
 opt.XTick = [1, 2, 3];
 opt.YTick = [1, 2];
 opt.YLim = [0.5, 2];
-opt.FontSize = 10;
+opt.FontSize = 8;
 opt.FontName = 'Helvetica';
 setAxesProp(opt, barAxes);
 set(gca,'YTickLabel', {'1x', '2x'});
 set(gca,'XTickLabel', {'Target', 'Strong Signal', 'Weak Signal'});
 legend(gca, 'off');
-set(barAxes, 'Position', [8    4    2.8320    1.7700]);
+set(gca, 'units', 'normalized');
+axesPosition(1:2) = [0.6, 0.6];
+set(gca, 'Position', axesPosition);
 
 %--------- Ergodic Harvesting Simulation Trajectory ---------%
 % Strong Signal Trajectory plot
@@ -557,7 +593,9 @@ setAxesProp(opt, trajAxes);
 legend(gca, 'off');
 mPlotContinuousEID(hSNR);
 hLine.LineStyle = '--';
-set(trajAxes,  'Position', [1    1    2.8320    1.4160]);
+set(gca, 'units', 'normalized');
+axesPosition(1:2) = [0.2, 0.3];
+set(gca, 'Position', axesPosition);
 % Weak Signal Trajectory
 trajAxes = axes; hold on;
 hLine = line([0, length(lSNR.sTrajList)], [0.5, 0.5], ...
@@ -585,7 +623,9 @@ setAxesProp(opt, trajAxes);
 legend(gca, 'off');
 mPlotContinuousEID(lSNR);
 hLine.LineStyle = '--';
-set(trajAxes,  'Position', [4.5    1    2.8320    1.4160]);
+set(gca, 'units', 'normalized');
+axesPosition(1:2) = [0.4, 0.3];
+set(gca, 'Position', axesPosition);
 % Bar plot
 barAxes = axes; hold on;
 barData = [0, 1, lSNR.moleDist/hSNR.moleDist];
@@ -601,13 +641,15 @@ opt.YMinorTick = 'off';
 opt.XTick = [1, 2, 3];
 opt.YTick = [1, 2];
 opt.YLim = [0.5, 2];
-opt.FontSize = 10;
+opt.FontSize = 8;
 opt.FontName = 'Helvetica';
 setAxesProp(opt, barAxes);
 set(gca,'YTickLabel', {'1x', '2x'});
 set(gca,'XTickLabel', {'Target', 'Strong Signal', 'Weak Signal'});
 legend(gca, 'off');
-set(barAxes,  'Position', [8    1    2.8320    1.7700]);
+set(gca, 'units', 'normalized');
+axesPosition(1:2) = [0.6, 0.3];
+set(gca, 'Position', axesPosition);
 
 % All set, now print the first section into PDF
 if SPLIT_PLOT
@@ -630,7 +672,7 @@ if ~PLOT_EER_BAND
     return;
 end
 %% Plot Parameters
-tScale = 5;   % Interval of EID plot update, set to 1 will plot all of the EID map
+tScale = 10;   % Interval of EID plot update, set to 1 will plot all of the EID map
 nBins = 80;   % Color resolution in the y axis
 alpha = 0.5;  % Transparency of the EID color
 % cmap = lines(10);
