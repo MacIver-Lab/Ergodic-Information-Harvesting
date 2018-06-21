@@ -5,6 +5,7 @@ function makeFigurePanels
 % Chen Chen
 
 warning('off', 'MATLAB:MKDIR:DirectoryExists');
+warning('off', 'MATLAB:rmpath:DirNotFound')
 %% Specify Target Figure to Plot (Change this as needed)
 % Target figure panel
 %    Choose one of the following:
@@ -32,12 +33,12 @@ warning('off', 'MATLAB:MKDIR:DirectoryExists');
 %                   does not require any simulation data and therefore
 %                   USE_PUBLISHED_DATASET will be ignored
 % 
-targetFig = 'fig1';
+targetFig = 'fig3';
 
 % Maximum number of CPU thread dedicated for sm-fig4 simulation
 % Note that this is only used for sm-fig4 and the number will automatically
 % be capped at the total number of detectable threads available
-nThread = 10;
+nThread = 8;
 
 % Control whether or not to use previously simulated dataset
 % Use flag (USE_PUBLISHED_DATASET = flag)
@@ -45,10 +46,10 @@ nThread = 10;
 %   1 | use previouly published dataset (default)
 %   0 | use locally simulated data if possible, otherwise proceed with new
 %       simulation (sm-fig4)
-USE_PUBLISHED_DATASET = 1;
+USE_PUBLISHED_DATASET = 0;
 
 %% Internal parameters (do not change)
-if USE_PUBLISHED_DATASET
+if USE_PUBLISHED_DATASET == 1
     DATA_PATH = './FigureCode/';
     FIG_DATA_PATH = sprintf([DATA_PATH,'%s/Data/'], targetFig);
 else
@@ -59,6 +60,14 @@ FIG_OUTPUT_PATH = sprintf('./FigureOutput/%s/', targetFig);
 FIG_CODE_PATH = sprintf('./FigureCode/%s/', targetFig);
 
 %% Make production figure panels (do not change)
+% Remove other figure panels from path
+figPanels = {'fig1', 'fig2', 'fig3', 'sm-fig1', 'sm-fig2', ...
+    'sm-fig3', 'sm-fig4', 'sm-fig5', 'sm-fig6'};
+for i = 1:length(figPanels)
+    if ~strcmp(figPanels{i}, targetFig)
+        rmpath(sprintf('./FigureCode/%s/', figPanels{i}));
+    end
+end
 addpath(FIG_CODE_PATH);
 mkdir(FIG_OUTPUT_PATH);
 switch targetFig
