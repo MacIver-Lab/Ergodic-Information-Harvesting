@@ -14,6 +14,11 @@ IT_hSNR = load(GEN_DATA_PATH('fig1-Infotaxis-SNR-60.mat'), 'oTrajList', 'sTrajLi
 %% Make plot
 % Panel d - low light condition
 figure(1); clf; hold on;
+set(gcf, ...
+    'units','normalized','outerposition',[0 0 1 1], ...
+    'PaperPositionMode','auto', ...
+    'PaperOrientation','landscape', ...
+    'PaperSize', [13 8]);
 plot(EH_lSNR.oTrajList, ...
     'LineWidth', 2);
 plot(EH_lSNR.sTrajList, ...
@@ -36,7 +41,11 @@ opt.FontName = 'Helvetica';
 opt.Colors = [0, 0, 0; 216, 58, 58; 73, 109, 181] / 255.0;
 setPlotProp(opt);
 legend(gca, 'off');
-set(gca,  'Position', [4, 4.5, 4.8, 3]);
+set(gca, 'units', 'normalized');
+axesPosition = get(gca, 'Position');
+axesPosition(1:2) = [0.4, 0.2];
+set(gca, 'Position', axesPosition);
+
 
 % Panel e - high light condition
 axes; hold on;
@@ -62,7 +71,9 @@ opt.FontName = 'Helvetica';
 opt.Colors = [0, 0, 0; 216, 58, 58; 73, 109, 181] / 255.0;
 setPlotProp(opt);
 legend(gca, 'off');
-set(gca,  'Position', [4, 1, 4.8, 3]);
+set(gca, 'units', 'normalized');
+axesPosition(1:2) = [0.4, 0.55];
+set(gca, 'Position', axesPosition);
 
-print(GEN_SAVE_PATH('fig1-de.pdf'), '-dpdf', '-bestfit');
+print(GEN_SAVE_PATH('fig1-de.pdf'), '-dpdf');
 fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));

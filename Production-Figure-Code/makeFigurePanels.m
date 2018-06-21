@@ -11,11 +11,11 @@ warning('off', 'MATLAB:rmpath:DirNotFound')
 %    Choose one of the following:
 %       'fig1'   -  panels for figure 1
 %       'fig2'   -  panels for figure 2
-%       'fig3'   -  panels for figure 3, note that the EIH simulation data
-%                   is shared for figure 2 and the function will try to
-%                   copy them over from figure 2 data folders. Make sure
-%                   you have simulated figure 2 before using 
-%                   USE_PUBLISHED_DATASET = 0
+%       'fig3'   -  panels for figure 3, note that figure 2 simulation is
+%                   required to use USE_PUBLISHED_DATASET = 0, and panel C 
+%                   relys on the simulated data from sm-fig1, please run 
+%                   sm-fig1 figure code to get fig3C reproduced. 
+%                   (It will be copied over to fig3 folder automatically.)
 %      'sm-fig1' -  panels for supplement figure 1.
 %      'sm-fig2' -  panels for supplement figure 2, fig2 simulation data 
 %                   are required to use USE_PUBLISHED_DATASET = 0
@@ -46,7 +46,7 @@ nThread = 8;
 %   1 | use previouly published dataset (default)
 %   0 | use locally simulated data if possible, otherwise proceed with new
 %       simulation (sm-fig4)
-USE_PUBLISHED_DATASET = 0;
+USE_PUBLISHED_DATASET = 1;
 
 %% Internal parameters (do not change)
 if USE_PUBLISHED_DATASET == 1

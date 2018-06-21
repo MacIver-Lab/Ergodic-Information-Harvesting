@@ -55,6 +55,11 @@ fft_fish_hSNR_tTraj = abs(fft_fish_hSNR_tTraj(2:fftEndIdx));
 
 %--------- Fish Sinusoidal Tracking ---------%
 figure(1);clf; hold on;
+set(gcf, ...
+    'units','normalized','outerposition',[0 0 1 1], ...
+    'PaperPositionMode','auto', ...
+    'PaperOrientation','landscape', ...
+    'PaperSize', [13 8]);
 plot(freqTicks, ...
     fft_fish_lSNR_tTraj/max(fft_fish_lSNR_tTraj), ...
     'LineWidth', 2, ...
@@ -82,7 +87,10 @@ opt.FontName = 'Helvetica';
 opt.Colors = barColor;
 setPlotProp(opt);
 legend(gca, 'off');
-set(gca,  'Position', [1    4    3.2   2]);
+set(gca, 'units', 'normalized');
+axesPosition = get(gca, 'Position');
+axesPosition(1:2) = [0.3, 0.3];
+set(gca, 'Position', axesPosition);
 
 % Ergodic Harvesting
 axes; hold on;
@@ -113,7 +121,9 @@ opt.FontName = 'Helvetica';
 opt.Colors = barColor;
 setPlotProp(opt);
 legend(gca, 'off');
-set(gca,  'Position', [1    1    3.2   2]);
+set(gca, 'units', 'normalized');
+axesPosition(1:2) = [0.3, 0.6];
+set(gca, 'Position', axesPosition);
 
 
 %% Rat Odor Tracking
@@ -183,7 +193,9 @@ opt.FontName = 'Helvetica';
 opt.Colors = barColor;
 setPlotProp(opt);
 legend(gca, 'off');
-set(gca,  'Position', [5    4    3.2   2]);
+set(gca, 'units', 'normalized');
+axesPosition(1:2) = [0.5, 0.6];
+set(gca, 'Position', axesPosition);
 
 % Ergodic Harvesting
 axes; hold on;
@@ -214,8 +226,10 @@ opt.FontName = 'Helvetica';
 opt.Colors = barColor;
 setPlotProp(opt);
 legend(gca, 'off');
-set(gca,  'Position', [5    1    3.2   2]);
+set(gca, 'units', 'normalized');
+axesPosition(1:2) = [0.5, 0.3];
+set(gca, 'Position', axesPosition);
 
 %% Print to file
-print(GEN_SAVE_PATH('sm-fig2a-FFT.pdf'),'-dpdf', '-bestfit');
+print(GEN_SAVE_PATH('sm-fig2a-FFT.pdf'),'-dpdf');
 fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));

@@ -8,6 +8,11 @@ load(GEN_BEHAVIOR_DATA_PATH('JammingData.mat'));
 
 %% Make plot
 figure(1); clf;
+set(gcf, ...
+    'units','normalized','outerposition',[0 0 1 1], ...
+    'PaperPositionMode','auto', ...
+    'PaperOrientation','landscape', ...
+    'PaperSize', [13 8]);
 eodVar = [jarCorrData.mean_MFD];
 plot(eodVar,'o-','LineWidth',2,'MarkerSize',12);
 
@@ -30,6 +35,10 @@ opt.FontSize = 22;
 setPlotProp(opt);
 legend('off');
 set(gca,'XTickLabel',num2str(sortedJamAmp'));
+set(gca, 'units', 'normalized');
+axesPosition = get(gca, 'Position');
+axesPosition(1:2) = [0.3, 0.3];
+set(gca, 'Position', axesPosition);
 print(GEN_SAVE_PATH('sm-fig6-Jamming_Correlation.pdf'), '-dpdf');
 
 
@@ -65,6 +74,11 @@ pJTS = [find(JamTimeStamp > JamSwitchTime(1),1),...
     find(JamTimeStamp >= JamSwitchTime(2),1)]-1;
 
 figure(2);clf;
+set(gcf, ...
+    'units','normalized','outerposition',[0 0 1 1], ...
+    'PaperPositionMode','auto', ...
+    'PaperOrientation','landscape', ...
+    'PaperSize', [13 8]);
 plot(JamTimeStamp(pJTS(1):pJTS(2)),fJamLPF(pJTS(1):pJTS(2)),'LineWidth',3);
 hold on;
 plot(FishTimeStamp,fFishLPF,'LineWidth',3);
@@ -90,9 +104,6 @@ opt.YLabel = 'Frequency (Hz)';
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
 opt.YMinorTick = 'off';
-opt.Legend = {'Jamming',...
-    'Fish EOD'};
-opt.LegendLoc = 'Best';
 opt.XLim = [0,max([FishTimeStamp,JamTimeStamp])+1];
 opt.YLim = [min([fJamLPF,fFishLPF])-0.5,...
     max([fJamLPF,fFishLPF])+1];
@@ -106,4 +117,8 @@ opt.Colors = [179/255, 48/255, 0;...
 % apply the settings
 setPlotProp(opt);
 legend('off');
+set(gca, 'units', 'normalized');
+axesPosition = get(gca, 'Position');
+axesPosition(1:2) = [0.3, 0.3];
+set(gca, 'Position', axesPosition);
 print(GEN_SAVE_PATH('sm-fig6-FishEOD.pdf'), '-dpdf');

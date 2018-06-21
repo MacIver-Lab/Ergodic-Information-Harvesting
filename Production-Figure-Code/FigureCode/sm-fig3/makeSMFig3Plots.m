@@ -60,6 +60,10 @@ setPlotProp(opt);
 hLine.LineStyle = '--';
 ytickangle(45);
 legend('off');
+set(gca, 'units', 'normalized');
+axesPosition = get(gca, 'Position');
+axesPosition(1:2) = [0.3, 0.3];
+set(gca, 'Position', axesPosition);
 print(GEN_SAVE_PATH('sm-fig3a-MagResponse.pdf'), '-dpdf');
 
 figure(2); clf;
@@ -88,6 +92,10 @@ opt.YTick = [];
 opt.FontName = 'Helvetica';
 setPlotProp(opt);
 legend('off');
+set(gca, 'units', 'normalized');
+axesPosition = get(gca, 'Position');
+axesPosition(1:2) = [0.3, 0.3];
+set(gca, 'Position', axesPosition);
 print(GEN_SAVE_PATH('sm-fig3b-Traj.pdf'), '-dpdf');
 
 figure(3); clf;
@@ -123,6 +131,10 @@ opt.FontName = 'Helvetica';
 setPlotProp(opt);
 hLine.LineStyle = '--';
 legend('off');
+set(gca, 'units', 'normalized');
+axesPosition = get(gca, 'Position');
+axesPosition(1:2) = [0.3, 0.3];
+set(gca, 'Position', axesPosition);
 print(GEN_SAVE_PATH('sm-fig3c-FFT.pdf'), '-dpdf');
 
 fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));

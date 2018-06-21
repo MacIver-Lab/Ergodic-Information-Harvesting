@@ -89,6 +89,11 @@ fprintf(['\t\t\tRelative exploration\n', ...
 
 % Plot group data
 figure(1); clf; hold on;
+set(gcf, ...
+    'units','normalized','outerposition',[0 0 1 1], ...
+    'PaperPositionMode','auto', ...
+    'PaperOrientation','landscape', ...
+    'PaperSize', [13 8]);
 hL = line([0,3], [1,1], 'LineStyle', '--', ...
     'Color', [140,140,140]/255.0, 'LineWidth',4);
 hBoxPlot = notBoxPlot([reStrongSignalFish',reWeakSignalFish'], ...
@@ -122,6 +127,10 @@ hLine(4).Color = [50,180,74]/255.0;
 legend(gca, 'off');
 set(gca,'XTickLabel',{'Strong Signal','Weak Signal'})
 set(gca,'YTickLabel',{'1x', '2x', '3x'})
+set(gca, 'units', 'normalized');
+axesPosition = get(gca, 'Position');
+axesPosition(1:2) = [0.3, 0.3];
+set(gca, 'Position', axesPosition);
 print(gcf,'-dpdf',GEN_SAVE_PATH('fish-RE.pdf'));
 
 fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));
@@ -194,6 +203,11 @@ fprintf(['\t\t\tRelative exploration\n', ...
 
 % Plot group data
 figure(2); clf;
+set(gcf, ...
+    'units','normalized','outerposition',[0 0 1 1], ...
+    'PaperPositionMode','auto', ...
+    'PaperOrientation','landscape', ...
+    'PaperSize', [13 8]);
 hBoxPlot = notBoxPlot([reBlk,reNrm], ...
     [2*ones(1,length(reBlk)), 1*ones(1,length(reNrm))]);
 opt = [];
@@ -222,6 +236,10 @@ hLine(4).Color = [50,180,74]/255.0;
 legend(gca, 'off');
 set(gca,'XTickLabel',{'Strong Signal','Weak Signal'});
 set(gca,'YTickLabel',{'1x', '2x', '4x', '6x'})
+set(gca, 'units', 'normalized');
+axesPosition = get(gca, 'Position');
+axesPosition(1:2) = [0.3, 0.3];
+set(gca, 'Position', axesPosition);
 
 print(gcf,'-dpdf',GEN_SAVE_PATH('mole-RE.pdf'));
 fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));

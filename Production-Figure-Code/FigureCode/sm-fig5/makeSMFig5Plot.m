@@ -9,7 +9,7 @@ GEN_BEHAVIOR_DATA_PATH = @(fname) fullfile(pwd, 'FigureCode', 'sm-fig5', 'Behavi
 GEN_SAVE_PATH = @(fname) fullfile(savePath, fname);
 sTrajHighCutFreq = 2.10; % Hz
 global PLOT_EER_BAND
-PLOT_EER_BAND = 1;
+PLOT_EER_BAND = 0;
 % SET this to 1 if you are having issues with creating vector graphic PDFs
 % it will save the complex EER band overlay into a separate tiff image
 USE_SPLIT_PRINT = 0;
@@ -35,6 +35,11 @@ ratDat.odor = ratDat.odor(5:end-12, :);
 
 % Plot
 figure(1), clf;
+set(gcf, ...
+    'units','normalized','outerposition',[0 0 1 1], ...
+    'PaperPositionMode','auto', ...
+    'PaperOrientation','landscape', ...
+    'PaperSize', [13 8]);
 % Part #1 - Ergodic Harvesting Search
 hold on;
 hS = plot(sTraj, 'LineWidth', 2, ...
@@ -61,7 +66,10 @@ setPlotProp(opt);
 legend(gca, 'off');
 hS.Color = [238, 46, 47]/255.0;
 hO.Color = [57, 83, 164]/255.0;
-set(gca, 'Position', [3, 0.5, 4, 2])
+set(gca, 'units', 'normalized');
+axesPosition = get(gca, 'Position');
+axesPosition(1:2) = [0.4, 0.2];
+set(gca, 'Position', axesPosition);
 
 % Part #2 - Rat Search
 h = axes; hold on;
@@ -86,7 +94,10 @@ setAxesProp(opt, h);
 hS.Color = [238, 46, 47]/255.0;
 hO.Color = [57, 83, 164]/255.0;
 legend(gca, 'off');
-set(gca, 'Position', [3, 3.5, 4, 2])
+set(gca, 'units', 'normalized');
+axesPosition = get(gca, 'Position');
+axesPosition(1:2) = [0.4, 0.5];
+set(gca, 'Position', axesPosition);
 
 if USE_SPLIT_PRINT
     splitprint(gcf,... %separate the current figure
@@ -120,6 +131,11 @@ moleDat.angleData = moleDat.angleData;
 
 % Plot
 figure(2), clf;
+set(gcf, ...
+    'units','normalized','outerposition',[0 0 1 1], ...
+    'PaperPositionMode','auto', ...
+    'PaperOrientation','landscape', ...
+    'PaperSize', [13 8]);
 % Part #1 - Ergodic Harvesting Search
 hold on;
 blindIdx = [0, 1120];
@@ -148,7 +164,10 @@ legend(gca, 'off');
 hS.Color = [238, 46, 47]/255.0;
 hO.Color = [57, 83, 164]/255.0;
 hO.LineStyle = '--';
-set(gca, 'Position', [3, 0.5, 4, 2])
+set(gca, 'units', 'normalized');
+axesPosition = get(gca, 'Position');
+axesPosition(1:2) = [0.4, 0.2];
+set(gca, 'Position', axesPosition);
 
 % Part #2 - Mole Search
 h = axes; hold on;
@@ -174,7 +193,10 @@ hS.Color = [238, 46, 47]/255.0;
 hO.Color = [57, 83, 164]/255.0;
 hO.LineStyle = '--';
 legend(gca, 'off');
-set(gca, 'Position', [3, 3.5, 4, 2])
+set(gca, 'units', 'normalized');
+axesPosition = get(gca, 'Position');
+axesPosition(1:2) = [0.4, 0.5];
+set(gca, 'Position', axesPosition);
 if USE_SPLIT_PRINT
     splitprint(gcf,... %separate the current figure
         GEN_SAVE_PATH('sm-fig5-Mole-search'),... % filenames
