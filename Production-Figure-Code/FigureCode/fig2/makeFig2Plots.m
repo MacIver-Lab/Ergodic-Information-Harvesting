@@ -5,6 +5,7 @@ function makeFig2Plots(dataPath, savePath)
 % 
 % Chen Chen
 
+close all;
 warning('off', 'MATLAB:print:FigureTooLargeForPage');
 GEN_DATA_PATH = @(fname) fullfile(dataPath, fname);
 GEN_BEHAVIOR_DATA_PATH = @(fname) fullfile(pwd, 'FigureCode', 'fig2', 'BehaviorData', fname);

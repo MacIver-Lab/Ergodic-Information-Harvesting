@@ -1,5 +1,6 @@
 function makeFig3Plot(dataPath, savePath)
 
+close all;
 warning('off', 'MATLAB:print:FigureTooLargeForPage');
 GEN_DATA_PATH = @(fname) fullfile(dataPath, fname);
 GEN_BEHAVIOR_DATA_PATH = @(fname) fullfile(pwd, 'FigureCode', 'fig3', 'BehaviorData', fname);

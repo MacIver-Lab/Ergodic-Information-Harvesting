@@ -2,6 +2,7 @@ function makeSMFig4Plot(dataPath, savePath)
 %% Distance from Ergodicity vs Mean Tracking Performance under different wiggle attenuation
 % Chen Chen
 
+close all;
 warning('off', 'MATLAB:print:FigureTooLargeForPage');
 GEN_DATA_PATH = @(fname) fullfile(dataPath, fname);
 GEN_SAVE_PATH = @(fname) fullfile(savePath, fname);

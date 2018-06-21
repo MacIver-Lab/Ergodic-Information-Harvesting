@@ -1,5 +1,6 @@
 function makeSMFig6Plot(savePath)
 
+close all;
 warning('off', 'MATLAB:print:FigureTooLargeForPage');
 GEN_BEHAVIOR_DATA_PATH = @(fname) fullfile(pwd, 'FigureCode', 'sm-fig6', 'BehaviorData', fname);
 GEN_SAVE_PATH = @(fname) fullfile(savePath, fname);

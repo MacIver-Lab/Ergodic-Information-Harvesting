@@ -12,6 +12,7 @@ IT_lSNR = load(GEN_DATA_PATH('fig1-Infotaxis-SNR-10.mat'), 'oTrajList', 'sTrajLi
 IT_hSNR = load(GEN_DATA_PATH('fig1-Infotaxis-SNR-60.mat'), 'oTrajList', 'sTrajList');
 
 %% Make plot
+close all;
 % Panel d - low light condition
 figure(1); clf; hold on;
 set(gcf, ...

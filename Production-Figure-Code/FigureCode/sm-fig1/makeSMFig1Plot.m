@@ -2,6 +2,7 @@ function makeSMFig1Plot(dataPath, savePath, usePrevDat)
 %% Plot supplement figure 1
 % Chen Chen
 
+close all;
 warning('off', 'MATLAB:print:FigureTooLargeForPage');
 warning('off', 'MATLAB:MKDIR:DirectoryExists');
 GEN_DATA_PATH = @(fname) fullfile(dataPath, fname);
