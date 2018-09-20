@@ -5,8 +5,8 @@ Created on Tue Feb 14 20:37:55 2017
 @author: Chen Chen
 """
 #from utils import *
-from ErgodicHarvestingLib.utils import matmult
-from ErgodicHarvestingLib.cyODE import rk4c, rk2
+from ErgodicInfotaxisAPI.utils import matmult
+from ErgodicInfotaxisAPI.cyODE import rk4c, rk2
 import numpy as np
 from numpy.linalg import inv
 from scipy.integrate import trapz
