@@ -10,9 +10,12 @@ Created on Wed Jan 17 13:32:35 2018
 """
 
 # Import required libraries
+from time import time
 import numpy as np
 from scipy.stats import norm, entropy
-import matplotlib.pyplot as plt
+from ErgodicHarvestingLib.cyEntropy import cyNormPDF
+#from cyEntropy import cyNormPDF
+#from numba import jit
 
 def EntropyEID(prior, wsRes, sigmaM, sigmaL):
     """Computes Entropy EID map
@@ -47,37 +50,41 @@ def EntropyEID(prior, wsRes, sigmaM, sigmaL):
     # Compute base entropy to compare
     sBase = entropy(prior)
     
+    # Hashtable for norm pdf
+    mmDict = {}
     ## Create Measurement model object
     def upsilon(theta=0.5):
         if type(theta) is float:
-            mm = norm.pdf(wsSamples,theta,sigmaM)
-            mm /= max(mm)
+            mm = mmDict.get(theta, None)
+            if mm is None:
+                mm = cyNormPDF(wsSamples,theta,sigmaM, nrm=1)
+                mmDict[theta] = mm
         else:
             # Queries multiple possible target thetas
-            mm = []
-            for t in theta:
-                mm_ = norm.pdf(wsSamples,t,sigmaM)
-                mm_ /= max(mm_)
-                mm.append(mm_)
-            mm = np.array(mm)
+            # Check theta level key hit
+            key = (theta[0], theta[-1])
+            mm = mmDict.get(key, None)
+            if mm is None:
+                mm = []
+                for t in theta:
+                    # Check t level key hit
+                    mm_ = mmDict.get(t, None)
+                    if mm_ is None:
+                        mm_ = cyNormPDF(wsSamples,t,sigmaM, nrm=1)
+                        mmDict[t] = mm_
+                    mm.append(mm_)
+                mm = np.array(mm)
+                mmDict[key] = mm
         return mm
     
     # Measurement likelihood lambda function
     #Pvtheta = lambda v, theta: ( 1.0 / (np.sqrt(2.0*np.pi) * sigmaL) ) * \
     #          np.exp( -(v - upsilon(theta))**2 / (2.0 * sigmaL**2) )
     pLConst1 = ( 1.0 / (np.sqrt(2.0*np.pi) * sigmaL) )
-    pLConst2 = -1 / (2.0 * sigmaL**2) 
+    pLConst2 = -1 / (2.0 * sigmaL**2)
     def Pvtheta(v, theta):
         # Compute likelihood
         pvt = pLConst1 * np.exp( (v - upsilon(theta))**2 * pLConst2 )
-          
-        # Normalize
-        if pvt.ndim == 1:
-            return pvt / pvt.sum()
-        else:
-            for idx in range(pvt.shape[0]):
-                pvt[idx, :] /= pvt[idx, :].sum()
-          
         return pvt
         
     # Measurement probability Pvx over all possible sensor location    
@@ -86,7 +93,6 @@ def EntropyEID(prior, wsRes, sigmaM, sigmaL):
         pL = Pvtheta(v, wsSamples)
         # Measurement probability
         pvx = pL
-          
         # Loop through theta samples (all possible target location, weighted by 
         # prior belief)
         for idx in range(pvx.shape[0]):
@@ -111,36 +117,31 @@ def EntropyEID(prior, wsRes, sigmaM, sigmaL):
         # Posterior
         pvx, pL = Pvx(mms)
         pp = pL * prior
-
         # Entropy
         dS = entropy(pp.T) - sBase
-        
         # Remove nan values
-        dS[dS == np.nan] = 0
-        
+        dS[np.where( (dS == np.nan) | (dS == -np.inf))] = 0
         # Update result
         deltaS += pvx * dS
 
     # Convert deltaS to Entropy EID
     eid = -deltaS
-    
-    # Remove invalid (infinity) numbers
-    eid[eid == np.inf] = 0
-    
-    # Remove negative numbers
-    eid[eid < 0] = 0
-    #if eid.min() < 0:
-    #    eid -= eid.min()
-    
-    #print("Belief Entropy = {0}, ".format(sBase))
+    eid[np.where(eid < 0)] = 0
     eid /= eid.sum()
     return eid
 
 """ Unit test
-wsSamples = np.linspace(0,1,101)
-priorP = norm.pdf(wsSamples,0.3,0.1) #+ norm.pdf(wsSamples,0.6,0.2)
-priorP /= priorP.sum()
-EID_Entropy = EntropyEID(priorP, 101, 0.1, 0.1)
-plt.plot(wsSamples, priorP)
-plt.plot(wsSamples, EID_Entropy)
+def test():
+    import matplotlib.pyplot as plt
+    wsSamples = np.linspace(0,1,101)
+    priorP = norm.pdf(wsSamples,0.3,0.1) #+ norm.pdf(wsSamples,0.6,0.2)
+    priorP /= priorP.sum()
+    ts = time()
+    EID_Entropy = EntropyEID(priorP, 101, 0.1, 0.1)
+    print(f'Python: {time()-ts} sec')
+    plt.plot(wsSamples, priorP)
+    plt.plot(wsSamples, EID_Entropy)
+    return EID_Entropy
+
+test()
 #"""

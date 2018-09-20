@@ -7,7 +7,6 @@ Created on Wed Mar 15 11:53:25 2017
 
 # Import basic packages
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
 # Import Ergodic packages
 from ErgodicHarvestingLib.EID import EID
@@ -17,7 +16,6 @@ from ErgodicHarvestingLib.EID_Opt import ergoptimize
 from time import strftime
 # Save to .mat file
 from ErgodicHarvestingLib.save2mat import save2mat
-from IPython import display
 from time import sleep
 # Entropy
 from scipy.stats import entropy

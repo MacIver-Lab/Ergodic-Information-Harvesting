@@ -6,11 +6,13 @@ Created on Tue Feb 14 20:37:55 2017
 """
 #from utils import *
 from ErgodicHarvestingLib.utils import matmult
+from ErgodicHarvestingLib.cyODE import rk4c, rk2
 import numpy as np
 from numpy.linalg import inv
 from scipy.integrate import trapz
-from scipy.integrate import ode, quad
+from scipy.integrate import ode, quad, solve_ivp
 from scipy.interpolate import interp1d
+#from numba import jit
 
 
 class ProjectionBasedOpt(object):
@@ -36,48 +38,66 @@ class ProjectionBasedOpt(object):
         self.Qk = 1.0
         self.Rk = 1.0
         
-        self.odeSolver = odeSolver
         self.time = time
-        self.odeDeltaT = time[1]-time[0]
         
+        odeDeltaT = time[1]-time[0]
+        self.odeParam = {
+            'method'    : 'RK23',
+            't_span'    : (time[0], time[-1]),
+            'rtol'      : 1e-4,
+            'atol'      : 1e-8,
+            't_eval'    : time,
+            'min_step'  : odeDeltaT, 
+            'first_step': odeDeltaT, 
+            'max_step'  : odeDeltaT,
+        }   
+        #self.odeIntegrator = lambda fun, y0: rk2(fun, time, y0)[1]
+        self.odeIntegrator = lambda fun, y0: solve_ivp(fun, y0=y0, **self.odeParam).y.flatten()
+    
+    #@jit(cache=True)
     def peqns(self,t,pp,Al,Bl,Rn,Qn):
+        if t > self.time[-1] or t < self.time[0]:
+            return 0
+        pp = np.array(pp).flatten()
         pp = pp.reshape(self.nx,self.nx)
         matdiffeq = (matmult(pp,Al(t)) + matmult(Al(t),pp) -
                    matmult(pp,Bl(t),Bl(t),pp) + Qn)
         return matdiffeq.flatten()
- 
+    
+    #@jit(cache=True)
     def reqns(self,t,rr,Al,Bl,a,b,Psol,Rn,Qn):
+        if t > self.time[-1] or t < self.time[0]:
+            return 0
         t = self.time[-1] - t
         matdiffeq = (matmult((Al(t)-matmult(Bl(t),Bl(t),Psol(t))), rr)
                    +a(t)-matmult(Psol(t),Bl(t),b(t)))
         return matdiffeq.flatten()
- 
+    
+    #@jit(cache=True)
     def veqns(self,zz,Al,Bl,a,b,Psol,Rsol,Rn,Qn):
-        vmatdiffeq = (matmult(-Bl,Psol,zz) - matmult(Bl,Rsol) -
-                   b)
+        vmatdiffeq = (matmult(-Bl,Psol,zz) - matmult(Bl,Rsol) - b)
         return vmatdiffeq
-     
+    
+    #@jit(cache=True)
     def zeqns(self,t,zz,Al,Bl,a,b,Psol,Rsol,Rn,Qn):
+        if t > self.time[-1] or t < self.time[0]:
+            return 0
         vmateq = self.veqns(zz,Al(t),Bl(t).T,a(t),b(t),Psol(t),Rsol(t),Rn,Qn)
         matdiffeq = matmult(Al(t),zz) + matmult(Bl(t),vmateq)
         return matdiffeq.flatten()
    
     def Ksol(self, X, U):
         time=self.time
-        P1 = 1.0
-        solver = ode(self.peqns).set_integrator(self.odeSolver, max_step=self.odeDeltaT)
-        solver.set_initial_value(P1,time[0]).set_f_params(self.A_interp,
-                                                          self.B_interp,
-                                                          self.Rk,
-                                                          self.Qk)
-        k = 0
-        t=time
-        soln = [P1]
-        while solver.successful() and solver.t < t[-1]:
-            k += 1
-            solver.integrate(t[k])
-            soln.append(solver.y)
- 
+        P1 = np.array([1.0])
+#        soln1 = solve_ivp(
+#                lambda t, y: self.peqns(t, y, self.A_interp, self.B_interp, self.Rk, self.Qk), 
+#                y0=P1,
+#                **self.odeParam
+#        ).y.flatten()
+        soln = self.odeIntegrator(
+                lambda t, y: self.peqns(t, y, self.A_interp, self.B_interp, self.Rk, self.Qk), 
+                P1
+        )
         # Convert the list to a numpy array.
         psoln = np.array(soln).reshape(len(soln),1)
         K = np.empty((time.shape[0],self.nx))
@@ -87,19 +107,16 @@ class ProjectionBasedOpt(object):
         return K
  
     def Psol(self, X, U, time):
- 
-        P1 = 1.0
-        solver = ode(self.peqns).set_integrator(self.odeSolver, max_step=self.odeDeltaT)
-        solver.set_initial_value(P1,time[0]).set_f_params(self.A_interp,
-            self.B_interp, self.Rn, self.Qn)
-        k = 0
-        t=time
-        soln = [P1]
-        while solver.successful() and solver.t < t[-1]:
-            k += 1
-            solver.integrate(t[k])
-            soln.append(solver.y)
- 
+        P1 = np.array([1.0])
+#        soln1 = solve_ivp(
+#                lambda t, y: self.peqns(t, y, self.A_interp,self.B_interp, self.Rn, self.Qn), 
+#                y0=P1,
+#                **self.odeParam
+#        ).y.flatten()
+        soln = self.odeIntegrator(
+                lambda t, y: self.peqns(t, y, self.A_interp,self.B_interp, self.Rn, self.Qn), 
+                P1
+        )
         soln = np.array(soln).reshape(len(soln),1)
         return soln
  
@@ -107,32 +124,35 @@ class ProjectionBasedOpt(object):
         rinit2 = np.array([0])
         Qn = 1.0
         Rn = 1.0
-        solver = ode(self.reqns).set_integrator(self.odeSolver, max_step=self.odeDeltaT)
-        solver.set_initial_value(rinit2,time[0]).set_f_params(self.A_interp,
-            self.B_interp,self.a_interp,self.b_interp,P_interp, Rn,Qn)
-        
-        k = 0
-        t = time
-        soln = [rinit2]
-        while solver.successful() and solver.t < t[-1]:# 
-            k += 1
-            solver.integrate(t[k])
-            soln.append(solver.y)
-            
-        soln.reverse()
+#        soln1 = solve_ivp(
+#                lambda t, y: self.reqns(t, y, self.A_interp,self.B_interp,self.a_interp,self.b_interp,P_interp,Rn,Qn), 
+#                y0=rinit2,
+#                **self.odeParam
+#        ).y.flatten()
+        soln = self.odeIntegrator(
+                lambda t, y: self.reqns(t, y, self.A_interp,self.B_interp,self.a_interp,self.b_interp,P_interp,Rn,Qn), 
+                rinit2
+        )
         soln = np.array(soln)
+        soln = np.flip(soln, 0).reshape(len(soln), 1)
         return soln
-
+    
     # pointwise dynamics linearizations
+    #@jit(cache=True)
     def fofx_pointwise(self,X,U):
         return U
     
+    #@jit(cache=True)
     def fofx(self,t,X,U):
+        if t > self.time[-1] or t < self.time[0]:
+            return 0
         return U(t)
 
+    #@jit(cache=True)
     def dfdx_pointwise(self,x,u):
         return np.array([0])
 
+    #@jit(cache=True)
     def dfdx(self):
         time = self.time
         dfdxl = np.empty([time.shape[0],self.nx])
@@ -141,9 +161,11 @@ class ProjectionBasedOpt(object):
         self.A_current = dfdxl
         return dfdxl
 
+    #@jit(cache=True)
     def dfdu_pointwise(self,x,u):
         return np.array([1])
 
+    #@jit(cache=True)
     def dfdu(self):
         time = self.time
         dfdul = np.empty([time.shape[0],self.nx])
@@ -152,30 +174,36 @@ class ProjectionBasedOpt(object):
         self.B_current = dfdul
         return dfdul
 
+    #@jit(cache=True)
     def cost_pointwise(self,x,u):
         R = self.R
         #Q = self.Q
         return .5 * matmult(u,R,u)
     
+    #@jit(cache=True)
     def cost(self,X,U):
         cost = np.empty(self.time.shape[0])
         for tindex, _ in np.ndenumerate(self.time):
             cost[tindex] = self.cost_pointwise(X[tindex],U[tindex])
         return trapz(cost,self.time) # Integrate over time
 
+    #@jit(cache=True)
     def eval_cost(self):
         # return the evaluated cost function
         return self.cost(self.X_current,self.U_current)
             
+    #@jit(cache=True)
     def dldu_pointwise(self,x,u):
         # return the pointwise linearized cost WRT state
         return matmult(self.R,u)
     
+    #@jit(cache=True)
     def dldx_pointwise(self,x,u):
         # return pointwise linearized cost WRT input
         #return matmult(self.Q, x)
         return np.array([0.0])
 
+    #@jit(cache=True)
     def dldx(self):
         # evaluate linearized cost WRT state
         X=self.X_current
@@ -187,6 +215,7 @@ class ProjectionBasedOpt(object):
         self.a_current = dldxl  #
         return self.a_current
 
+    #@jit(cache=True)
     def dldu(self):
         # evaluate linearized cost WRT input
         X = self.X_current
@@ -199,6 +228,7 @@ class ProjectionBasedOpt(object):
         self.b_current = dldul
         return dldul
 
+    #@jit(cache=True)
     def dcost(self,descdir):
         # evaluate directional derivative
         dX = descdir[0]
@@ -219,62 +249,65 @@ class ProjectionBasedOpt(object):
         Ps = self.Psol(X, U, time)
         self.P_current = Ps
         P_interp = interp1d(time, Ps.T)
-
         Rs = self.Rsol(X, U, P_interp,time).flatten()
         self.R_current=Rs
         r_interp = interp1d(time, Rs.T)
 
         zinit = -matmult( P_interp(0)**-1, r_interp(0) )
-        #initialize the 4th order Runge-Kutta solver
-        solver = ode(self.zeqns).set_integrator(self.odeSolver, max_step=self.odeDeltaT)
-        #initial value
-        solver.set_initial_value(zinit,time[0]).set_f_params(self.A_interp, self.B_interp,
-                                                            self.a_interp, self.b_interp,
-                                                            P_interp, r_interp,
-                                                            self.Rn, self.Qn)
-        k = 0
-        t=time
-        zsoln = [zinit]
-        while solver.successful() and solver.t < t[-1]:
-           k += 1
-           solver.integrate(t[k])
-           zsoln.append(solver.y)
-
+        # Solve ODE
+#        soln1 = solve_ivp(
+#                lambda t, y: self.zeqns(t, y, 
+#                                        self.A_interp, self.B_interp,
+#                                        self.a_interp, self.b_interp,
+#                                        P_interp, r_interp,
+#                                        self.Rn, self.Qn), 
+#                y0=zinit,
+#                **self.odeParam
+#        ).y.flatten()
+        soln = self.odeIntegrator(
+                lambda t, y: self.zeqns(t, y, 
+                                        self.A_interp, self.B_interp,
+                                        self.a_interp, self.b_interp,
+                                        P_interp, r_interp,
+                                        self.Rn, self.Qn), 
+                zinit
+        )
         #Convert the list to a numpy array.
-        zsoln = np.array(zsoln)
-        zsoln = zsoln.reshape(time.shape[0],X.shape[1])
+        zsoln = np.array(soln)
+        #print(zsoln.shape)
+        zsoln = zsoln.reshape(time.shape[0], 1)
         vsoln = np.empty(U.shape)
-        for tindex,t in np.ndenumerate(time):
+        for tindex, t in np.ndenumerate(time):
             vsoln[tindex] = self.veqns(zsoln[tindex],self.A_current[tindex],
                             self.B_current[tindex],self.a_current[tindex],
                             self.b_current[tindex],Ps[tindex],Rs[tindex],self.Rn,self.Qn)
         return [zsoln,vsoln]
     
-    def simulate(self,X0,U):
+    def simulate(self, X0, U):
         time = self.time
-        
         U_interp = interp1d(time, U.T)
-        # # initialize the 4th order Runge-Kutta solver
-        solver = ode(self.fofx).set_integrator(self.odeSolver, max_step=self.odeDeltaT)
-        # # initial value
-        solver.set_initial_value(X0,time[0]).set_f_params(U_interp)
-        #ppsol = odeint(pkeqns,P1,time,args=(A_interp,B_interp))
-        k = 0
-        t = time
-        xsoln = [X0]
-        while solver.successful() and solver.t < t[-1]:
-            k += 1
-            solver.integrate(t[k])
-            xsoln.append(solver.y)
-
+        # Solve ODE
+#        soln1 = solve_ivp(
+#                lambda t, y: self.fofx(t, y, U_interp), 
+#                y0=X0,
+#                **self.odeParam
+#        ).y.flatten()
+        soln = self.odeIntegrator(
+                lambda t, y: self.fofx(t, y, U_interp),
+                X0
+        )
         # Convert the list to a numpy array.
-        xsoln = np.array(xsoln)
+        xsoln = np.array(soln).reshape(len(soln), 1)
         return xsoln
         
     def proj(self,t,X,K,mu,alpha):
-        # print U(t)
-        # print K(t)
-        # print alpha(t)
+#        print("X", X)
+#        print("alpha", alpha(t))
+#        print("t", t)
+        if type(X) is float:
+            X = np.array(X)
+        if t > self.time[-1] or t < self.time[0]:
+            return 0
         uloc = mu(t) +  matmult(K(t),(alpha(t).T - X.T))
         return uloc
 
@@ -292,20 +325,18 @@ class ProjectionBasedOpt(object):
         K_interp = interp1d(time, Ks.T)
         mu_interp = interp1d(time, mu.T)
         alpha_interp = interp1d(time, alpha.T)
-        solver = ode(self.proj).set_integrator(self.odeSolver, max_step=self.odeDeltaT)
-        # # initial value
-        solver.set_initial_value(X0,time[0]).set_f_params(K_interp,mu_interp,alpha_interp)
-        #ppsol = odeint(pkeqns,P1,time,args=(A_interp,B_interp))
-        k = 0
-        t = time
-        soln = [X0]
-        while solver.successful() and solver.t < t[-1]:
-            k += 1
-            solver.integrate(t[k])
-            soln.append(solver.y)
-
+        # Solve ODE
+#        soln1 = solve_ivp(
+#                lambda t, y: self.proj(t, y, K_interp, mu_interp, alpha_interp), 
+#                y0=X0,
+#                **self.odeParam
+#        ).y.flatten()
+        soln = self.odeIntegrator(
+                lambda t, y: self.proj(t, y, K_interp, mu_interp, alpha_interp), 
+                X0
+        )
         # Convert the list to a numpy array.
-        xsoln = np.array(soln)
+        xsoln = np.array(soln).reshape(len(soln), 1)
         usoln = np.empty(mu.shape)
         for tindex,_ in np.ndenumerate(time):
             usoln[tindex,:] = self.projcontrol(xsoln[tindex],Ks[tindex],mu[tindex],alpha[tindex])
