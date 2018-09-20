@@ -144,10 +144,10 @@ legend(legHdl, 'No Attenuation', 'Low Attenuation', ...
 % Prettify figure
 opt = [];
 opt.BoxDim = [8,5];
-opt.YLim = [45, 75];
-opt.YTick = 45:10:75;
-opt.XLim = [0.21, 0.37];
-opt.XTick = 0.21:0.04:0.37;
+opt.YLim = [45, 65];
+opt.YTick = 45:10:65;
+opt.XLim = [0.21, 0.41];
+opt.XTick = 0.21:0.04:0.41;
 opt.XMinorTick = 'off';
 opt.YMinorTick = 'off';
 opt.ShowBox = 'off';
@@ -178,8 +178,8 @@ ylabel('Distance from Ergodicity');
 % Prettify figure
 opt = [];
 opt.BoxDim = [8,5];
-opt.YLim = [0.205, 0.37];
-opt.YTick = 0.21:0.04:0.37;
+opt.YLim = [0.205, 0.41];
+opt.YTick = 0.21:0.04:0.41;
 opt.XLim = [min(gAtten), max(gAtten)+5];
 opt.XTick = [0, 25:25:150];
 opt.XMinorTick = 'off';
@@ -212,9 +212,9 @@ ylabel('Mean Relative Tracking Error');
 % Prettify figure
 opt = [];
 opt.BoxDim = [8,5];
-opt.YLim = [45, 75];
+opt.YLim = [45, 65];
 opt.XLim = [min(gAtten), max(gAtten)+5];
-opt.YTick = 45:10:75;
+opt.YTick = 45:10:65;
 opt.XTick = [0, 25:25:150];
 opt.XMinorTick = 'off';
 opt.YMinorTick = 'off';
