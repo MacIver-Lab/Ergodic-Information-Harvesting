@@ -15,7 +15,7 @@ class SimParameters:
         
 class ErgodicParameters(SimParameters):
     nIter = 14     # Number of iterations in ergodic optimization loop
-    nFourier = 10  # Number of Fourier Coefficients used in Fisher Information EID
+    nFourier = 15  # Number of Fourier Coefficients used in Fisher Information EID
     # Cost Weights
     wBarrCost = 100  # Weight of the Barr Cost
     wErgCost  = 5    # Weight of the Ergodic Cost
