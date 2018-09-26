@@ -29,7 +29,7 @@ SPLIT_PLOT = 0;
 
 %% Electric Fish Simulation
 % Load data
-EH_lSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-ElectricFish-SNR-30.mat'), ...
+EH_lSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-ElectricFish-SNR-25.mat'), ...
     'oTrajList', 'sTrajList', 'dt', 'phi');
 EH_hSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-ElectricFish-SNR-60.mat'), ...
     'oTrajList', 'sTrajList', 'dt', 'phi');
@@ -242,8 +242,8 @@ end
 
 %% Rat Odor Tracking
 % Load Data
-lSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Rat-WeakSignal.mat'));
-hSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Rat-StrongSignal.mat'));
+lSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Rat-WeakSignal-SNR-30.mat'));
+hSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Rat-StrongSignal-SNR-70.mat'));
 lSNR.eidList = flattenResultList(lSNR.phi(:,:,1:end-1))';
 hSNR.eidList = flattenResultList(hSNR.phi(:,:,1:end-1))';
 
@@ -263,10 +263,10 @@ khan.hSNR.dt = 6.8421 / length(khan.hSNR.sTraj);
 % Exclude initial global search before converge to ensure data consistency
 % The criteria is to crop the initial searching trajectory until the sensor
 % crosses the target for the first time
-dist_hSNR_Sensor = cumDist(hSNR.sTrajList(156:end));
-dist_hSNR_Trail = cumDist(hSNR.oTrajList(156:end));
-dist_lSNR_Sensor = cumDist(lSNR.sTrajList(267:end));
-dist_lSNR_Trail = cumDist(lSNR.oTrajList(267:end));
+dist_hSNR_Sensor = cumDist(hSNR.sTrajList(1:end));
+dist_hSNR_Trail = cumDist(hSNR.oTrajList(1:end));
+dist_lSNR_Sensor = cumDist(lSNR.sTrajList(1:end));
+dist_lSNR_Trail = cumDist(lSNR.oTrajList(1:end));
 dist_rat_hSNR_Sensor = cumDist(khan.hSNR.sTraj);
 dist_rat_hSNR_Trail = cumDist(khan.hSNR.oTraj);
 dist_rat_lSNR_Sensor = cumDist(khan.lSNR.sTraj);
@@ -458,8 +458,8 @@ end
 % Load Data
 mole.hSNR = load(GEN_BEHAVIOR_DATA_PATH('Mole-StrongSignal.mat'));
 mole.lSNR = load(GEN_BEHAVIOR_DATA_PATH('Mole-WeakSignal.mat'));
-hSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Mole-StrongSignal.mat'));
-lSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Mole-WeakSignal.mat'));
+hSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Mole-StrongSignal-SNR-70.mat'));
+lSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Mole-WeakSignal-SNR-30.mat'));
 
 lSNR.eidList = flattenResultList(lSNR.phi(:,:,1:end))';
 hSNR.eidList = flattenResultList(hSNR.phi(:,:,1:end))';
@@ -673,7 +673,7 @@ if ~PLOT_EER_BAND
     return;
 end
 %% Plot Parameters
-tScale = 10;   % Interval of EID plot update, set to 1 will plot all of the EID map
+tScale = 50;   % Interval of EID plot update, set to 1 will plot all of the EID map
 nBins = 80;   % Color resolution in the y axis
 alpha = 0.5;  % Transparency of the EID color
 % cmap = lines(10);
