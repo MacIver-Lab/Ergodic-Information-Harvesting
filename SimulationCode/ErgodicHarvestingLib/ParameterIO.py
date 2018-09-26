@@ -22,7 +22,7 @@ def loadParams(dat):
     eidParam.pLSigmaAmpBayesian = pDict['eidParam']['pLSigmaAmpBayesian']
     eidParam.pLSigmaAmpEID = pDict['eidParam']['pLSigmaAmpEID']
     eidParam.pLSigmaAmp = pDict['eidParam']['pLSigmaAmp']
-    if type(pDict['eidParam']['rawTraj']) == bool:
+    if type(pDict['eidParam']['rawTraj']) == bool or type(pDict['eidParam']['rawTraj']) == str:
         eidParam.rawTraj = pDict['eidParam']['rawTraj']
     else:
         eidParam.rawTraj = np.array(pDict['eidParam']['rawTraj'])

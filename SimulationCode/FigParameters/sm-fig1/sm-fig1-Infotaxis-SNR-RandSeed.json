@@ -216,21 +216,21 @@
     "eidParam": {
         "res": 101,
         "tRes": 101,
-        "maxIter": 40,
+        "maxIter": 50,
         "eidType": "Entropy",
         "pLHistDepth": 1,
-        "pLSigmaAmpBayesian": 75,
-        "pLSigmaAmpEID": 75,
-        "pLSigmaAmp": 75,
+        "pLSigmaAmpBayesian": 100,
+        "pLSigmaAmpEID": 100,
+        "pLSigmaAmp": 100,
         "blindIdx": false,
         "blind": "n/a",
         "simType": "IF",
         "rawTraj": false,
-        "maxT": 50,
+        "maxT": 80,
         "objCenter": 0.5,
         "sInitPos": 0.4,
         "stepSize": 0.0075,
-        "planDepth": 5,
+        "planDepth": 2,
         "saveDir": "./SimData/sm-fig1/"
     },
     "SNR": [
@@ -259,7 +259,7 @@
         0.06
     ],
     "objAmp": [
-        0.20
+        0.25
     ],
     "figName": "sm-fig1",
     "filename": "sm-fig1-Infotaxis-SNR-RandSeed.mat",
@@ -267,7 +267,7 @@
         0.02
     ],
     "pLSigmaAmp": [
-        75
+        100
     ],
     "dt": [
         0.02
@@ -277,7 +277,12 @@
         1,
         2,
         3,
-        4
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
     ],
     "tRes": [
         101
