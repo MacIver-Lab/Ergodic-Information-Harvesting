@@ -29,7 +29,7 @@ SPLIT_PLOT = 0;
 
 %% Electric Fish Simulation
 % Load data
-EH_lSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-ElectricFish-SNR-25.mat'), ...
+EH_lSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-ElectricFish-SNR-20.mat'), ...
     'oTrajList', 'sTrajList', 'dt', 'phi');
 EH_hSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-ElectricFish-SNR-60.mat'), ...
     'oTrajList', 'sTrajList', 'dt', 'phi');
@@ -52,11 +52,10 @@ EH_lSNR.sTrajList = LPF(EH_lSNR.sTrajList, 1/EH_lSNR.dt, simTrajHighCutFreq);
 EH_hSNR.sTrajList = LPF(EH_hSNR.sTrajList, 1/EH_hSNR.dt, simTrajHighCutFreq);
 
 % Cumulative 1D distance traveled
-% with the first 5 seconds cropped (exploration done)
-EH_hSNR.sDist = cumDist(EH_hSNR.sTrajList(200:end));
-EH_hSNR.oDist = cumDist(EH_hSNR.oTrajList(200:end));
-EH_lSNR.sDist = cumDist(EH_lSNR.sTrajList(200:end));
-EH_lSNR.oDist = cumDist(EH_lSNR.oTrajList(200:end));
+EH_hSNR.sDist = cumDist(EH_hSNR.sTrajList(1:end));
+EH_hSNR.oDist = cumDist(EH_hSNR.oTrajList(1:end));
+EH_lSNR.sDist = cumDist(EH_lSNR.sTrajList(1:end));
+EH_lSNR.oDist = cumDist(EH_lSNR.oTrajList(1:end));
 
 %--------- Fish Sinusoidal Tracking ---------%
 % Strong Signal Trajectory plot
@@ -133,8 +132,8 @@ opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
 opt.YMinorTick = 'off'; 
 opt.XTick = [1, 2, 3];
-opt.YTick = [1, 2];
-opt.YLim = [0.5, 2];
+opt.YTick = [1, 3];
+opt.YLim = [0.5, 3];
 opt.FontSize = 8;
 opt.FontName = 'Helvetica';
 setAxesProp(opt, barAxes);
@@ -215,8 +214,8 @@ opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
 opt.YMinorTick = 'off'; 
 opt.XTick = [1, 2, 3];
-opt.YTick = [1, 2];
-opt.YLim = [0.5, 2];
+opt.YTick = [1, 3];
+opt.YLim = [0.5, 3];
 opt.FontSize = 8;
 opt.FontName = 'Helvetica';
 setAxesProp(opt, barAxes);
