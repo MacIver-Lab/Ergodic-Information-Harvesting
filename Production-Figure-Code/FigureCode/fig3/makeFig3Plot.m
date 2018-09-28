@@ -48,45 +48,61 @@ fprintf('Wilcoxon rank sum test (one-sided) - p = %.4f\n', P);
 
 % Ergodic Harvesting Data
 % Load Ergodic data
-EH_lSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-ElectricFish-SNR-30.mat'), ...
-    'oTrajList', 'sTrajList', 'dt');
-EH_hSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-ElectricFish-SNR-60.mat'), ...
-    'oTrajList', 'sTrajList', 'dt');
-% Load Infotaxis data
-IT_lSNR = load(GEN_DATA_PATH('fig3-Infotaxis-ElectricFish-SNR-30.mat'), ...
-    'oTrajList', 'sTrajList', 'dt');
-IT_hSNR = load(GEN_DATA_PATH('fig3-Infotaxis-ElectricFish-SNR-60.mat'), ...
-    'oTrajList', 'sTrajList', 'dt');
+EH_lSNR_files = dir(GEN_DATA_PATH('fig2-ErgodicHarvest-ElectricFish-SNR-25-RandSeed-*.mat'));
+EH_hSNR_files = dir(GEN_DATA_PATH('fig2-ErgodicHarvest-ElectricFish-SNR-60-RandSeed-*.mat'));
+IT_lSNR_files = dir(GEN_DATA_PATH('fig3-Infotaxis-ElectricFish-SNR-25-RandSeed-*.mat'));
+IT_hSNR_files = dir(GEN_DATA_PATH('fig3-Infotaxis-ElectricFish-SNR-60-RandSeed-*.mat'));
 
-% Filter trajectory
-trajHighCutFreq = 2.10; 
-EH_lSNR.sTrajList = LPF(EH_lSNR.sTrajList, 1/EH_lSNR.dt, trajHighCutFreq);
-EH_hSNR.sTrajList = LPF(EH_hSNR.sTrajList, 1/EH_hSNR.dt, trajHighCutFreq);
-IT_lSNR.sTrajList = LPF(IT_lSNR.sTrajList, 1/IT_lSNR.dt, trajHighCutFreq);
-IT_hSNR.sTrajList = LPF(IT_hSNR.sTrajList, 1/IT_hSNR.dt, trajHighCutFreq);
+reErgSS = zeros(1, length(EH_lSNR_files), 'double');
+reErgWS = zeros(1, length(EH_hSNR_files), 'double');
+reInfSS = zeros(1, length(IT_lSNR_files), 'double');
+reInfWS = zeros(1, length(IT_hSNR_files), 'double');
 
-% Cumulative 1D distance traveled with the initial condition cropped to 
-% ensure consistency
-EH_hSNR.sPower = cumDist(EH_hSNR.sTrajList(200:end));
-EH_hSNR.oPower = cumDist(EH_hSNR.oTrajList(200:end));
-EH_lSNR.sPower = cumDist(EH_lSNR.sTrajList(200:end));
-EH_lSNR.oPower = cumDist(EH_lSNR.oTrajList(200:end));
-IT_hSNR.sPower = cumDist(IT_hSNR.sTrajList(200:end));
-IT_hSNR.oPower = cumDist(IT_hSNR.oTrajList(200:end));
-IT_lSNR.sPower = cumDist(IT_lSNR.sTrajList(200:end));
-IT_lSNR.oPower = cumDist(IT_lSNR.oTrajList(200:end));
+for i = 1:length(EH_lSNR_files)
+    EH_lSNR = load(GEN_DATA_PATH(EH_lSNR_files(i).name), 'oTrajList', 'sTrajList', 'dt');
+    EH_hSNR = load(GEN_DATA_PATH(EH_hSNR_files(i).name), 'oTrajList', 'sTrajList', 'dt');
+    IT_lSNR = load(GEN_DATA_PATH(IT_lSNR_files(i).name), 'oTrajList', 'sTrajList', 'dt');
+    IT_hSNR = load(GEN_DATA_PATH(IT_hSNR_files(i).name), 'oTrajList', 'sTrajList', 'dt');
+    
+    % Filter trajectory
+    trajHighCutFreq = 2.10;
+    EH_lSNR.sTrajList = LPF(EH_lSNR.sTrajList, 1/EH_lSNR.dt, trajHighCutFreq);
+    EH_hSNR.sTrajList = LPF(EH_hSNR.sTrajList, 1/EH_hSNR.dt, trajHighCutFreq);
+    IT_lSNR.sTrajList = LPF(IT_lSNR.sTrajList, 1/IT_lSNR.dt, trajHighCutFreq);
+    IT_hSNR.sTrajList = LPF(IT_hSNR.sTrajList, 1/IT_hSNR.dt, trajHighCutFreq);
+    
+    % Cumulative 1D distance traveled
+    EH_hSNR.sPower = cumDist(EH_hSNR.sTrajList(1:end));
+    EH_hSNR.oPower = cumDist(EH_hSNR.oTrajList(1:end));
+    EH_lSNR.sPower = cumDist(EH_lSNR.sTrajList(1:end));
+    EH_lSNR.oPower = cumDist(EH_lSNR.oTrajList(1:end));
+    IT_hSNR.sPower = cumDist(IT_hSNR.sTrajList(1:end));
+    IT_hSNR.oPower = cumDist(IT_hSNR.oTrajList(1:end));
+    IT_lSNR.sPower = cumDist(IT_lSNR.sTrajList(1:end));
+    IT_lSNR.oPower = cumDist(IT_lSNR.oTrajList(1:end));
+    
+    reErgSS(i) = EH_hSNR.sPower/EH_hSNR.oPower;
+    reErgWS(i) = EH_lSNR.sPower/EH_lSNR.oPower;
+    reInfSS(i) = IT_hSNR.sPower/IT_hSNR.oPower;
+    reInfWS(i) = IT_lSNR.sPower/IT_lSNR.oPower;
+end
+reErgSS_Mean = mean(reErgSS);
+reErgWS_Mean = mean(reErgWS);
+reInfSS_Mean = mean(reInfSS);
+reInfWS_Mean = mean(reInfWS);
+reErgSS_SEM = 1.96 * std(reErgSS) / sqrt(length(reErgSS));
+reErgWS_SEM = 1.96 * std(reErgWS) / sqrt(length(reErgWS));
+reInfSS_SEM = 1.96 * std(reInfSS) / sqrt(length(reInfSS));
+reInfWS_SEM = 1.96 * std(reInfWS) / sqrt(length(reInfWS));
 
-reStrongSignalErg = EH_hSNR.sPower/EH_hSNR.oPower;
-reWeakSignalErg = EH_lSNR.sPower/EH_lSNR.oPower;
-reStrongSignalInfo = IT_hSNR.sPower/IT_hSNR.oPower;
-reWeakSignalInfo = IT_lSNR.sPower/IT_lSNR.oPower;
-fprintf(['\t\t\tRelative exploration\n', ...
+fprintf(['\t\t\tRelative exploration (mean +/- 95%% CI)\n', ...
     '---------------------------------------------',...
-    '\n\t> Ergodic Harvesting (strong signal) = %.3f', ...
-    '\n\t> Ergodic Harvesting (weak signal) = %.3f\n',...
-    '\n\t> Infotaxis (strong signal) = %.3f', ...
-    '\n\t> Infotaxis (weak signal) = %.3f\n'], ...
-    reStrongSignalErg, reWeakSignalErg, reStrongSignalInfo, reWeakSignalInfo);
+    '\n\t> Ergodic Harvesting (strong signal) = %.3f +/- %.3f', ...
+    '\n\t> Ergodic Harvesting (weak signal) = %.3f +/- %.3f\n',...
+    '\n\t> Infotaxis (strong signal) = %.3f +/- %.3f', ...
+    '\n\t> Infotaxis (weak signal) = %.3f +/- %.3f\n'], ...
+    reErgSS_Mean, reErgSS_SEM, reErgWS_Mean, reErgWS_SEM, ...
+    reInfSS_Mean, reInfSS_SEM, reInfWS_Mean, reInfWS_SEM);
 
 % Plot group data
 figure(1); clf; hold on;
@@ -169,38 +185,60 @@ fprintf('Weak signal trials, n = %d\n', length(reBlk));
     'tail', 'right');
 fprintf('Wilcoxon rank sum test (one-sided) - p = %.4f\n', P);
 
-
 % Mole Odor Localization
 % Ergodic Harvesting
-EH_hSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Mole-StrongSignal.mat'), ...
-    'sTrajList', 'sTrajList', 'dt');
-EH_lSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Mole-WeakSignal.mat'), ...
-    'sTrajList', 'sTrajList', 'dt');
+EH_lSNR_files = dir(GEN_DATA_PATH('fig2-ErgodicHarvest-Mole-WeakSignal-RandSeed-*.mat'));
+EH_hSNR_files = dir(GEN_DATA_PATH('fig2-ErgodicHarvest-Mole-StrongSignal-RandSeed-*.mat'));
+IT_lSNR_files = dir(GEN_DATA_PATH('fig3-Infotaxis-Mole-WeakSignal-RandSeed-*.mat'));
+IT_hSNR_files = dir(GEN_DATA_PATH('fig3-Infotaxis-Mole-StrongSignal-RandSeed-*.mat'));
 
-IT_hSNR = load(GEN_DATA_PATH('fig3-Infotaxis-Mole-SNR-60.mat'), ...
-    'sTrajList', 'sTrajList', 'dt');
-IT_lSNR = load(GEN_DATA_PATH('fig3-Infotaxis-Mole-SNR-10.mat'), ...
-    'sTrajList', 'sTrajList', 'dt');
+reErgSS = zeros(1, length(EH_lSNR_files), 'double');
+reErgWS = zeros(1, length(EH_hSNR_files), 'double');
+reInfSS = zeros(1, length(IT_lSNR_files), 'double');
+reInfWS = zeros(1, length(IT_hSNR_files), 'double');
 
-% Filter trajectory - with moving average filter
-EH_lSNR.sTrajList = movmean(EH_lSNR.sTrajList, 2);
-EH_hSNR.sTrajList = movmean(EH_hSNR.sTrajList, 2);
-IT_lSNR.sTrajList = movmean(IT_lSNR.sTrajList, 2);
-IT_hSNR.sTrajList = movmean(IT_hSNR.sTrajList, 2);
 
-% Relative exploration effort - Angular distance traveled
-EH_hSNR.moleDist = cumAngularDist(EH_hSNR.sTrajList);
-EH_lSNR.moleDist = cumAngularDist(EH_lSNR.sTrajList);
-IT_hSNR.moleDist = cumAngularDist(IT_hSNR.sTrajList);
-IT_lSNR.moleDist = cumAngularDist(IT_lSNR.sTrajList);
+for i = 1:length(EH_lSNR_files)
+    EH_lSNR = load(GEN_DATA_PATH(EH_lSNR_files(i).name), 'oTrajList', 'sTrajList', 'dt');
+    EH_hSNR = load(GEN_DATA_PATH(EH_hSNR_files(i).name), 'oTrajList', 'sTrajList', 'dt');
+    IT_lSNR = load(GEN_DATA_PATH(IT_lSNR_files(i).name), 'oTrajList', 'sTrajList', 'dt');
+    IT_hSNR = load(GEN_DATA_PATH(IT_hSNR_files(i).name), 'oTrajList', 'sTrajList', 'dt');
+    
+    % Filter trajectory
+    trajHighCutFreq = 3.0;
+    EH_lSNR.sTrajList = LPF(EH_lSNR.sTrajList, 1/EH_lSNR.dt, trajHighCutFreq);
+    EH_hSNR.sTrajList = LPF(EH_hSNR.sTrajList, 1/EH_hSNR.dt, trajHighCutFreq);
+    IT_lSNR.sTrajList = LPF(IT_lSNR.sTrajList, 1/IT_lSNR.dt, trajHighCutFreq);
+    IT_hSNR.sTrajList = LPF(IT_hSNR.sTrajList, 1/IT_hSNR.dt, trajHighCutFreq);
+    
+    % Relative exploration effort - Angular distance traveled
+    EH_hSNR.moleDist = cumAngularDist(EH_hSNR.sTrajList);
+    EH_lSNR.moleDist = cumAngularDist(EH_lSNR.sTrajList);
+    IT_hSNR.moleDist = cumAngularDist(IT_hSNR.sTrajList);
+    IT_lSNR.moleDist = cumAngularDist(IT_lSNR.sTrajList);
+    
+    reErgSS(i) = EH_hSNR.moleDist;
+    reErgWS(i) = EH_lSNR.moleDist;
+    reInfSS(i) = IT_hSNR.moleDist;
+    reInfWS(i) = IT_lSNR.moleDist;
+end
+reErgSS_Mean = mean(reErgSS);
+reErgWS_Mean = mean(reErgWS);
+reInfSS_Mean = mean(reInfSS);
+reInfWS_Mean = mean(reInfWS);
+reErgSS_SEM = 1.96 * std(reErgSS) / sqrt(length(reErgSS));
+reErgWS_SEM = 1.96 * std(reErgWS) / sqrt(length(reErgWS));
+reInfSS_SEM = 1.96 * std(reInfSS) / sqrt(length(reInfSS));
+reInfWS_SEM = 1.96 * std(reInfWS) / sqrt(length(reInfWS));
 
-fprintf(['\t\t\tRelative exploration\n', ...
+fprintf(['\t\t\tRelative exploration (mean +/- 95%% CI)\n', ...
     '---------------------------------------------',...
-    '\n\t> Ergodic Harvesting (strong signal) = %.3f', ...
-    '\n\t> Ergodic Harvesting (weak signal) = %.3f\n',...
-    '\n\t> Infotaxis (strong signal) = %.3f', ...
-    '\n\t> Infotaxis (weak signal) = %.3f\n'], ...
-    EH_hSNR.moleDist, EH_lSNR.moleDist, IT_hSNR.moleDist, IT_lSNR.moleDist);
+    '\n\t> Ergodic Harvesting (strong signal) = %.3f +/- %.3f', ...
+    '\n\t> Ergodic Harvesting (weak signal) = %.3f +/- %.3f\n',...
+    '\n\t> Infotaxis (strong signal) = %.3f +/- %.3f', ...
+    '\n\t> Infotaxis (weak signal) = %.3f +/- %.3f\n'], ...
+    reErgSS_Mean, reErgSS_SEM, reErgWS_Mean, reErgWS_SEM, ...
+    reInfSS_Mean, reInfSS_SEM, reInfWS_Mean, reInfWS_SEM);
 
 % Plot group data
 figure(2); clf;

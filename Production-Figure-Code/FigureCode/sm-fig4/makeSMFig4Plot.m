@@ -146,8 +146,8 @@ opt = [];
 opt.BoxDim = [8,5];
 opt.YLim = [45, 65];
 opt.YTick = 45:10:65;
-opt.XLim = [0.21, 0.41];
-opt.XTick = 0.21:0.04:0.41;
+opt.XLim = [0.19, 0.41];
+opt.XTick = 0.19:0.04:0.41;
 opt.XMinorTick = 'off';
 opt.YMinorTick = 'off';
 opt.ShowBox = 'off';
@@ -173,13 +173,13 @@ notBoxPlot(meanErgodicity(gAtten ~= 0), gAtten(gAtten ~= 0), ...
 line([-5, max(gAtten)+1], [refTrial.meanErgodicityMean,refTrial.meanErgodicityMean], ...
     'LineStyle', '--', 'LineWidth', 2, 'Color', lines(1));
 xlabel('Wiggle Attenuation (dB)');
-ylabel('Distance from Ergodicity');
+ylabel('Mean Distance from Ergodicity');
 
 % Prettify figure
 opt = [];
 opt.BoxDim = [8,5];
-opt.YLim = [0.205, 0.41];
-opt.YTick = 0.21:0.04:0.41;
+opt.YLim = [0.19, 0.41];
+opt.YTick = 0.19:0.04:0.41;
 opt.XLim = [min(gAtten), max(gAtten)+5];
 opt.XTick = [0, 25:25:150];
 opt.XMinorTick = 'off';

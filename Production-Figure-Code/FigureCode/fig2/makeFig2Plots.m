@@ -52,11 +52,10 @@ EH_lSNR.sTrajList = LPF(EH_lSNR.sTrajList, 1/EH_lSNR.dt, simTrajHighCutFreq);
 EH_hSNR.sTrajList = LPF(EH_hSNR.sTrajList, 1/EH_hSNR.dt, simTrajHighCutFreq);
 
 % Cumulative 1D distance traveled
-% with the first 5 seconds cropped (exploration done)
-EH_hSNR.sDist = cumDist(EH_hSNR.sTrajList(200:end));
-EH_hSNR.oDist = cumDist(EH_hSNR.oTrajList(200:end));
-EH_lSNR.sDist = cumDist(EH_lSNR.sTrajList(200:end));
-EH_lSNR.oDist = cumDist(EH_lSNR.oTrajList(200:end));
+EH_hSNR.sDist = cumDist(EH_hSNR.sTrajList(1:end));
+EH_hSNR.oDist = cumDist(EH_hSNR.oTrajList(1:end));
+EH_lSNR.sDist = cumDist(EH_lSNR.sTrajList(1:end));
+EH_lSNR.oDist = cumDist(EH_lSNR.oTrajList(1:end));
 
 %--------- Fish Sinusoidal Tracking ---------%
 % Strong Signal Trajectory plot
@@ -133,8 +132,8 @@ opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
 opt.YMinorTick = 'off'; 
 opt.XTick = [1, 2, 3];
-opt.YTick = [1, 2];
-opt.YLim = [0.5, 2];
+opt.YTick = [1, 3];
+opt.YLim = [0.5, 3];
 opt.FontSize = 8;
 opt.FontName = 'Helvetica';
 setAxesProp(opt, barAxes);
@@ -215,8 +214,8 @@ opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
 opt.YMinorTick = 'off'; 
 opt.XTick = [1, 2, 3];
-opt.YTick = [1, 2];
-opt.YLim = [0.5, 2];
+opt.YTick = [1, 3];
+opt.YLim = [0.5, 3];
 opt.FontSize = 8;
 opt.FontName = 'Helvetica';
 setAxesProp(opt, barAxes);
@@ -242,8 +241,8 @@ end
 
 %% Rat Odor Tracking
 % Load Data
-lSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Rat-WeakSignal-SNR-30.mat'));
-hSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Rat-StrongSignal-SNR-70.mat'));
+lSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Rat-WeakSignal-SNR-25.mat'));
+hSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Rat-StrongSignal-SNR-50.mat'));
 lSNR.eidList = flattenResultList(lSNR.phi(:,:,1:end-1))';
 hSNR.eidList = flattenResultList(hSNR.phi(:,:,1:end-1))';
 
