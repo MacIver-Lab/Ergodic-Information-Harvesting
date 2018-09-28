@@ -29,7 +29,7 @@ SPLIT_PLOT = 0;
 
 %% Electric Fish Simulation
 % Load data
-EH_lSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-ElectricFish-SNR-20.mat'), ...
+EH_lSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-ElectricFish-SNR-25.mat'), ...
     'oTrajList', 'sTrajList', 'dt', 'phi');
 EH_hSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-ElectricFish-SNR-60.mat'), ...
     'oTrajList', 'sTrajList', 'dt', 'phi');
@@ -241,8 +241,8 @@ end
 
 %% Rat Odor Tracking
 % Load Data
-lSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Rat-WeakSignal-SNR-30.mat'));
-hSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Rat-StrongSignal-SNR-70.mat'));
+lSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Rat-WeakSignal-SNR-25.mat'));
+hSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Rat-StrongSignal-SNR-50.mat'));
 lSNR.eidList = flattenResultList(lSNR.phi(:,:,1:end-1))';
 hSNR.eidList = flattenResultList(hSNR.phi(:,:,1:end-1))';
 
