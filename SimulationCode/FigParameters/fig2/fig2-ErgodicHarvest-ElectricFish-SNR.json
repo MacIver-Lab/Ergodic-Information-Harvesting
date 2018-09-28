@@ -345,7 +345,7 @@
         0.20
     ],
     "figName": "fig2",
-    "filename": "fig2-ErgodicHarvest-ElectricFish-SNR.mat",
+    "filename": "fig2-ErgodicHarvest-ElectricFish-SNR-RandSeed.mat",
     "procNoiseSigma": [
         0.02
     ],
@@ -356,7 +356,10 @@
         0.025
     ],
     "randSeed": [
-        1
+        0,
+        1,
+        2,
+        3
     ],
     "tRes": [
         101

@@ -229,8 +229,8 @@
         "maxT": 80,
         "objCenter": 0.5,
         "sInitPos": 0.4,
-        "stepSize": 0.0075,
-        "planDepth": 2,
+        "stepSize": 0.005,
+        "planDepth": 3,
         "saveDir": "./SimData/sm-fig1/"
     },
     "SNR": [
@@ -250,7 +250,9 @@
         47.5,
         50.0,
         52.5,
-        55.0
+        55.0,
+        57.5,
+        60.0
     ],
     "wControl": [
         20

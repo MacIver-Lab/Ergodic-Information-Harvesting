@@ -344,7 +344,7 @@
         0.0
     ],
     "figName": "fig2",
-    "filename": "fig2-ErgodicHarvest-Mole-WeakSignal-SNR.mat",
+    "filename": "fig2-ErgodicHarvest-Mole-WeakSignal-RandSeed.mat",
     "procNoiseSigma": [
         0.02
     ],
@@ -355,7 +355,10 @@
         0.025
     ],
     "randSeed": [
-        1
+        0,
+        1,
+        2,
+        3
     ],
     "tRes": [
         101
