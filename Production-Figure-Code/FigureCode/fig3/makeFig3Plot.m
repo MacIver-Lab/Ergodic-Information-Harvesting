@@ -48,10 +48,10 @@ fprintf('Wilcoxon rank sum test (one-sided) - p = %.4f\n', P);
 
 % Ergodic Harvesting Data
 % Load Ergodic data
-EH_lSNR_files = dir(GEN_DATA_PATH('fig2-ErgodicHarvest-ElectricFish-SNR-25-RandSeed-*.mat'));
-EH_hSNR_files = dir(GEN_DATA_PATH('fig2-ErgodicHarvest-ElectricFish-SNR-60-RandSeed-*.mat'));
-IT_lSNR_files = dir(GEN_DATA_PATH('fig3-Infotaxis-ElectricFish-SNR-25-RandSeed-*.mat'));
-IT_hSNR_files = dir(GEN_DATA_PATH('fig3-Infotaxis-ElectricFish-SNR-60-RandSeed-*.mat'));
+EH_lSNR_files = dir(GEN_DATA_PATH('fig4-ErgodicHarvest-ElectricFish-SNR-25-RandSeed-*.mat'));
+EH_hSNR_files = dir(GEN_DATA_PATH('fig4-ErgodicHarvest-ElectricFish-SNR-60-RandSeed-*.mat'));
+IT_lSNR_files = dir(GEN_DATA_PATH('fig4-Infotaxis-ElectricFish-SNR-25-RandSeed-*.mat'));
+IT_hSNR_files = dir(GEN_DATA_PATH('fig4-Infotaxis-ElectricFish-SNR-60-RandSeed-*.mat'));
 
 reErgSS = zeros(1, length(EH_lSNR_files), 'double');
 reErgWS = zeros(1, length(EH_hSNR_files), 'double');
@@ -142,7 +142,9 @@ hLine(4).LineWidth = 5;
 hLine(2).Color = [162,0,0]/255.0;
 hLine(4).Color = [50,180,74]/255.0;
 legend(gca, 'off');
-set(gca,'XTickLabel',{'Strong Signal','Weak Signal'})
+set(gca,'XTickLabel',{...
+    '\color[rgb]{0.1961,0.7059,0.2902}Strong Signal',...
+    '\color[rgb]{0.6353,0,0}Weak Signal'})
 set(gca,'YTickLabel',{'1x', '2x', '3x'})
 set(gca, 'units', 'normalized');
 axesPosition = get(gca, 'Position');
@@ -150,7 +152,67 @@ axesPosition(1:2) = [0.3, 0.3];
 set(gca, 'Position', axesPosition);
 print(gcf,'-dpdf',GEN_SAVE_PATH('fish-RE.pdf'));
 
-fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));
+% EIH and Infotaxis
+figure(2); clf; hold on;
+set(gcf, ...
+    'units','normalized','outerposition',[0 0 1 1], ...
+    'PaperPositionMode','auto', ...
+    'PaperOrientation','landscape', ...
+    'PaperSize', [13 8]);
+hL = line([-1,5], [1,1], 'LineStyle', '--', ...
+    'Color', [140,140,140]/255.0, 'LineWidth',4);
+hBoxPlot = notBoxPlot([reErgSS, reInfSS, reErgWS, reInfWS], ...
+    [0.5*ones(1,length(reErgSS)), ...
+    0.75*ones(1,length(reInfSS)), ...
+    1.25*ones(1,length(reErgWS)),...
+    1.5*ones(1,length(reInfWS))], ...
+    'jitter', 0.15);
+cmap = [...
+    85, 1, 159; ...
+    255, 196, 3;...
+    85, 1, 159; ...
+    255, 196, 3;...
+    ] ./ 255;
+opt = [];
+opt.BoxDim = [10,5.1]*0.82;
+opt.YLabel = 'Relative Exploration'; % ylabel
+opt.YLim = [0.75, 3];
+opt.YTick = [1, 2, 3];
+opt.XLim = [0.2, 1.8];
+opt.XTick = [0.625, 1.375];
+opt.ShowBox = 'off';
+opt.XMinorTick = 'off';
+opt.YMinorTick = 'off';
+opt.FontName = 'Helvetica';
+opt.Colors = cmap;
+setAxesProp(opt);
+hLine = findobj(gca,'Type','line');
+hL.Color = [140,140,140]/255.0;
+hL.LineWidth = 4;
+hL.LineStyle = '--';
+for i = 1:2:size(hLine)-1
+    hLine(i).LineStyle = 'none';
+    hLine(i).Marker = '.';
+    hLine(i).MarkerEdgeColor = [0.0, 0.0, 0.0];
+    hLine(i).MarkerFaceColor = [0.0, 0.0, 0.0];
+    hLine(i).MarkerSize = 30;
+    hLine(i+1).LineWidth = 5;
+    hLine(i+1).Color = cmap((i+1)/2, :);
+end
+legend(gca, 'off');
+xlbl = get(gca, 'XTickLabel');
+xlbl = get(gca, 'XLabel');
+set(gca,'XTickLabel',{...
+    '\color[rgb]{0.1961,0.7059,0.2902}Strong Signal',...
+    '\color[rgb]{0.6353,0,0}Weak Signal'})
+set(gca,'YTickLabel',{'1x', '2x', '3x'})
+set(gca, 'units', 'normalized');
+axesPosition = get(gca, 'Position');
+axesPosition(1:2) = [0.3, 0.3];
+set(gca, 'Position', axesPosition);
+print(gcf,'-dpdf',GEN_SAVE_PATH('fish-RE.pdf'));
+
+% fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));
 
 
 %% Mole behavioral data
@@ -187,10 +249,10 @@ fprintf('Wilcoxon rank sum test (one-sided) - p = %.4f\n', P);
 
 % Mole Odor Localization
 % Ergodic Harvesting
-EH_lSNR_files = dir(GEN_DATA_PATH('fig2-ErgodicHarvest-Mole-WeakSignal-RandSeed-*.mat'));
-EH_hSNR_files = dir(GEN_DATA_PATH('fig2-ErgodicHarvest-Mole-StrongSignal-RandSeed-*.mat'));
-IT_lSNR_files = dir(GEN_DATA_PATH('fig3-Infotaxis-Mole-WeakSignal-RandSeed-*.mat'));
-IT_hSNR_files = dir(GEN_DATA_PATH('fig3-Infotaxis-Mole-StrongSignal-RandSeed-*.mat'));
+EH_lSNR_files = dir(GEN_DATA_PATH('fig4-ErgodicHarvest-Mole-WeakSignal-RandSeed-*.mat'));
+EH_hSNR_files = dir(GEN_DATA_PATH('fig4-ErgodicHarvest-Mole-StrongSignal-RandSeed-*.mat'));
+IT_lSNR_files = dir(GEN_DATA_PATH('fig4-Infotaxis-Mole-WeakSignal-RandSeed-*.mat'));
+IT_hSNR_files = dir(GEN_DATA_PATH('fig4-Infotaxis-Mole-StrongSignal-RandSeed-*.mat'));
 
 reErgSS = zeros(1, length(EH_lSNR_files), 'double');
 reErgWS = zeros(1, length(EH_hSNR_files), 'double');
@@ -241,7 +303,7 @@ fprintf(['\t\t\tRelative exploration (mean +/- 95%% CI)\n', ...
     reInfSS_Mean, reInfSS_SEM, reInfWS_Mean, reInfWS_SEM);
 
 % Plot group data
-figure(2); clf;
+figure(3); clf;
 set(gcf, ...
     'units','normalized','outerposition',[0 0 1 1], ...
     'PaperPositionMode','auto', ...
@@ -281,6 +343,10 @@ axesPosition(1:2) = [0.3, 0.3];
 set(gca, 'Position', axesPosition);
 
 print(gcf,'-dpdf',GEN_SAVE_PATH('mole-RE.pdf'));
+
+% EIH and Infotaxis data
+
+
 fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));
 fprintf('Please note that panel C relys on the simulated data from sm-fig1, \nplease run sm-fig1 figure code to get fig3C reproduced. \n(It will be copied over to fig3 folder automatically.)\n');
 

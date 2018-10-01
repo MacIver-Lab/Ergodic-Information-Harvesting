@@ -33,7 +33,7 @@ warning('off', 'MATLAB:rmpath:DirNotFound')
 %                   does not require any simulation data and therefore
 %                   USE_PUBLISHED_DATASET will be ignored
 % 
-targetFig = 'sm-fig1';
+targetFig = 'fig4';
 
 % Maximum number of CPU thread dedicated for sm-fig4 simulation
 % Note that this is only used for sm-fig4 and the number will automatically
@@ -88,6 +88,8 @@ switch targetFig
             end
         end
         makeFig3Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
+    case 'fig4'
+        makeFig4Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'sm-fig1'
         makeSMFig1Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH, USE_PUBLISHED_DATASET);
     case 'sm-fig2'

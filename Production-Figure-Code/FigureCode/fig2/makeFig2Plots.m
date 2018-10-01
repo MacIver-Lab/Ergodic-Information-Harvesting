@@ -20,7 +20,7 @@ cumDist = @(x) sum(abs(diff(x)));
 % note that due to the complexity of EER bands, it's can be fairly slow 
 % to plot the EER bands
 global PLOT_EER_BAND
-PLOT_EER_BAND = 1;
+PLOT_EER_BAND = 0;
 % Use split plot method to generate vector graphic plots
 % This is a workaround for the buffer issue in MATLAB due
 % to the EER patch is too complex for the interal save
@@ -29,9 +29,9 @@ SPLIT_PLOT = 0;
 
 %% Electric Fish Simulation
 % Load data
-EH_lSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-ElectricFish-SNR-25.mat'), ...
+EH_lSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-ElectricFish-SNR-25-RandSeed-1.mat'), ...
     'oTrajList', 'sTrajList', 'dt', 'phi');
-EH_hSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-ElectricFish-SNR-60.mat'), ...
+EH_hSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-ElectricFish-SNR-60-RandSeed-1.mat'), ...
     'oTrajList', 'sTrajList', 'dt', 'phi');
 EH_lSNR.eidList = flattenResultList(EH_lSNR.phi(:,:,1:end-1))';
 EH_hSNR.eidList = flattenResultList(EH_hSNR.phi(:,:,1:end-1))';
@@ -133,11 +133,11 @@ opt.XMinorTick = 'off';
 opt.YMinorTick = 'off'; 
 opt.XTick = [1, 2, 3];
 opt.YTick = [1, 3];
-opt.YLim = [0.5, 3];
+opt.YLim = [0, 3];
 opt.FontSize = 8;
 opt.FontName = 'Helvetica';
 setAxesProp(opt, barAxes);
-set(barAxes,'YTickLabel', {'1x', '2x'});
+set(barAxes,'YTickLabel', {'1x', '3x'});
 set(barAxes,'XTickLabel', {'Target', 'Strong Signal', 'Weak Signal'});
 legend(gca, 'off');
 set(gca, 'units', 'normalized');
@@ -215,11 +215,11 @@ opt.XMinorTick = 'off';
 opt.YMinorTick = 'off'; 
 opt.XTick = [1, 2, 3];
 opt.YTick = [1, 3];
-opt.YLim = [0.5, 3];
+opt.YLim = [0, 3];
 opt.FontSize = 8;
 opt.FontName = 'Helvetica';
 setAxesProp(opt, barAxes);
-set(barAxes,'YTickLabel', {'1x', '2x'});
+set(barAxes,'YTickLabel', {'1x', '3x'});
 set(barAxes,'XTickLabel', {'Target', 'Strong Signal', 'Weak Signal'});
 legend(gca, 'off');
 set(gca, 'units', 'normalized');
@@ -241,8 +241,8 @@ end
 
 %% Rat Odor Tracking
 % Load Data
-lSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Rat-WeakSignal-SNR-25.mat'));
-hSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Rat-StrongSignal-SNR-50.mat'));
+lSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Rat-WeakSignal.mat'));
+hSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Rat-StrongSignal.mat'));
 lSNR.eidList = flattenResultList(lSNR.phi(:,:,1:end-1))';
 hSNR.eidList = flattenResultList(hSNR.phi(:,:,1:end-1))';
 
@@ -457,8 +457,8 @@ end
 % Load Data
 mole.hSNR = load(GEN_BEHAVIOR_DATA_PATH('Mole-StrongSignal.mat'));
 mole.lSNR = load(GEN_BEHAVIOR_DATA_PATH('Mole-WeakSignal.mat'));
-hSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Mole-StrongSignal-SNR-70.mat'));
-lSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Mole-WeakSignal-SNR-30.mat'));
+hSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Mole-StrongSignal-RandSeed-1.mat'));
+lSNR = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Mole-WeakSignal-RandSeed-1.mat'));
 
 lSNR.eidList = flattenResultList(lSNR.phi(:,:,1:end))';
 hSNR.eidList = flattenResultList(hSNR.phi(:,:,1:end))';
@@ -666,13 +666,227 @@ end
 
 fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));
 
+%% Cockroach odor source localization
+cockroachData = load(GEN_BEHAVIOR_DATA_PATH('cockroach_data.mat'));
+% 4mm
+[head, ~, src] = parseDataStream(cockroachData.cockroach_c4);
+distRef = max([head(:, 1); src']) - max(head(1, 1), 0.0);
+dist4 = cockroachData.cockroach_c4_table.walk_dist / distRef;
+% Plot
+figure(4); clf; hold on;
+set(gcf, ...
+    'units','normalized','outerposition',[0 0 1 1], ...
+    'PaperPositionMode','auto', ...
+    'PaperOrientation','landscape', ...
+    'PaperSize', [13 8]);
+% Reference path
+line([head(1, 1), src(1)], [0, 0], ...
+    'LineStyle', '--', 'LineWidth', 4, 'Color', barColor(1, :));
+% Strong signal
+plot(head(:,1), head(:,2), ...
+    'LineWidth', 2, ...
+    'Color', barColor(2, :));
+% Configure figure
+xlabel('Position (X)');
+ylabel('Position (Y)');
+opt = [];
+opt.BoxDim = [8,4] * 0.354;
+opt.ShowBox = 'off';
+opt.XMinorTick = 'off';
+opt.YMinorTick = 'off'; 
+opt.XLim = [head(1, 1), head(end, 1)];
+opt.YLim = [-10, 10];
+opt.XTick = [];
+opt.YTick = [];
+opt.FontSize = 10;
+opt.FontName = 'Helvetica';
+opt.Colors = barColor([1,2], :);
+setPlotProp(opt);
+legend(gca, 'off');
+set(gca,  'Position', [1    4    2.8320    1.7700]);
+set(gca, 'units', 'normalized');
+axesPosition = get(gca, 'Position');
+axesPosition(1:2) = [0.2, 0.6];
+set(gca, 'Position', axesPosition);
+% 1mm
+[head, ~, src] = parseDataStream(cockroachData.cockroach_c1);
+distRef = max([head(:, 1); src']) - max(head(107, 1), 0.0);
+dist1 = cockroachData.cockroach_c1_table.walk_dist / distRef;
+trajAxes = axes; hold on;
+% Reference path
+line([head(107, 1), src(1)], [0, 0], ...
+    'LineStyle', '--', 'LineWidth', 4, 'Color', barColor(1, :));
+% Weak signal
+plot(head(107:end-2,1), head(107:end-2,2), ...
+    'LineWidth', 2, ...
+    'Color', barColor(3, :));
+% Configure figure
+xlabel('Position (X)');
+ylabel('Position (Y)');
+opt = [];
+opt.BoxDim = [8,4] * 0.354;
+opt.ShowBox = 'off';
+opt.XMinorTick = 'off';
+opt.YMinorTick = 'off'; 
+opt.XLim = [head(107, 1), head(end, 1)];
+opt.YLim = [-10, 10];
+opt.XTick = [];
+opt.YTick = [];
+opt.FontSize = 10;
+opt.FontName = 'Helvetica';
+opt.Colors = barColor([1,3], :);
+setAxesProp(opt, trajAxes);
+legend(gca, 'off');
+set(gca, 'units', 'normalized');
+axesPosition(1:2) = [0.4, 0.6];
+set(gca, 'Position', axesPosition);
+% Barplot
+barAxes = axes; hold on;
+dist = [1, 1, dist1/dist4];
+for i = 1:3
+    bar(i, dist(i), 0.4, 'BaseValue', 0, ...
+        'FaceColor', barColor(i,:));
+end
+opt = [];
+opt.BoxDim = [8,5] * 0.354;
+opt.ShowBox = 'off';
+opt.XMinorTick = 'off';
+opt.YMinorTick = 'off'; 
+opt.XTick = [1, 2, 3];
+opt.YTick = [1, 3];
+opt.YLim = [0, 3];
+opt.FontSize = 8;
+opt.FontName = 'Helvetica';
+setAxesProp(opt, barAxes);
+set(barAxes,'YTickLabel', {'1x', '3x'});
+set(barAxes,'XTickLabel', {'Odor', 'Strong Signal', 'Weak Signal'});
+legend(gca, 'off');
+set(gca, 'units', 'normalized');
+axesPosition(1:2) = [0.6, 0.6];
+set(barAxes, 'Position', axesPosition);
+
+%--------- Ergodic Harvesting Simulation Trajectory ---------%
+lsnr = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Cockroach-WeakSignal-SNR-25-RandSeed-1.mat'), ...
+    'dt', 'sTrajList', 'oTrajList', 'phi');
+hsnr = load(GEN_DATA_PATH('fig2-ErgodicHarvest-Cockroach-StrongSignal-SNR-80-RandSeed-1.mat'), ...
+    'dt', 'sTrajList', 'oTrajList', 'phi');
+trajLen = 1400;
+hsnr.oTrajList = hsnr.oTrajList(1:trajLen);
+hsnr.sTrajList = LPF(hsnr.sTrajList(1:trajLen), 1/hsnr.dt, 2);
+lsnr.oTrajList = lsnr.oTrajList(1:trajLen);
+lsnr.sTrajList = LPF(lsnr.sTrajList(1:trajLen), 1/lsnr.dt, 2);
+hsnr.eidList = flattenResultList(hsnr.phi(:,:,1:end-1))';
+lsnr.eidList = flattenResultList(lsnr.phi(:,:,1:end-1))';
+hsnr.eidList = hsnr.eidList(:, 1:trajLen);
+lsnr.eidList = lsnr.eidList(:, 1:trajLen);
+% Plot
+trajAxes = axes; hold on;
+% Reference path
+line([0, length(hsnr.oTrajList)], [0.5, 0.5], ...
+    'LineStyle', '--', 'LineWidth', 4, 'Color', barColor(1, :));
+% Strong signal
+plot(hsnr.sTrajList, ...
+    'LineWidth', 2, ...
+    'Color', barColor(2, :));
+% Configure figure
+xlabel('Time');
+ylabel('Lateral Position');
+opt = [];
+opt.BoxDim = [8,4] * 0.354;
+opt.ShowBox = 'off';
+opt.XMinorTick = 'off';
+opt.YMinorTick = 'off'; 
+opt.XLim = [0, length(hsnr.oTrajList)];
+opt.YLim = [0.2, 0.8];
+opt.XTick = [];
+opt.YTick = [];
+opt.FontSize = 10;
+opt.FontName = 'Helvetica';
+opt.Colors = barColor([1,2], :);
+setPlotProp(opt);
+legend(gca, 'off');
+mPlotContinuousEID(hsnr);
+set(gca, 'units', 'normalized');
+axesPosition(1:2) = [0.2, 0.3];
+set(gca, 'Position', axesPosition);
+% Weak Signal
+trajAxes = axes; hold on;
+% Reference path
+line([0, length(hsnr.oTrajList)], [0.5, 0.5], ...
+    'LineStyle', '--', 'LineWidth', 4, 'Color', barColor(1, :));
+% Weak signal
+plot(lsnr.sTrajList, ...
+    'LineWidth', 2, ...
+    'Color', barColor(3, :));
+% Configure figure
+xlabel('Time');
+ylabel('Lateral Position');
+opt = [];
+opt.BoxDim = [8,4] * 0.354;
+opt.ShowBox = 'off';
+opt.XMinorTick = 'off';
+opt.YMinorTick = 'off'; 
+opt.XLim = [0, length(hsnr.oTrajList)];
+opt.YLim = [0.2, 0.8];
+opt.XTick = [];
+opt.YTick = [];
+opt.FontSize = 10;
+opt.FontName = 'Helvetica';
+opt.Colors = barColor([1,3], :);
+setAxesProp(opt, trajAxes);
+legend(gca, 'off');
+mPlotContinuousEID(lsnr);
+set(gca, 'units', 'normalized');
+axesPosition(1:2) = [0.4, 0.3];
+set(gca, 'Position', axesPosition);
+% Barplot
+calcDist = @(x) sum(abs(diff(x)));
+barAxes = axes; hold on;
+dist = [1, 1, calcDist(lsnr.sTrajList) / calcDist(hsnr.sTrajList)];
+for i = 1:3
+    bar(i, dist(i), 0.4, 'BaseValue', 0, ...
+        'FaceColor', barColor(i,:));
+end
+opt = [];
+opt.BoxDim = [8,5] * 0.354;
+opt.ShowBox = 'off';
+opt.XMinorTick = 'off';
+opt.YMinorTick = 'off'; 
+opt.XTick = [1, 2, 3];
+opt.YTick = [1, 3];
+opt.YLim = [0, 3];
+opt.FontSize = 8;
+opt.FontName = 'Helvetica';
+setAxesProp(opt, barAxes);
+set(barAxes,'YTickLabel', {'1x', '3x'});
+set(barAxes,'XTickLabel', {'Odor', 'Strong Signal', 'Weak Signal'});
+legend(gca, 'off');
+set(gca, 'units', 'normalized');
+axesPosition(1:2) = [0.6, 0.3];
+set(barAxes, 'Position', axesPosition);
+
+% All set, now print the first section into PDF
+if SPLIT_PLOT
+    splitprint(gcf,... %separate the current figure
+        GEN_SAVE_PATH('fig2-Cockroach'),... %filenames will begin with 'disp2'
+        {{'line';'text'},{'surface';'patch';'image'}}, ...% types of objects
+        {'-dpdf','-dtiff'},... %file formats
+        0,... %alignment mark will not be added
+        [1 0],... %axes in first figure will be visible
+        {'','-r400'});
+else
+    print(GEN_SAVE_PATH('fig2-Cockroach.pdf'),'-dpdf');
+end
+
+
+
 function mPlotContinuousEID(dat)
 global PLOT_EER_BAND
 if ~PLOT_EER_BAND
     return;
 end
 %% Plot Parameters
-tScale = 50;   % Interval of EID plot update, set to 1 will plot all of the EID map
+tScale = 5;   % Interval of EID plot update, set to 1 will plot all of the EID map
 nBins = 80;   % Color resolution in the y axis
 alpha = 0.5;  % Transparency of the EID color
 % cmap = lines(10);
@@ -715,4 +929,21 @@ for i = 1:size(list,3)
     for j = 1:size(list,2)
         outList((i-1)*size(list,2) + j,:) = list(:,j,i)';
     end
+end
+
+function [head, tail, src] = parseDataStream(dat)
+head = dat(:, 1:2);
+tail = dat(:, 3:4);
+src = dat(1, 5:6);
+
+function [m, sem] = calc95CI(x)
+m = mean(x);
+sem = 1.96 * std(x) / sqrt(length(x));
+
+function re = calcRE(dat)
+% Computes relative exploration
+len = size(dat, 1);
+re = zeros(len, 1, 'double');
+for i = 1:len
+    re(i) = dat.walk_dist(i) / dat.distRef(i);
 end

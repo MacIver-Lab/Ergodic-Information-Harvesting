@@ -370,8 +370,8 @@ function [h,statsOut]=myPlotter(X,Y)
      C=cols(k,:);
      J=(rand(size(thisX))-0.5)*jitter;
         
-     h(k).data=plot(thisX+J, thisY, 'o', 'color', 'k',...
-                   'markerfacecolor', 'k');
+     h(k).data=plot(thisX+J, thisY, 'o', 'color', [0.1, 0.1, 0.1],...
+                   'markerfacecolor', [0.1, 0.1, 0.1]);
  end
 
 %  if strcmp(style,'line') || strcmp(style,'sdline')
@@ -406,8 +406,6 @@ function [h,statsOut]=myPlotter(X,Y)
      h(ii).interval=interval;
  end
 
-
-
      function ptch=patchMaker(thisInterval,color)
          l=mu(k)-thisInterval;
          u=mu(k)+thisInterval;
@@ -419,10 +417,5 @@ function [h,statsOut]=myPlotter(X,Y)
         
     
 end %function myPlotter
-
-
-
-
-
 
 end %function notBoxPlot
