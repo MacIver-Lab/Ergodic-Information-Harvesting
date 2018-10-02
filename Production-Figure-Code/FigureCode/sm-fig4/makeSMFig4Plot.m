@@ -39,7 +39,7 @@ end
 
 %% Statistics
 % Threshold for low, medium, and high attenuation trials
-%     Low    = [ 0 -  15] dB
+%     Low    = [ 5 -  15] dB
 %     Medium = (15 -  80] dB
 %     High   = (80 - 150] dB
 AttenThreshLow = 15;

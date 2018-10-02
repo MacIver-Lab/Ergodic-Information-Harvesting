@@ -499,7 +499,6 @@ opt.YMinorTick = 'off';
 opt.XTick = [];
 opt.YTick = [];
 opt.XLim = [0, length(mole.hSNR.angleData)];
-% opt.YLim = [mean(mole.hSNR.angleData)-50, mean(mole.hSNR.angleData)+50];
 opt.FontSize = 10;
 opt.FontName = 'Helvetica';
 opt.Colors = [0, 0, 0; barColor(2,:)];
@@ -530,7 +529,6 @@ opt.YMinorTick = 'off';
 opt.XTick = [];
 opt.YTick = [];
 opt.XLim = [0, length(mole.lSNR.angleData)];
-% opt.YLim = [mean(mole.hSNR.angleData)-50, mean(mole.hSNR.angleData)+50];
 opt.FontSize = 10;
 opt.FontName = 'Helvetica';
 opt.Colors = [0, 0, 0; barColor(3,:)];
@@ -946,4 +944,14 @@ len = size(dat, 1);
 re = zeros(len, 1, 'double');
 for i = 1:len
     re(i) = dat.walk_dist(i) / dat.distRef(i);
+end
+
+function dist = calcSumLength2D(path)
+%% Calculates the cumulative 2D euclidean distance
+distMat = pdist(path, 'euclidean');
+distMat = squareform(distMat);
+
+dist = 0;
+for i = 2:size(path,1)
+    dist = dist + distMat(i, i-1);
 end

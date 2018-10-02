@@ -40,12 +40,6 @@ fprintf('Weak signal trials, n = %d, average trial length = %.2f seconds\n', ...
 reStrongSignalFish = strongSig(:,1) ./ strongSig(:, 2);
 reWeakSignalFish = weakSig(:,1) ./ weakSig(:, 2);
 
-% Compute statistics
-% Ranksum test, right tail = median of rteWeakSignal is greater than median of rteStrongSignal
-[P, ~, Stats] = ranksum(reWeakSignalFish, reStrongSignalFish,...
-    'tail', 'right');
-fprintf('Wilcoxon rank sum test (one-sided) - p = %.4f\n', P);
-
 % Ergodic Harvesting Data
 % Load Ergodic data
 EH_lSNR_files = dir(GEN_DATA_PATH('fig4-ErgodicHarvest-ElectricFish-SNR-25-RandSeed-*.mat'));
@@ -105,6 +99,19 @@ fprintf(['---------------------------------------------------------\n',...
     '----------------------------------------------------------\n'], ...
     reErgSS_Mean, reErgSS_SEM, reErgWS_Mean, reErgWS_SEM, ...
     reInfSS_Mean, reInfSS_SEM, reInfWS_Mean, reInfWS_SEM);
+
+
+% Compute statistics
+% Ranksum test, right tail = median of A is greater than median of B
+[P, ~, Stats] = ranksum(reWeakSignalFish, reStrongSignalFish,...
+    'tail', 'right');
+fprintf('Behavior statistics: Wilcoxon rank sum test (one-sided) - p = %.4f (n = %d)\n', ...
+    P, length([reWeakSignalFish; reStrongSignalFish]));
+[P, ~, Stats] = ranksum(reErgWS, reErgSS,...
+    'tail', 'right');
+fprintf('EIH statistics: Wilcoxon rank sum test (one-sided) - p = %.4f (n = %d)\n', ...
+    P, length([reErgWS, reErgSS]));
+
 
 % Plot group data
 figure(1); clf; hold on;
@@ -237,13 +244,6 @@ end
 fprintf('Strong signal trials, n = %d\n', length(reNrm));
 fprintf('Weak signal trials, n = %d\n', length(reBlk));
 
-% Compute statistics
-% Ranksum test, right tail = median of reBlk is greater than 
-% median of reNrm
-[P, ~, Stats] = ranksum(reBlk, reNrm,...
-    'tail', 'right');
-fprintf('Wilcoxon rank sum test (one-sided) - p = %.4f\n', P);
-
 % Mole Odor Localization
 % Ergodic Harvesting
 EH_lSNR_files = dir(GEN_DATA_PATH('fig4-ErgodicHarvest-Mole-WeakSignal-RandSeed-*.mat'));
@@ -269,6 +269,12 @@ for i = 1:length(EH_lSNR_files)
     EH_hSNR.sTrajList = LPF(EH_hSNR.sTrajList, 1/EH_hSNR.dt, trajHighCutFreq);
     IT_lSNR.sTrajList = LPF(IT_lSNR.sTrajList, 1/IT_lSNR.dt, trajHighCutFreq);
     IT_hSNR.sTrajList = LPF(IT_hSNR.sTrajList, 1/IT_hSNR.dt, trajHighCutFreq);
+    
+    % Reference distance (straight to the target)
+    EH_lSNR.refDist = abs(EH_lSNR.sTrajList(1) - EH_lSNR.oTrajList(1));
+    EH_hSNR.refDist = abs(EH_hSNR.sTrajList(1) - EH_hSNR.oTrajList(1));
+    IT_lSNR.refDist = abs(IT_lSNR.sTrajList(1) - IT_lSNR.oTrajList(1));
+    IT_hSNR.refDist = abs(IT_hSNR.sTrajList(1) - IT_hSNR.oTrajList(1));
     
     % Relative exploration effort - Angular distance traveled
     EH_hSNR.moleDist = cumAngularDist(EH_hSNR.sTrajList);
@@ -300,6 +306,18 @@ fprintf(['---------------------------------------------------------\n',...
     '----------------------------------------------------------\n'], ...
     reErgSS_Mean, reErgSS_SEM, reErgWS_Mean, reErgWS_SEM, ...
     reInfSS_Mean, reInfSS_SEM, reInfWS_Mean, reInfWS_SEM);
+
+% Compute statistics
+% Ranksum test, right tail = median of A is greater than median of B
+[P, ~, Stats] = ranksum(reBlk, reNrm,...
+    'tail', 'right');
+fprintf('Behavior statistics: Wilcoxon rank sum test (one-sided) - p = %.4f (n = %d)\n', ...
+    P, length([reBlk, reNrm]));
+[P, ~, Stats] = ranksum(reErgWS, reErgSS,...
+    'tail', 'right');
+fprintf('EIH statistics: Wilcoxon rank sum test (one-sided) - p = %.4f (n = %d)\n', ...
+    P, length([reErgWS, reErgSS]));
+
 
 % Plot group data
 figure(3); clf;
@@ -413,13 +431,6 @@ re12 = calcRE(cockroachData.trial_c12);
 fprintf('Strong signal trials, n = %d\n', length(re4));
 fprintf('Weak signal trials, n = %d\n', length(re12));
 
-% Compute statistics
-% Ranksum test, right tail = median of reBlk is greater than 
-% median of reNrm
-[P, ~, Stats] = ranksum(re12, re4,...
-    'tail', 'right');
-fprintf('Wilcoxon rank sum test (one-sided) - p = %.4f\n', P);
-
 % Mole Odor Localization
 % Ergodic Harvesting
 EH_lSNR_files = dir(GEN_DATA_PATH('fig4-ErgodicHarvest-Cockroach-WeakSignal-RandSeed-*.mat'));
@@ -476,6 +487,17 @@ fprintf(['---------------------------------------------------------\n',...
     '----------------------------------------------------------\n'], ...
     reErgSS_Mean, reErgSS_SEM, reErgWS_Mean, reErgWS_SEM, ...
     reInfSS_Mean, reInfSS_SEM, reInfWS_Mean, reInfWS_SEM);
+
+% Compute statistics
+% Ranksum test, right tail = median of A is greater than median of B
+[P, ~, Stats] = ranksum(re12, re4,...
+    'tail', 'right');
+fprintf('Behavior statistics: Wilcoxon rank sum test (one-sided) - p = %.4f (n = %d)\n', ...
+    P, length([re12; re4]));
+[P, ~, Stats] = ranksum(reErgWS, reErgSS,...
+    'tail', 'right');
+fprintf('EIH statistics: Wilcoxon rank sum test (one-sided) - p = %.4f (n = %d)\n', ...
+    P, length([reErgWS, reErgSS]));
 
 % Plot group data
 figure(5); clf;
@@ -582,6 +604,15 @@ axesPosition = get(gca, 'Position');
 axesPosition(1:2) = [0.3, 0.3];
 set(gca, 'Position', axesPosition);
 print(gcf,'-dpdf',GEN_SAVE_PATH('fig4-cockroach-simulation.pdf'));
+
+%% Hawkmoth
+EH_lSNR_files = dir(GEN_DATA_PATH('fig4-ErgodicHarvest-Cockroach-WeakSignal-RandSeed-*.mat'));
+hsnrFiles = dir([DAT_ROOT, ...
+    '/MothSim2-nF-15-SNR-60-dt-0.005-PNS-0.02-PLS-150-wC-20-Sigma-0.06-oAmp-0.2-RandSeed-*.mat']);
+lsnrFiles = dir([DAT_ROOT, ...
+    '/MothSim2-nF-15-SNR-30-dt-0.005-PNS-0.02-PLS-150-wC-20-Sigma-0.06-oAmp-0.2-RandSeed-*.mat']);
+
+
 
 fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));
 

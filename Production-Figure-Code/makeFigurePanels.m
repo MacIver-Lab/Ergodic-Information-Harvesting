@@ -33,7 +33,7 @@ warning('off', 'MATLAB:rmpath:DirNotFound')
 %                   does not require any simulation data and therefore
 %                   USE_PUBLISHED_DATASET will be ignored
 % 
-targetFig = 'fig4';
+targetFig = 'sm-fig1';
 
 % Maximum number of CPU thread dedicated for sm-fig4 simulation
 % Note that this is only used for sm-fig4 and the number will automatically
@@ -61,7 +61,7 @@ FIG_CODE_PATH = sprintf('./FigureCode/%s/', targetFig);
 
 %% Make production figure panels (do not change)
 % Remove other figure panels from path
-figPanels = {'fig1', 'fig2', 'fig3', 'sm-fig1', 'sm-fig2', ...
+figPanels = {'fig1', 'fig2', 'fig3', 'fig4', 'sm-fig1', 'sm-fig2', ...
     'sm-fig3', 'sm-fig4', 'sm-fig5', 'sm-fig6'};
 for i = 1:length(figPanels)
     if ~strcmp(figPanels{i}, targetFig)
