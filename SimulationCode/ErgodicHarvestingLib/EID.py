@@ -40,18 +40,14 @@ class EID(object):
         self.pStateTransition /= np.sum(self.pStateTransition)
 
         # Internal Objects
-        self.sensor = self.Sensor(snr=self.eidParam.SNR, sigma=self.eidParam.Sigma, res=self.eidParam.res, 
-                                  maxT=self.eidParam.maxT, objAmp=self.eidParam.objAmp, objCenter=self.eidParam.objCenter, 
-                                  rawTraj=self.eidParam.rawTraj)
+        self.sensor = self.Sensor(eidParam)
 
 
     def UpdateTraj(self, traj, pLast):
         self.max_iter = len(traj)
         
         # Internal Objects
-        self.sensor = self.Sensor(snr=self.eidParam.SNR, sigma=self.eidParam.Sigma, res=self.eidParam.res, 
-                                  maxT=self.eidParam.maxT, objAmp=self.eidParam.objAmp, objCenter=self.eidParam.objCenter, 
-                                  rawTraj=self.eidParam.rawTraj)
+        self.sensor = self.Sensor(self.eidParam)
         
         # Sensor Position, shape = (max_iter, 1)
         self.sPos = traj
@@ -221,24 +217,22 @@ class EID(object):
             self.MeanObjPos = np.zeros([max_iter, 1])
 
     class Sensor(object):
-        def __init__(self, snr, sigma, res, maxT, objAmp, objCenter, rawTraj):
-            self.SNR = snr
-            self.SpatialResol = res # Samples per measure
+        def __init__(self, eidParam):
+            self.SNR = eidParam.SNR
+            self.SpatialResol = eidParam.res # Samples per measure
             self.Scale = 1.0
-            self.Sigma = sigma
+            self.Sigma = eidParam.Sigma
             self.sampGrid = np.linspace(0.0,1.0,self.SpatialResol)
             
-            self.maxT = maxT
-            self.objAmp  = objAmp
-            self.objCenter = objCenter
+            self.maxT = eidParam.maxT
+            self.objAmp  = eidParam.objAmp
+            self.objCenter = eidParam.objCenter
 
             self.RefMM = self.MeasureModel(0.5)
             self.FI = self.FI1D(self.RefMM)
             self.FIPow2 = self.FI**2
-
             # is sensor blinded? used for simulating global search behavior
             self.blind = 0
-
             # Calculate Measurement Noise Amplitude
             mmPower = (self.RefMM**2).sum() / self.RefMM.size
             self.noisePower = 10.0 * np.log10(mmPower) - self.SNR
@@ -246,35 +240,29 @@ class EID(object):
             self.noiseSigma = np.sqrt( self.noisePower )
             #print("Noise power = {0}".format(self.noisePower))
             self.NoiseAmp = self.RefMM.max() / (10.0**(self.SNR/20.0))
-
             # Current Sensor Measurement
             self.V = 0.0
             self.Vp = interp1d(self.sampGrid, self.RefMM)
-        
-            
             # Load Object Trajectory Data
-            if type(rawTraj) != bool:
-                self.rawTraj = rawTraj
+            if type(eidParam.rawTraj) != bool:
+                self.rawTraj = eidParam.rawTraj
                 # Create interpolate object
-                #.rawTraj = interp1d(np.linspace(0.0,self.maxT,num=rawTraj.size),rawTraj.flatten(),kind='cubic')
-                #print('Pre-defined object trajectory loaded!')
-                self.ReScaleTraj()
+                if eidParam.trajSim is False:
+                    self.rawTraj = interp1d(np.linspace(0.0,self.maxT,num=self.rawTraj.size), self.rawTraj.flatten(),kind='cubic')
+                else:
+                    self.ReScaleTraj()
             else:
                 self.rawTraj = False
             
         def ReScaleTraj(self):
             rawTraj = self.rawTraj
-            
             # Normalize and remove offset
             rawTraj = rawTraj / rawTraj.max()
             rawTraj = rawTraj - rawTraj.mean()
-            
             # Scale
             rawTraj = rawTraj * self.objAmp / np.abs(rawTraj).max()
-            
             # Recenter
             rawTraj = rawTraj + self.objCenter
-            
             # Create interpolate object
             self.rawTraj = interp1d(np.linspace(0.0,self.maxT,num=rawTraj.size),rawTraj.flatten(),kind='cubic')
             

@@ -57,6 +57,8 @@ class EIDParameters(SimParameters):
     procNoiseSigma = 0.01  # Sigma of the process noise
     # Indexes of simulation iterations where the sensor will be blinded with randomized noise
     blindIdx = False
+    # is this is trajectory only sim?
+    trajSim = False
     # DeltaT for trajectory simulation
     dt = 0.02
 
