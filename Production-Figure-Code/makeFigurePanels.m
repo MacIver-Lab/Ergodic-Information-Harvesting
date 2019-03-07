@@ -33,12 +33,7 @@ warning('off', 'MATLAB:rmpath:DirNotFound')
 %                   does not require any simulation data and therefore
 %                   USE_PUBLISHED_DATASET will be ignored
 % 
-targetFig = 'sm-fig1';
-
-% Maximum number of CPU thread dedicated for sm-fig4 simulation
-% Note that this is only used for sm-fig4 and the number will automatically
-% be capped at the total number of detectable threads available
-nThread = 8;
+targetFig = 'fig6';
 
 % Control whether or not to use previously simulated dataset
 % Use flag (USE_PUBLISHED_DATASET = flag)
@@ -50,94 +45,42 @@ USE_PUBLISHED_DATASET = 0;
 
 %% Internal parameters (do not change)
 if USE_PUBLISHED_DATASET == 1
-    DATA_PATH = './FigureCode/';
-    FIG_DATA_PATH = sprintf([DATA_PATH,'%s/Data/'], targetFig);
+    FIG_DATA_PATH = './PublishedData/';
 else
-    DATA_PATH = '../SimulationCode/SimData/';
-    FIG_DATA_PATH = sprintf([DATA_PATH,'%s/'], targetFig);
+    FIG_DATA_PATH = '../SimulationCode/SimData/';
 end
 FIG_OUTPUT_PATH = sprintf('./FigureOutput/%s/', targetFig);
-FIG_CODE_PATH = sprintf('./FigureCode/%s/', targetFig);
+
+% add figure code and common path
+addpath('./FigureCode');
+addpath('./FigureCode/common')
+addpath('./FigureCode/common/boundedline/boundedline/');
+addpath('./FigureCode/common/boundedline/Inpaint_nans/');
 
 %% Make production figure panels (do not change)
-% Remove other figure panels from path
-figPanels = {'fig1', 'fig2', 'fig3', 'fig4', 'sm-fig1', 'sm-fig2', ...
-    'sm-fig3', 'sm-fig4', 'sm-fig5', 'sm-fig6'};
-for i = 1:length(figPanels)
-    if ~strcmp(figPanels{i}, targetFig)
-        rmpath(sprintf('./FigureCode/%s/', figPanels{i}));
-    end
-end
-addpath(FIG_CODE_PATH);
 mkdir(FIG_OUTPUT_PATH);
 switch targetFig
     case 'fig1'
         makeFig1Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'fig2'
-        makeFig2Plots(FIG_DATA_PATH, FIG_OUTPUT_PATH);
+        makeFig2Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'fig3'
-        if ~USE_PUBLISHED_DATASET
-            mkdir(FIG_DATA_PATH);
-            try
-                cpySimDataFiles('../SimulationCode/SimData/fig2/*ElectricFish*', ...
-                    FIG_DATA_PATH);
-                cpySimDataFiles('../SimulationCode/SimData/fig2/*Mole*', ...
-                    FIG_DATA_PATH);
-            catch
-                error('Cannot find fig2 simulation data, did fig2 simulation completed?');
-            end
-        end
-        makeFig3Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
+        makeFig3Plots(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'fig4'
         makeFig4Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
+    case 'fig5'
+        makeFig5Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
+    case 'fig6'
+        if ~USE_PUBLISHED_DATASET
+            Fig6ProcessData(FIG_DATA_PATH, FIG_OUTPUT_PATH);
+        end
+        makeFig6Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
+    case 'fig7'
+        makeFig7Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'sm-fig1'
-        makeSMFig1Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH, USE_PUBLISHED_DATASET);
+        makeFigS1Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'sm-fig2'
-        if ~USE_PUBLISHED_DATASET
-            mkdir(FIG_DATA_PATH);
-            try
-                cpySimDataFiles('../SimulationCode/SimData/fig2/*ElectricFish*', ...
-                    FIG_DATA_PATH);
-                cpySimDataFiles('../SimulationCode/SimData/fig2/*Rat*', ...
-                    FIG_DATA_PATH);
-            catch
-                error('Cannot find fig2 simulation data, did fig2 simulation completed?');
-            end
-        end
-        makeSMFig2Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
-    case 'sm-fig3'
-        if ~USE_PUBLISHED_DATASET
-            mkdir(FIG_DATA_PATH);
-            try
-                cpySimDataFiles('../SimulationCode/SimData/fig2/fig2-ErgodicHarvest-ElectricFish-SNR-30*', ...
-                    FIG_DATA_PATH);
-            catch
-                error('Cannot find fig2 simulation data, did fig2 simulation completed?');
-            end
-        end
-        makeSMFig3Plots(FIG_DATA_PATH, FIG_OUTPUT_PATH);
-    case 'sm-fig4'
-        if USE_PUBLISHED_DATASET == 0 || USE_PUBLISHED_DATASET == 2
-            if isempty(dir([FIG_DATA_PATH, 'sm-fig4-Data.mat'])) || USE_PUBLISHED_DATASET == 2
-                if USE_PUBLISHED_DATASET ~= 2
-                    warning('No previously simulated data were found, submitting new simulation...');
-                end
-                mkdir(FIG_DATA_PATH);
-                try
-                    cpySimDataFiles('../SimulationCode/SimData/fig2/fig2-ErgodicHarvest-ElectricFish-SNR-30*', ...
-                        FIG_DATA_PATH);
-                catch
-                    error('Cannot find fig2 simulation data, did fig2 simulation completed?');
-                end
-                % Proceed with simulation
-                SMFig4Sim(FIG_DATA_PATH, nThread);
-            end
-        end
-        makeSMFig4Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
-    case 'sm-fig5'
-        makeSMFig5Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
-    case 'sm-fig6'
-        makeSMFig6Plot(FIG_OUTPUT_PATH);
+        makeFigS2Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     otherwise
         error('Target figure not found!');
 end
