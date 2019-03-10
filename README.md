@@ -40,69 +40,39 @@ singularity shell -B ./:/EIH ./EIH.img
 
 We used [Cython](https://cython.org/) to accelerate the simulation which requires compiling some of the code before running the simulation. Compile the accelerated code by calling the following command:
 ```bash
+cd /EIH
 . ./BuildCython.sh
 ```
 
 ### Start Reproducing Simulation
 You are all set for the environment setup. You can start reproducing all the simulation results by running the main simulation code:
 ```bash
-cd SimulationCode/
-Python3 RunAllSims.py
+cd /EIH/SimulationCode/
+python3 RunAllSims.py
 ```
+By default, `RunAllSims.py` will check the number of available CPU threads and automally run parallel simulation jobs with maximum number of threads possible. Nonetheless, the number of threads can be manually specified by passing the desired parallel thread count argument to it, for example
+```bash
+python3 RunAllSims.py 20
+```
+will run 20 threads in parallel.
 
+**NOTE**: The simulation will take a long time to finish. Depending on your operating system, you may need to **prevent your system from going to sleep**. This is necessary with MacOS. With MacOS: Open a terminal, and type `caffeinate` and hit return. Your system will be prevented from sleeping until you hit Control-C.
 
-## TODO - Organize
-**NOTE**: Depending on your operating system, you **may need to prevent your system from going to sleep**. This is necessary with MacOS. With MacOS: Open a terminal, and type `caffeinate` and hit return. Your system will be prevented from sleeping until you hit Control-C.
+Once all the simulation jobs are done, exit Singularity shell environment by calling `exit` command. 
 
-## How to Reproduce Figure Results
-There are two stages required to reproduce the published figure results. First, follow the simulation section below to run EIH simulation trials to reproduce the data required for figures. Then proceed to the figure plotting code to reproduce the figure results. 
+### Reproduce Figure Results
+The figure code are written in MATLAB so MATLAB R2017a or later version is required. To start, open the `makeFigurePanels.m` code in MATLAB under `Production-Figure-Code` folder. To reproduce figure 2 for example, use the following procedures:
+- Launch `Ergodic-Information-Harvesting/Production-Figure-Code/makeFigurePanels.m` using MATLAB. Note that the code has been tested with MATLAB `R2017a` and `R2018a`.
+- Specify input parameters
+  - Set `targetFig = 'fig2'` to select figure 1 as the target
+  - Set `USE_PUBLISHED_DATASET = 1` to use the published dataset included in the repository. Alternatively, if local simulation jobs are completed, use `USE_PUBLISHED_DATASET = 0` will force the code to use reproduced data located at `Ergodic-Information-Harvesting/SimulationCode/SimData/`
+- Run the MATLAB code
+
+You should see a new MATLAB figure containing Figure 2 panels. PDF(s) will be saved under `Ergodic-Information-Harvesting/Production-Figure-Code/FigureOutput/fig2/`.
 
 ### Benchmark Running Time
-**The total run time to run both the simulation and figure plotting code is 45.6 hours for a 2015 MacOS desktop system (iMac 2015, Intel i7 Quad Core with 4.4GHz turboboost, running with `nThreads = 8`). Most of this time is for Supplementary Figures 1 and 4, which have close to 200 simulations. Therefore, in addition to the full simulation code provided and detailed in Step 1, we have also included our published dataset which can be viewed by setting a flag in the figure generation code in Step 2 below, which allows immediate reproduction of published figures. This also provides a baseline of comparison for results that you generate.**
-
-|   Figure  | Total Running Time (Hours) |
-|:---------:|:--------------------------:|
-|   `fig1`  |             1.1            |
-|   `fig2`  |             3.3            |
-|   `fig3`  |             1.1            |
-| `sm-fig1` |             29             |
-| `sm-fig4` |             10             |
-| `sm-fig5` |             1.1            |
+**The total run time to run both the simulation and figure plotting code is TBA hours for a 2015 MacOS desktop system (iMac 2015, Intel i7 Quad Core with 4.4GHz turboboost, running with `nThreads = 8`).**
 
 ### Additional Note for Linux and MacOS Users
 #### Prevent System from Sleeping During Simulation
-As noted above, sleeping causes the Jupyter notebook to lose connection and stops the simulation. Also, 'sm-fig4' is a ten hour run in MATLAB to regenerate simulation results. To prevent MacOS from sleeping in these instances, use `caffeinate` at a Terminal window before starting the Jupyter notebook or before regenerating 'sm-fig4' within MATLAB.
-
-
-### Step 1 - Local EIH Simulation (optional)
-#### Code Structure
-The simulation code files are all stored under `./SimulationCode/` and are organized in a centralized fashion. `Ergodic-Information-Harvesting-Simulation.ipynb` is the only notebook file you need to run and you can use it to reproduce the raw simulation data used for all but one of the figures in the paper and Supplementary Information (all but `sm-fig4`, which uses a combination of MATLAB and python). Each dataset is organized in a per-figure fashion and the parameter supporting the simulation is stored under `/SimulationCode/FigParameters/` folder in `json` format.
-
-All of the data used in published figures will be simulated through this step (except for `sm-fig4`: see Step 2).
-
-#### Example Procedure of Simulating Data for figure 1
-To simulate the raw data for a given figure, figure 1 for instance, you just need to:
-- specify `targetFigure = ['fig1']` in the `Ergodic-Information-Harvesting-Simulation.ipynb` which is further documented inside the notebook. To run multiple figures, simply append the list with the desired figures, *e.g.* `
-targetFiguretargetF  = ['fig1', 'fig2', 'fig3', 'sm-fig1']`.
-- specify `nThreads` parameter based on the number of CPU threads available on your machine. Use `nThreads = cpu_count()` will ensure the best performance but will slow down your machine significantly on some figures which utilize all of the threads. Use `nThreads = cpu_count() - 1` to leave 1 thread for your normal workflow.
-- run the entire notebook by selecting on the top menu `Cell -> Run All`. 
-
-Depending on the size of the simulation and the number of threads you allow the program to use, it could take some time to finish. 
-
-Once completed (the program will display `All done! EOF at ...` at the bottom), you can find the simulated data under `/SimulationCode/SimData/fig1/` (`/fig1` because we are simulating for figure 1 here). The raw data will be in `*.mat` MATLAB data format that can be loaded by MATLAB.
-
-### Step 2 - Reproduce Figure Results
-#### Code Structure
-The figure code files are under `./Production-Figure-Code/`. Similarly, it is centralized in a single MATLAB file `makeFigurePanels.m`. Code for each figure panels are included under `./Production-Figure-Code/FigureCode/` along with the previously simulated data if step 1 is skipped.
-
-Note that running `sm-fig4` with `USE_PUBLISHED_DATASET = 0` (which uses locally reproduced dataset instead of the previously simulated) will start a batch simulation before making figure panels. The simulations for this figure took around 10 hours on the benchmark machine.
-
-#### Example Procedure of Reproducing figure 1
-To reproduce figure 1 for example, use the following procedures:
-- Launch `./Production-Figure-Code/makeFigurePanels.m` using MATLAB. Note that the code has been tested with MATLAB `R2017a` and `R2018a`.
-- Specify input parameters
-  - Set `targetFig = 'fig1'` to select figure 1 as the target
-  - Set `USE_PUBLISHED_DATASET = 1` to show the data we published. Alternatively, use `USE_PUBLISHED_DATASET = 0` if the simulation data for figure 1 has been created through step 1
-- Run the MATLAB code
-
-You should see a new MATLAB figure containing Figure 1 panels. PDF(s) will be saved under `./FigureOutput/fig1/`.
+To prevent MacOS from sleeping in these instances, use `caffeinate` at a Terminal window running simulation jobs.
