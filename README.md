@@ -15,12 +15,39 @@ Note that this repository has included all the published data, including all the
 ## Detailed Steps to Reproduce
 To accomodata the possible [dependencies hell](https://en.wikipedia.org/wiki/Dependency_hell) and minimize the effort of setting up runtime environment, we prebuilt [container image](https://en.wikipedia.org/wiki/Container_(virtualization)) to be used for all the simulation code execution in Python. Note that this is only for reproducing simulations, a local installation of MATLAB (not provided in the container) is still required to reproduce figures.
 
+### Download or Clone This Repository
+To start, you will need to download the most recent version of the EIH repository. This can be done by either cloning it as a `git` repository, which can be done by executing:
+```bash
+git clone --depth=1 https://github.com/MacIver-Lab/Ergodic-Information-Harvesting
+```
+or, simply [download this repository as an archive from GitHub](https://github.com/MacIver-Lab/Ergodic-Information-Harvesting/archive/master.zip).
+
 ### Install Singularity and Pull the EIH Container Image
 [Singularity](https://www.sylabs.io/singularity/) is a software for building, managing, and executing container images. It is required to run the simulations through our prebuilt container image. To install Singularity, follow the [official installation guide for Windows/MacOS/Linux](https://www.sylabs.io/guides/2.6/user-guide/installation.html).
 
-Once installed, pull the prebuilt EIH container image from cloud by executing:
+Once Singularity is installed, open a command line tool at the EIH directory `./Ergodic-Information-Harvesting/` and pull the prebuilt EIH container image from cloud by running the following command in the command line:
 ```bash
+singularity --name EIH.img pull shub://MacIver-Lab/Ergodic-Information-Harvesting
+```
 
+### Invoke Shell in the EIH Container Image
+The container image is basically a fully self-contained Linux OS image with Python 3 dependencies setup for EIH simulation. We will invoke the command line tool inside of the EIH container image to interact with the resources inside to start our simulations.
+
+First, invoke the shell inside of the image by running:
+```bash
+singularity shell -B ./:/EIH ./EIH.img
+```
+
+We used [Cython](https://cython.org/) to accelerate the simulation which requires compiling some of the code before running the simulation. Compile the accelerated code by calling the following command:
+```bash
+. ./BuildCython.sh
+```
+
+### Start Reproducing Simulation
+You are all set for the environment setup. You can start reproducing all the simulation results by running the main simulation code:
+```bash
+cd SimulationCode/
+Python3 RunAllSims.py
 ```
 
 
