@@ -13,6 +13,7 @@ From: continuumio/miniconda3
      export conda=/opt/conda/bin/conda
      export pip=/opt/conda/bin/pip
      export python3=/opt/conda/bin/python
+     export python=python3
 
 %post 
      # update system and install gcc
@@ -23,7 +24,7 @@ From: continuumio/miniconda3
      # Update pip
      /opt/conda/bin/pip install -U pip -q
      # Install dependencies
-     /opt/conda/bin/conda install -c conda-forge -y -q matplotlib tqdm jupyter cython numba scipy=1.0.1 numpy=1.16.1 
+     /opt/conda/bin/conda install -c conda-forge -y -q tqdm cython numba scipy=1.0.1 numpy=1.16.1 
      # Clean up
      /opt/conda/bin/conda clean --all -y --quiet
      apt-get autoremove -y
