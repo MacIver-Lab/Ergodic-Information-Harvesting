@@ -48,7 +48,7 @@ print('---------------------------------------------------------------')
 SimulationMain(params, nThread=nThread)
 
 # wiggle attenuation simulations 
-#EID_Attenuation_Sim('./SimParameters/SimJobList.txt', nThread)
+EID_Attenuation_Sim('./SimParameters/SimJobList.txt', nThread)
 
 timeStampEnd = datetime.fromtimestamp(time.time())
 timeString = timeStampEnd.strftime("%b-%d-%Y %T")
