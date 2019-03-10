@@ -5,37 +5,27 @@ For a prior publication (["Ergodic Exploration of Distributed Information"](http
 - Video of how EIH works (Two differences from ["Ergodic Exploration of Distributed Information"](https://nxr.northwestern.edu/sites/default/files/publications/Mill16a_ergodic_control_distributed_info.pdf): 1. Object to be found is not moving; 2. Uses Fisher Information instead of entropy.) [Click here to watch the video on YouTube](https://youtu.be/eF6J-YmPdIA)
 - Interactive Jupyter notebook tutorial [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/MacIver-Lab/Ergodic-Information-Harvesting/master?filepath=Tutorial%2FErgodic_Information_Harvesting_Tutorial.ipynb)
 
-
 # Steps to reproduce the results shown in the EIH paper
-All of the simulation code is written with Python 3.6 using [Jupyter Notebook](http://jupyter.org/). All of the figure plotting files are written in MATLAB (R2017a). The code can be run on:
-- A local computer, which is very easy to set up but limited by the number of accessible CPU cores.
-- Cloud computing virtual servers throug any popular Infrastructure as a Service (IaaS) provider, *e.g.* [Amazon Elastic Compute Cloud](https://aws.amazon.com/ec2/) or [Google Cloud Compute Engine](https://cloud.google.com/compute/). Cloud computing is easy to setup and provides a way to scale up the total number of running threads (*e.g.* Google Cloud Compute Engine allows up to 96 CPU threads per instance). A [cloud computing setup guide](https://github.com/MacIver-Lab/Ergodic-Information-Harvesting/blob/master/CloudComputingSetup.md) covers the steps needed to setup EIH simulation on a Linux instance running on the cloud.
+All of the simulation code is written with [Python 3](https://www.python.org/). All of the figure plotting files are written in MATLAB (R2017a+). The code can be run on:
+- A local computer, which is very easy to set up but the performance is ultimately limited by the number of locally accessible CPU cores
+- Cloud computing virtual servers throug any Infrastructure as a Service (IaaS) provider, *e.g.* [Amazon Elastic Compute Cloud](https://aws.amazon.com/ec2/), [Google Cloud Compute Engine](https://cloud.google.com/compute/), or academic [HPCC (High Performance Computing Cluster)](https://en.wikipedia.org/wiki/HPCC) systems. Cloud computing is easy to setup and provides a way to scale up the total number of running threads (*e.g.* Google Cloud Compute Engine allows up to 96 CPU threads per instance). Our code's runtime envionrment and dependencies are fully containerized through [Singularity](https://www.sylabs.io/singularity/) to minimize the effort for envionrment set and scales easily for better performance.
 
-## Setting up the runtime environment
-The results generation system uses Jupyter as the environment for interaction. Jupyter is very easy to set up if you have not used it before. Below is a quick start for those who does not yet have Jupyter environment setup locally.
+Note that this repository has included all the published data, including all the simulations, to reproduce all figures in the paper and supplemental materials. For lazy result reproduction and verification, simply jump to step 3 to directly reproduce the figures using published dataset.
 
-### Install Anaconda 
-[Anaconda](https://www.anaconda.com/download/) is the required Python environment. It runs on MacOS, Unix, and Windows environments and provide easy package management for setting up the runtime environments for the simulation. To download, go to [https://www.anaconda.com/download/](https://www.anaconda.com/download/) and install Anaconda.
+## Detailed Steps to Reproduce
+To accomodata the possible [dependencies hell](https://en.wikipedia.org/wiki/Dependency_hell) and minimize the effort of setting up runtime environment, we prebuilt [container image](https://en.wikipedia.org/wiki/Container_(virtualization)) to be used for all the simulation code execution in Python. Note that this is only for reproducing simulations, a local installation of MATLAB (not provided in the container) is still required to reproduce figures.
 
-Once installed, open the Anaconda Prompt or bash and run the following code to install all of the dependencies.
-The required packages are `scipy` and `numpy`. Note that a specific version has been specified to avoid issues due to any future update to these packages that may cause a backward incompatibility with our code. Most of the other dependencies, such as `jupyter` and `IPython`, has been satisfied by the Anaconda bundle already and are thus not included in the code below.
+### Install Singularity and Pull the EIH Container Image
+[Singularity](https://www.sylabs.io/singularity/) is a software for building, managing, and executing container images. It is required to run the simulations through our prebuilt container image. To install Singularity, follow the [official installation guide for Windows/MacOS/Linux](https://www.sylabs.io/guides/2.6/user-guide/installation.html).
+
+Once installed, pull the prebuilt EIH container image from cloud by executing:
 ```bash
-conda install scipy=1.0.1 numpy=1.14.3
-```
-Alternatively, if you prefer `pip`, you could use the code below instead.
-```bash
-pip install scipy==1.0.1 numpy==1.14.3
+
 ```
 
-### Launch Jupyter
-Once the environment is setup, you can launch the simulation through a `jupyter notebook` client. Here's how to do it.
-- Navigate to the simulation code folder `/SimulationCode/`
-- Launch a new Jupyter notebook instance
-  - If using Windows, open a command prompt under this code folder and run `jupyter notebook`
-  - If using Linux or MacOS, simply run this command in a terminal: `jupyter notebook` 
-- A new browser tab should pop up. Find and open `Ergodic-Information-Harvesting-Simulation.ipynb` under the file list. Note that Jupyter notebook will use the current directory of your command prompt as the working directory: if you don't see the code folder, that means your command window is in a different folder and you need to navigate to `/SimulationCode/` before running `jupyter notebook`
-- Once opened, you should see the code for simulation and you are now good to go to reproduce the results of our study.
-- **NOTE**: Depending on your operating system, you **may need to prevent your system from going to sleep**. This is necessary with MacOS. With MacOS: Open a terminal, and type `caffeinate` and hit return. Your system will be prevented from sleeping until you hit Control-C.
+
+## TODO - Organize
+**NOTE**: Depending on your operating system, you **may need to prevent your system from going to sleep**. This is necessary with MacOS. With MacOS: Open a terminal, and type `caffeinate` and hit return. Your system will be prevented from sleeping until you hit Control-C.
 
 ## How to Reproduce Figure Results
 There are two stages required to reproduce the published figure results. First, follow the simulation section below to run EIH simulation trials to reproduce the data required for figures. Then proceed to the figure plotting code to reproduce the figure results. 
@@ -56,12 +46,6 @@ There are two stages required to reproduce the published figure results. First, 
 #### Prevent System from Sleeping During Simulation
 As noted above, sleeping causes the Jupyter notebook to lose connection and stops the simulation. Also, 'sm-fig4' is a ten hour run in MATLAB to regenerate simulation results. To prevent MacOS from sleeping in these instances, use `caffeinate` at a Terminal window before starting the Jupyter notebook or before regenerating 'sm-fig4' within MATLAB.
 
-#### Using the Correct Version of Python
-For `sm-fig4`, we use MATLAB to initiate batch python simulations which may require additional care. This is due to a python version mismatch which is detailed in the paragraph below (for those who want to know why this happens):
-
-> Since Linux has built-in python in addition to Anaconda, and MacOS may have a version of python previously installed, please be sure to add Anaconda to the system's path and use the python that comes with Anaconda instead of the system's default python. For `sm-fig4`, the python simulation is handled through MATLAB using the `system()` command to invoke bash commands. We have found for some systems, calling `system('python -V');` in MATLAB will display the default system python under `/usr/lib/python*` instead of Anaconda's python, which is typically located under `$HOME/anaconda/bin`.
-
-The solution is simple. For MacOS, call MATLAB from a terminal command window (this causes MATLAB to use the correct path that installing Anaconda will set on your system). To do this: 1) Run matlab as usual and note the output of the command `matlabroot`. 2) open a terminal and enter `cd [output of matlabroot]/bin' (for example, if matlabroot returns '/Applications/MATLAB_R2017b.app' do 'cd /Applications/MATLAB_R2017b.app/bin'. 3) type 'matlab' and return; this will open the usual MATLAB gui and you can proceed as normal.
 
 ### Step 1 - Local EIH Simulation (optional)
 #### Code Structure
