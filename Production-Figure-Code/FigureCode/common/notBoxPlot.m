@@ -210,6 +210,9 @@ if ~legacyCall
     params.addParameter('alpha', 0.5, @(x) isnumeric(x) & isscalar(x));
     params.addParameter('jitterScale', 0.1, @(x) isnumeric(x) & isscalar(x));
     params.addParameter('dotSize', 60, @(x) isnumeric(x) & isscalar(x));
+    params.addParameter('plotColor', 'r', @(x) ischar(x));
+    params.addParameter('blendPatchColor', false, @(x) islogical(x));
+    params.addParameter('plotRawData', true, @(x) islogical(x));
 
     params.parse(varargin{:});
 
@@ -221,6 +224,9 @@ if ~legacyCall
     alpha = params.Results.alpha;
     jitterScale = params.Results.jitterScale;
     dotSize = params.Results.dotSize;
+    plotColor = params.Results.plotColor;
+    plotRawData = params.Results.plotRawData;
+    blendPatchColor = params.Results.blendPatchColor;
 
     %Set interval function
     switch interval
@@ -344,6 +350,12 @@ function [h,statsOut]=myPlotter(X,Y)
  cols=hsv(length(X)+1)*0.5;
  cols(1,:)=0;
  %jitScale=0.1; %To scale the patch by the width of the jitter
+ if plotColor == 'b'
+     cols = hsv(length(X)+5)*0.5;
+     colPatch = [0.6, 0.6, 1];
+ elseif plotColor == 'r'
+     colPatch = [1, 0.6, 0.6];
+ end
 
  for k=1:length(X)
      thisY=Y(:,k);
@@ -362,12 +374,16 @@ function [h,statsOut]=myPlotter(X,Y)
 
      if strcmp(style,'patch') || strcmp(style,'sdline')
        %Plot mean and SEM (and optionally the median)
-       h(k).semPtch=patchMaker(SEM(k),[140,140,140]/255.0);
-       h(k).mu=plot([X(k)-jitterScale,X(k)+jitterScale],[mu(k),mu(k)],'-r',...
+       if blendPatchColor
+           h(k).semPtch=patchMaker(SEM(k), colPatch);
+       else
+           h(k).semPtch=patchMaker(SEM(k), [140,140,140]/255.0);
+       end
+       h(k).mu=plot([X(k)-jitterScale,X(k)+jitterScale],[mu(k),mu(k)],['-',plotColor],...
             'linewidth',2);
        if markMedian
           statsOut(k).median = med(k);
-          h(k).med=plot([X(k)-jitterScale,X(k)+jitterScale],[med(k),med(k)],':r',...
+          h(k).med=plot([X(k)-jitterScale,X(k)+jitterScale],[med(k),med(k)],[':',plotColor],...
                 'linewidth',2);
        end
      end
@@ -376,13 +392,13 @@ function [h,statsOut]=myPlotter(X,Y)
      C=cols(k,:);
      J=(rand(size(thisX))-0.5)*jitter;
         
-%      h(k).data=plot(thisX+J, thisY, 'o', 'color', [0.1, 0.1, 0.1],...
-%                    'markerfacecolor', [0.1, 0.1, 0.1]);
-     h(k).data=scatter(thisX+J, thisY, dotSize, ...
-         'MarkerFaceColor', [0.1, 0.1, 0.1], ...
-         'MarkerEdgeColor', [0.1, 0.1, 0.1]);
-     h(k).data.MarkerFaceAlpha = alpha;
-     h(k).data.MarkerEdgeAlpha = 0;
+     if plotRawData
+         h(k).data=scatter(thisX+J, thisY, dotSize, ...
+             'MarkerFaceColor', [0.1, 0.1, 0.1], ...
+             'MarkerEdgeColor', [0.1, 0.1, 0.1]);
+         h(k).data.MarkerFaceAlpha = alpha;
+         h(k).data.MarkerEdgeAlpha = 0;
+     end
  end
 
 %  if strcmp(style,'line') || strcmp(style,'sdline')

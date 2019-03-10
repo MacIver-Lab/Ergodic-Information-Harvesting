@@ -27,16 +27,18 @@ DC_data = data - Offset;
 
 %% Build LPF
 % Low-Pass Filter
-if length(Fs) > 384
+if length(data) > 786
     order = 128;
-elseif length(Fs) > 192
+elseif length(data) > 384
     order = 64;
-elseif length(Fs) > 64
+elseif length(data) > 192
     order = 32;
-elseif length(Fs) > 48
+elseif length(data) > 64
     order = 16;
+elseif length(data) > 48
+    order = 8;
 else
-    order = 8; % fallback
+    order = ceil(length(data) / 4); % fallback
 end
 [B,A] = fir1(order,CutOffFreq/(Fs*.5));
 
