@@ -18,7 +18,7 @@ All of the simulation code is written with [Python 3](https://www.python.org/). 
 
 Note that this repository has included all of the published data, including all the simulations, to reproduce all figures in the paper and supplemental materials. To reproduce our figures from the published data, rather than re-run all the simulations from scratch, simply jump to step 5 below.
 
-## Detailed Steps to Reproduce
+## Detailed Steps
 To avoid possible [dependency hell](https://en.wikipedia.org/wiki/Dependency_hell) and minimize the effort of setting up the runtime environment we used for our results, we prebuilt a [container image](https://en.wikipedia.org/wiki/Container_(virtualization)) to be used for executing all the simulation code in Python. Here is an article explaining the utility of containers for reproducibility of research: [Singularity: Scientific containers for mobility of compute](https://doi.org/10.1371/journal.pone.0177459). Note that this is only for reproducing simulations: for generation of the figures from the simulations, a local installation of MATLAB (not provided in the container) is still required.
 
 ### 1. Download or Clone This Repository
