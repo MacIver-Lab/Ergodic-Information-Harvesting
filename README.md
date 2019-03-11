@@ -10,19 +10,19 @@ All of the simulation code is written with [Python 3](https://www.python.org/). 
 - A local computer, which is very easy to set up but the performance is ultimately limited by the number of locally accessible CPU cores
 - Cloud computing virtual servers throug any Infrastructure as a Service (IaaS) provider, *e.g.* [Amazon Elastic Compute Cloud](https://aws.amazon.com/ec2/), [Google Cloud Compute Engine](https://cloud.google.com/compute/), or academic [HPCC (High Performance Computing Cluster)](https://en.wikipedia.org/wiki/HPCC) systems. Cloud computing is easy to setup and provides a way to scale up the total number of running threads (*e.g.* Google Cloud Compute Engine allows up to 96 CPU threads per instance). Our code's runtime envionrment and dependencies are fully containerized through [Singularity](https://www.sylabs.io/singularity/) to minimize the effort for envionrment set and scales easily for better performance.
 
-Note that this repository has included all the published data, including all the simulations, to reproduce all figures in the paper and supplemental materials. For lazy result reproduction and verification, simply jump to step 3 to directly reproduce the figures using published dataset.
+Note that this repository has included all the published data, including all the simulations, to reproduce all figures in the paper and supplemental materials. For lazy result reproduction and verification, simply jump to step 5 to directly reproduce the figures using published dataset.
 
 ## Detailed Steps to Reproduce
 To accomodata the possible [dependencies hell](https://en.wikipedia.org/wiki/Dependency_hell) and minimize the effort of setting up runtime environment, we prebuilt [container image](https://en.wikipedia.org/wiki/Container_(virtualization)) to be used for all the simulation code execution in Python. Note that this is only for reproducing simulations, a local installation of MATLAB (not provided in the container) is still required to reproduce figures.
 
-### Download or Clone This Repository
+### 1. Download or Clone This Repository
 To start, you will need to download the most recent version of the EIH repository. This can be done by either cloning it as a `git` repository, which can be done by executing:
 ```bash
 git clone --depth=1 https://github.com/MacIver-Lab/Ergodic-Information-Harvesting
 ```
 or, simply [download this repository as an archive from GitHub](https://github.com/MacIver-Lab/Ergodic-Information-Harvesting/archive/master.zip).
 
-### Install Singularity and Pull the EIH Container Image
+### 2. Install Singularity and Pull the EIH Container Image
 [Singularity](https://www.sylabs.io/singularity/) is a software for building, managing, and executing container images. It is required to run the simulations through our prebuilt container image. To install Singularity, follow the [official installation guide for Windows/MacOS/Linux](https://www.sylabs.io/guides/2.6/user-guide/installation.html).
 
 Once Singularity is installed, open a command line tool at the EIH directory `./Ergodic-Information-Harvesting/` and pull the prebuilt EIH container image from cloud by running the following command in the command line:
@@ -30,7 +30,7 @@ Once Singularity is installed, open a command line tool at the EIH directory `./
 singularity --name EIH.img pull shub://MacIver-Lab/Ergodic-Information-Harvesting
 ```
 
-### Invoke Shell in the EIH Container Image
+### 3. Invoke Shell in the EIH Container Image
 The container image is basically a fully self-contained Linux OS image with Python 3 dependencies setup for EIH simulation. We will invoke the command line tool inside of the EIH container image to interact with the resources inside to start our simulations.
 
 First, invoke the shell inside of the image by running:
@@ -38,13 +38,13 @@ First, invoke the shell inside of the image by running:
 singularity shell -B ./:/EIH ./EIH.img
 ```
 
-We used [Cython](https://cython.org/) to accelerate the simulation which requires compiling some of the code before running the simulation. Compile the accelerated code by calling the following command:
+We used [Cython](https://cython.org/) to accelerate the simulation which requires compiling some of the code before running the simulation. Compile the accelerated code by calling the following command, this only needs to be done once:
 ```bash
 cd /EIH
 . ./BuildCython.sh
 ```
 
-### Start Reproducing Simulation
+### 4. Start Reproducing Simulation
 You are all set for the environment setup. You can start reproducing all the simulation results by running the main simulation code:
 ```bash
 cd /EIH/SimulationCode/
@@ -60,7 +60,7 @@ will run 20 threads in parallel.
 
 Once all the simulation jobs are done, exit Singularity shell environment by calling `exit` command. 
 
-### Reproduce Figure Results
+### 5. Reproduce Figure Results
 The figure code are written in MATLAB so MATLAB R2017a or later version is required. To start, open the `makeFigurePanels.m` code in MATLAB under `Production-Figure-Code` folder. To reproduce figure 2 for example, use the following procedures:
 - Launch `Ergodic-Information-Harvesting/Production-Figure-Code/makeFigurePanels.m` using MATLAB. Note that the code has been tested with MATLAB `R2017a` and `R2018a`.
 - Specify input parameters
