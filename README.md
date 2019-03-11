@@ -6,7 +6,7 @@
 [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/MacIver-Lab/Ergodic-Information-Harvesting/master?filepath=Tutorial%2FErgodic_Information_Harvesting_Tutorial.ipynb)
  
 # Ergodic Information Harvesting (EIH) Video & Tutorial
-- Video explainer of key concepts of how EIH works, and application to controlling an underwater electrolocation robot [Click here to watch the video on YouTube](https://youtu.be/eF6J-YmPdIA)
+- Video explainer of key concepts underlying ergodic information harvesting, and an example application of the EIH algorithm to controlling an underwater electrolocation robot [Click here to watch the video on YouTube](https://youtu.be/eF6J-YmPdIA)
 - Interactive Jupyter notebook tutorial, click to view online: [![nbviewer](https://camo.githubusercontent.com/bfeb5472ee3df9b7c63ea3b260dc0c679be90b97/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f72656e6465722d6e627669657765722d6f72616e67652e7376673f636f6c6f72423d66333736323626636f6c6f72413d346434643464)](https://nbviewer.jupyter.org/github/MacIver-Lab/Ergodic-Information-Harvesting/blob/master/Tutorial/Ergodic_Information_Harvesting_Tutorial.ipynb)
   
   or use  [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/MacIver-Lab/Ergodic-Information-Harvesting/master?filepath=Tutorial%2FErgodic_Information_Harvesting_Tutorial.ipynb) to run interactively through online Jupyter Notebook
