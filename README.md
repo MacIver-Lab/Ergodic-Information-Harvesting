@@ -51,7 +51,11 @@ singularity pull --name EIH.img shub://MacIver-Lab/Ergodic-Information-Harvestin
 #### Windows and MacOS
 [Docker](https://en.wikipedia.org/wiki/Docker_%28software%29) is used on Windows and MacOS for running EIH container image since Singularity only have native support for Linux OS. To install Docker, follow the official installation guide for [Windows](https://hub.docker.com/editions/community/docker-ce-desktop-windows) or [MacOS](https://hub.docker.com/editions/community/docker-ce-desktop-mac).
 
-Once installed, open a command line tool at the EIH directory `./Ergodic-Information-Harvesting/` and pull the prebuilt EIH container image from the cloud by running the following command on the command line:
+Once installed, first go to the Docker settings and update the desired number of CPUs and memory available for Docker (and EIH simulation) to use. The number of CPU thread available during the simulation is limited by this configuration.
+
+![](https://docs.docker.com/docker-for-windows/images/settings-advanced.png)
+
+Next, open a command line tool at any directory and pull the prebuilt EIH container image from the cloud by running the following command on the command line:
 ```bash
 docker pull maciverlabnu/ergodic-information-harvesting
 ```
