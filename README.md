@@ -31,6 +31,7 @@ To start, you will need to clone the most recent version of the EIH repository. 
  ```
 - `git-lfs` - is used to pull all the published data. Go to [git-lfs's official release page](https://git-lfs.github.com/) to download and install. Then run the following command **inside the root directory of the cloned EIH repo `./Ergodic-Information-Harvesting/`**
 ```bash
+cd Ergodic-Information-Harvesting
 git lfs install
 git lfs pull
 ```
