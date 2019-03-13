@@ -11,9 +11,9 @@ RUN apt-get update --fix-missing && \
     
 # git-lfs for pulling published data
 RUN apt-get install -y software-properties-common && \
+    curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash && \
     add-apt-repository ppa:git-core/ppa && \
     apt-get update && \
-    curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash && \
     apt-get install git-lfs && \
     git lfs install && \
     apt-get clean && \
