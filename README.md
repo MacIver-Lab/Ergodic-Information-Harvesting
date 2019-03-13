@@ -51,14 +51,25 @@ Once installed, open a command line tool at the EIH directory `./Ergodic-Informa
 docker pull maciverlabnu/ergodic-information-harvesting
 ```
 
-
 ### 3. Invoke Shell in the EIH Container Image
 The container image is a fully self-contained Linux OS image with Python 3 dependencies setup for generating the EIH simulations developed for the study. We will invoke the command line tool inside of the EIH container image to interact with the resources inside the container and start the simulations.
 
-First, invoke the shell inside of the image by running:
-```bash
-singularity shell -B ./:/EIH ./EIH.img
-```
+- When using Singularity on Linux OS, invoke the shell inside of the image by running:
+ ```bash
+ singularity shell -B ./:/EIH ./EIH.img
+ ```
+- When using Docker on Windows or MacOS, first check the drive where the EIH repository is downloaded to is accessible to Docker:
+
+ ![](https://msdnshared.blob.core.windows.net/media/2016/06/d4w-shared-drives.png)
+ 
+ make sure the target drive is checked before invoking the shell. 
+ 
+ ```bash
+ docker run -it -v [absolute path to EIH folder]:/EIH maciverlabnu/ergodic-information-harvesting
+ ```
+ replace the `[absolute path to EIH folder]` part with the absolute path to your local EIH repository folder, *e.g.* `C:/Ergodic-Information-Harvesting` (remember to replace `\` with `/` when in Windows) or `~/Ergodic-Information-Harvesting`.
+ 
+### 4. Start Reproducing Simulation
 
 We used [Cython](https://cython.org/) to accelerate the simulation which requires compiling some of the code before running the simulation. Compile the accelerated code by calling the following command (this only needs to be done once):
 ```bash
@@ -66,7 +77,6 @@ cd /EIH
 . ./BuildCython.sh
 ```
 
-### 4. Start Reproducing Simulation
 You are all set for the environment setup. You can start reproducing all the simulation results by running the main simulation code:
 ```bash
 cd /EIH/SimulationCode/
