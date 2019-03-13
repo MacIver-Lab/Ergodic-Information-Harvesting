@@ -30,13 +30,27 @@ git clone --depth=1 https://github.com/MacIver-Lab/Ergodic-Information-Harvestin
 ```
 or, you can simply [download this repository as an archive from GitHub](https://github.com/MacIver-Lab/Ergodic-Information-Harvesting/archive/master.zip).
 
-### 2. Install Singularity and Pull the EIH Container Image
-[Singularity](https://www.sylabs.io/singularity/) is software for building, managing, and executing container images. It is required to run the simulations through our prebuilt container image. To install Singularity, follow the [official installation guide for Windows/MacOS/Linux](https://www.sylabs.io/guides/2.6/user-guide/installation.html).
+**TODO: add instructions on git lfs checkout to pull published data.**
+
+### 2. Install Singularity or Docker and Pull the EIH Container Image
+The following steps are different depending on the operating system environment. Please follow the instructions that best suits your system.
+
+#### Linux and Linux based HPCC/Cloud Environments
+[Singularity](https://www.sylabs.io/singularity/) is software for building, managing, and executing container images on Linux. It is required to run the simulations through our prebuilt container image on Linux and is easier to setup. For HPCC (High Performance Computing Cluster) environments, Singularity is usually used against Docker for security reasons. To install Singularity, follow the [official installation guide for Linux](https://www.sylabs.io/guides/2.6/user-guide/installation.html).
 
 Once Singularity is installed, open a command line tool at the EIH directory `./Ergodic-Information-Harvesting/` and pull the prebuilt EIH container image from the cloud by running the following command on the command line:
 ```bash
 singularity pull --name EIH.img shub://MacIver-Lab/Ergodic-Information-Harvesting
 ```
+
+#### Windows and MacOS
+[Docker](https://en.wikipedia.org/wiki/Docker_%28software%29) is used on Windows and MacOS for running EIH container image since Singularity only have native support for Linux OS. To install Docker, follow the official installation guide for [Windows](https://hub.docker.com/editions/community/docker-ce-desktop-windows) or [MacOS](https://hub.docker.com/editions/community/docker-ce-desktop-mac).
+
+Once installed, open a command line tool at the EIH directory `./Ergodic-Information-Harvesting/` and pull the prebuilt EIH container image from the cloud by running the following command on the command line:
+```bash
+docker pull maciverlabnu/ergodic-information-harvesting
+```
+
 
 ### 3. Invoke Shell in the EIH Container Image
 The container image is a fully self-contained Linux OS image with Python 3 dependencies setup for generating the EIH simulations developed for the study. We will invoke the command line tool inside of the EIH container image to interact with the resources inside the container and start the simulations.
