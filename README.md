@@ -23,14 +23,18 @@ Note that this repository has included all of the published data, including all 
 ## Detailed Steps
 To avoid possible [dependency hell](https://en.wikipedia.org/wiki/Dependency_hell) and minimize the effort of setting up the runtime environment we used for our results, we prebuilt a [container image](https://en.wikipedia.org/wiki/Container_(virtualization)) to be used for executing all the simulation code in Python. Here is an article explaining the utility of containers for reproducibility of research: [Singularity: Scientific containers for mobility of compute](https://doi.org/10.1371/journal.pone.0177459). Note that this is only for reproducing simulations: for generation of the figures from the simulations, a local installation of MATLAB (not provided in the container) is still required.
 
-### 1. Download or Clone This Repository
-To start, you will need to download the most recent version of the EIH repository. This can be done by either cloning it as a `git` repository, as follows:
+### 1. Clone This Repository
+To start, you will need to clone the most recent version of the EIH repository. Two tools are required:
+- `git` - is used to pull all the non-data files from this repository. Go to [git's official release page](https://git-scm.com/downloads) to download and install git. Then use the following command to clone this repository:
+ ```bash
+ git clone --depth=1 https://github.com/MacIver-Lab/Ergodic-Information-Harvesting
+ ```
+- `git-lfs` - is used to pull all the published data. Go to [git-lfs's official release page](https://git-lfs.github.com/) to download and install. Then run the following command **inside the root directory of the cloned EIH repo `./Ergodic-Information-Harvesting/`**
 ```bash
-git clone --depth=1 https://github.com/MacIver-Lab/Ergodic-Information-Harvesting
+git lfs install
+git lfs pull
 ```
-or, you can simply [download this repository as an archive from GitHub](https://github.com/MacIver-Lab/Ergodic-Information-Harvesting/archive/master.zip).
-
-**TODO: add instructions on git lfs checkout to pull published data.**
+If successeded, you should see files being downloaded by `git-lfs`.
 
 ### 2. Install Singularity or Docker and Pull the EIH Container Image
 The following steps are different depending on the operating system environment. Please follow the instructions that best suits your system.
