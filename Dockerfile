@@ -7,15 +7,7 @@ FROM continuumio/miniconda3
 
 # get gcc and g++ for compiling Cython
 RUN apt-get update --fix-missing && \
-    apt-get install -y gcc g++
-    
-# git-lfs for pulling published data
-RUN apt-get install -y software-properties-common && \
-    curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash && \
-    add-apt-repository ppa:git-core/ppa && \
-    apt-get update && \
-    apt-get install git-lfs && \
-    git lfs install && \
+    apt-get install -y gcc g++ && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -23,11 +15,11 @@ RUN export conda=/opt/conda/bin/conda && \
     export pip=/opt/conda/bin/pip && \
     export python3=/opt/conda/bin/python && \
     export python=python3
- 
+
 # install python dependencies
 RUN conda install -c conda-forge -y -q tqdm cython numba scipy=1.0.1 numpy=1.16.1 && \
     conda clean --all -y -q
- 
+
 # create binding point for EIH repository
 RUN mkdir /EIH
 VOLUME /EIH
