@@ -2,7 +2,7 @@
 
 
 [![https://www.singularity-hub.org/static/img/hosted-singularity--hub-%23e32929.svg](https://www.singularity-hub.org/static/img/hosted-singularity--hub-%23e32929.svg)](https://singularity-hub.org/collections/2511)
-[![Docker status](https://img.shields.io/docker/automated/maciverlabnu/ergodic-information-harvesting.svg)](https://hub.docker.com/r/maciverlabnu/ergodic-information-harvesting)
+[![Docker status](https://img.shields.io/docker/cloud/build/maciverlabnu/ergodic-information-harvesting.svg)](https://hub.docker.com/r/maciverlabnu/ergodic-information-harvesting)
 [![Docker pulls](https://img.shields.io/docker/pulls/maciverlabnu/ergodic-information-harvesting.svg)](https://hub.docker.com/r/maciverlabnu/ergodic-information-harvesting)
 [![nbviewer](https://camo.githubusercontent.com/bfeb5472ee3df9b7c63ea3b260dc0c679be90b97/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f72656e6465722d6e627669657765722d6f72616e67652e7376673f636f6c6f72423d66333736323626636f6c6f72413d346434643464)](https://nbviewer.jupyter.org/github/MacIver-Lab/Ergodic-Information-Harvesting/blob/master/Tutorial/Ergodic_Information_Harvesting_Tutorial.ipynb)
 [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/MacIver-Lab/Ergodic-Information-Harvesting/master?filepath=Tutorial%2FErgodic_Information_Harvesting_Tutorial.ipynb)
