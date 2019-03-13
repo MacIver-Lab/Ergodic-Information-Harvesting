@@ -7,10 +7,18 @@ FROM continuumio/miniconda3
 
 # get gcc and g++ for compiling Cython
 RUN apt-get update --fix-missing && \
-    apt-get install -y gcc g++ && \
+    apt-get install -y gcc g++
+    
+# git-lfs for pulling published data
+RUN apt-get install -y software-properties-common && \
+    add-apt-repository ppa:git-core/ppa && \
+    apt-get update && \
+    curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash && \
+    apt-get install git-lfs && \
+    git lfs install && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-    
+
 RUN export conda=/opt/conda/bin/conda && \
     export pip=/opt/conda/bin/pip && \
     export python3=/opt/conda/bin/python && \
