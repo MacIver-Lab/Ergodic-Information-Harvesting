@@ -33,7 +33,7 @@ or, you can simply [download this repository as an archive from GitHub](https://
 
 Once Singularity is installed, open a command line tool at the EIH directory `./Ergodic-Information-Harvesting/` and pull the prebuilt EIH container image from the cloud by running the following command on the command line:
 ```bash
-singularity --name EIH.img pull shub://MacIver-Lab/Ergodic-Information-Harvesting
+singularity pull --name EIH.img shub://MacIver-Lab/Ergodic-Information-Harvesting
 ```
 
 ### 3. Invoke Shell in the EIH Container Image
