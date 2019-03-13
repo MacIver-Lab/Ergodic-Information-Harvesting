@@ -17,8 +17,8 @@ from datetime import datetime
 # Ergodic Harvesting Code
 from ErgodicHarvestingLib.SimParameters import ErgodicParameters, EIDParameters
 from ErgodicHarvestingLib.Simulation import EIDSim
-from EIH_Attenuation_Sim_Main import EID_Attenuation_Sim
-from SimulationMain import SimulationMain
+from ErgodicHarvestingLib.EIH_Attenuation_Sim_Main import EID_Attenuation_Sim
+from ErgodicHarvestingLib.SimulationMain import SimulationMain
 
 # get number of parallel threads, EAFP way
 try:

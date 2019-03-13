@@ -34,7 +34,7 @@ def normalize(s, t, mid=0.5, gain=0.1):
     return s, t
 
 def loadMothData(target="M300lux", trialID=0, nrmMid=0.5, nrmGain=0.1):
-    traj = flatten(loadmat('./MothData.mat')[f'trial_{target}'])[trialID,:,:]
+    traj = flatten(loadmat('../Production-Figure-Code/PublishedData/animal_behavior_data/Moth/MothData.mat')[f'trial_{target}'])[trialID,:,:]
     s, t = normalize(traj[:, 0], traj[:, 1], nrmMid, nrmGain)
     return [s, t]
 
