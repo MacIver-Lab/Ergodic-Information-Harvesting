@@ -8,7 +8,7 @@ function makeFigS2Plot(dataPath, savePath)
 close all;
 warning('off', 'MATLAB:print:FigureTooLargeForPage');
 GEN_DATA_PATH = @(fname) fullfile(dataPath, 'behavior_sim', fname);
-GEN_BEHAVIOR_DATA_PATH = @(fname) fullfile(dataPath, 'animal_behavior_data', fname);
+GEN_BEHAVIOR_DATA_PATH = @(fname) fullfile('./PublishedData/', 'animal_behavior_data', fname);
 GEN_SAVE_PATH = @(fname) fullfile(savePath, fname);
 barColor = [72, 110, 181;...
     50, 180, 74; ...

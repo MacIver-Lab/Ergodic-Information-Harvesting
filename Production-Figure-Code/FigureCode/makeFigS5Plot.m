@@ -6,7 +6,7 @@ close all;
 warning('off', 'MATLAB:print:FigureTooLargeForPage');
 warning('off', 'MATLAB:MKDIR:DirectoryExists');
 GEN_DATA_PATH = @(fname) fullfile(dataPath, 'search_sim', fname);
-GEN_BEHAVIOR_DATA_PATH = @(fname) fullfile(dataPath, 'animal_behavior_data', fname);
+GEN_BEHAVIOR_DATA_PATH = @(fname) fullfile('./PublishedData/', 'animal_behavior_data', fname);
 GEN_SAVE_PATH = @(fname) fullfile(savePath, fname);
 sTrajHighCutFreq = 2.10; % Hz
 global PLOT_EER_BAND

@@ -35,6 +35,8 @@ def loadParams(dat):
     if eidParam.simType == 'IF':
         eidParam.stepSize = pDict['eidParam']['stepSize']
         eidParam.planDepth = pDict['eidParam']['planDepth']
+    if 'trajSim' in pDict.keys():
+        eidParam.trajSim = pDict['trajSim']
     # Conditions to simulate
     SNR = pDict['SNR']
     wControl = pDict['wControl']

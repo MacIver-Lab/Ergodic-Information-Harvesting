@@ -2,7 +2,7 @@ function makeFig7Plot(dataPath, savePath)
 close all;
 warning('off', 'MATLAB:print:FigureTooLargeForPage');
 GEN_DATA_PATH = @(fname) fullfile(dataPath, '\wiggle_attenuation_sim', fname);
-GEN_BEHAVIOR_DATA_PATH = @(fname) fullfile(dataPath, 'animal_behavior_data', fname);
+GEN_BEHAVIOR_DATA_PATH = @(fname) fullfile('./PublishedData/', 'animal_behavior_data', fname);
 GEN_SAVE_PATH = @(fname) fullfile(savePath, fname);
 % Lock random number generator seed
 rng(0);

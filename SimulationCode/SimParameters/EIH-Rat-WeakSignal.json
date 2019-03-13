@@ -311,7 +311,7 @@
             0.99,
             1.0
         ],
-        "wControl": 20
+        "wControl": 10
     },
     "eidParam": {
         "res": 101,
@@ -319,9 +319,9 @@
         "maxIter": 40,
         "eidType": "Entropy",
         "pLHistDepth": 1,
-        "pLSigmaAmpBayesian": 150,
-        "pLSigmaAmpEID": 150,
-        "pLSigmaAmp": 150,
+        "pLSigmaAmpBayesian": 100,
+        "pLSigmaAmpEID": 100,
+        "pLSigmaAmp": 100,
         "blindIdx": false,
         "blind": "n/a",
         "simType": "EH",
@@ -753,5 +753,6 @@
     ],
     "tRes": [
         101
-    ]
+    ],
+    "trajSim": true
 }

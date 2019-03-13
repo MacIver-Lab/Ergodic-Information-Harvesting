@@ -22,7 +22,7 @@ warning('off', 'MATLAB:rmpath:DirNotFound')
 %       'sm-fig5'-  panels for figure S5
 %       'sm-fig6'-  panels for figure S6
 % 
-targetFig = 'sm-fig5';
+targetFig = 'fig2';
 
 % Control whether or not to use previously simulated dataset
 % Use flag (USE_PUBLISHED_DATASET = flag)
@@ -50,8 +50,6 @@ addpath('./FigureCode/common/boundedline/Inpaint_nans/');
 %% Make production figure panels (do not change)
 mkdir(FIG_OUTPUT_PATH);
 switch targetFig
-    case 'fig1'
-        makeFig1Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'fig2'
         makeFig2Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'fig3'
