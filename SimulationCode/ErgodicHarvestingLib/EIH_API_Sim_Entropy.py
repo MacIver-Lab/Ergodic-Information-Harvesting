@@ -49,8 +49,7 @@ def EIH_Sim(*argv):
         eidParam.eidType = 'Entropy'
         eidParam.simType = 'EH'
 
-        filename = 'EIH' + \
-                '-SNR-' + str(eidParam.SNR)
+        filename = 'EIH' + '-SNR-' + str(eidParam.SNR)
                 
         if simType == 'trackingOnly':
             # Parse input parameters
@@ -59,7 +58,7 @@ def EIH_Sim(*argv):
             eidParam.saveDir = argv[4]
             if not exists(eidParam.saveDir):
                 print("Save folder {0} does not exist, creating...".format(eidParam.saveDir))
-                makedirs(eidParam.saveDir)
+                makedirs(eidParam.saveDir, exist_ok=True)
 
             # Load source file
             print('Loading source file {0}'.format(sourceFile))
