@@ -83,6 +83,7 @@ The container image is a fully self-contained Linux OS image with Python 3 depen
 We used [Cython](https://cython.org/) to accelerate the simulation which requires compiling some of the code before running the simulation. Compile the accelerated code by calling the following command (this only needs to be done once):
 ```bash
 cd /EIH
+chmod +x ./BuildCython.sh
 . ./BuildCython.sh
 ```
 
