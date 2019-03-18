@@ -206,7 +206,7 @@ set(gca,'XTickLabel', strcat(num2str((opt.XTick)'),'x'));
 set(gca,'YTickLabel', strcat(num2str((opt.YTick)'),'%'));
 set(gca, 'units', 'normalized');
 axesPosition = get(gca, 'Position');
-axesPosition(1:2) = [0.4, 0.3];
+axesPosition(1:2) = [0.4, 0.2];
 set(gca, 'Position', axesPosition);
 legend('off');
 print(gcf,'-dpdf',GEN_SAVE_PATH('fig7.pdf'));

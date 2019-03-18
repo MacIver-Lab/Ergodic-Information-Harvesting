@@ -46,7 +46,7 @@ for i = 1:length(attenSamp)
 end
 
 opt = [];
-opt.BoxDim = [8,5] * 0.5;
+opt.BoxDim = [8, 5] * 0.4;
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
 opt.YMinorTick = 'off';
@@ -65,7 +65,7 @@ ytickangle(45);
 legend('off');
 set(gca, 'units', 'normalized');
 axesPosition = get(gca, 'Position');
-axesPosition(1:2) = [0.4, 0.75];
+axesPosition(1:2) = [0.4, 0.7];
 set(gca, 'Position', axesPosition);
 
 axes; hold on;
@@ -79,7 +79,7 @@ ylabel('Position');
 set(gca,'XLim',[0,50]);
 set(gca,'YLim',[0.1,0.9]);
 opt = [];
-opt.BoxDim = [8,5] * 0.5;
+opt.BoxDim = [8, 5] * 0.4;
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
 opt.YMinorTick = 'off';
@@ -93,7 +93,7 @@ setAxesProp(opt, gca);
 legend('off');
 set(gca, 'units', 'normalized');
 axesPosition = get(gca, 'Position');
-axesPosition(1:2) = [0.4, 0.25];
+axesPosition(1:2) = [0.4, 0.1];
 set(gca, 'Position', axesPosition);
 
 axes; hold on;
@@ -112,7 +112,7 @@ set(gca,'YTick',[]);
 set(gca,'XTick',[0, freqWin(1), 0.5:0.5:freqWin(2)]);
 ylabel('Normalized Gain');
 opt = [];
-opt.BoxDim = [8,5] * 0.5;
+opt.BoxDim = [8, 5] * 0.4;
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
 opt.YMinorTick = 'off';
@@ -128,7 +128,7 @@ hLine.LineStyle = '--';
 legend('off');
 set(gca, 'units', 'normalized');
 axesPosition = get(gca, 'Position');
-axesPosition(1:2) = [0.4, 0.5];
+axesPosition(1:2) = [0.4, 0.4];
 set(gca, 'Position', axesPosition);
 print(GEN_SAVE_PATH('figS4.pdf'), '-dpdf');
 

@@ -19,7 +19,7 @@ plot(eodVar,'o-','LineWidth',2,'MarkerSize',12);
 
 % change settings
 opt = [];
-opt.BoxDim = [8,5] * 0.7;
+opt.BoxDim = [8, 5] * 0.5;
 opt.LineWidth = 2;
 opt.Markers = {'o'};
 opt.XLabel = 'Jamming Amplitude (mA)'; % xlabel
@@ -30,7 +30,7 @@ opt.YMinorTick = 'off';
 opt.XTick = 1:5;
 opt.YLimit = [0,6];
 opt.FontName = 'Helvetica';
-opt.FontSize = 22;
+opt.FontSize = 14;
 % apply the settings
 setAxesProp(opt, gca);
 legend('off');
@@ -82,7 +82,7 @@ patch(patchinfo);
 
 % Adjust Plot
 opt = [];
-opt.BoxDim = [8,5] * 0.7;
+opt.BoxDim = [8, 5] * 0.5;
 opt.LineWidth = [3, 3];
 opt.XLabel = 'Time (s)';
 opt.YLabel = 'Frequency (Hz)';
@@ -95,7 +95,7 @@ opt.YLim = [min([fJamLPF,fFishLPF])-0.5,...
 opt.YTick = [462, 465, 468, 471];
 opt.YLim = [461.5, 471];
 opt.FontName = 'Helvetica';
-% opt.FontSize = 22;
+opt.FontSize = 14;
 opt.Colors = [64/255, 0, 202/255;...
     179/255, 48/255, 0];
 % apply the settings
@@ -103,6 +103,6 @@ setAxesProp(opt, gca);
 legend('off');
 set(gca, 'units', 'normalized');
 axesPosition = get(gca, 'Position');
-axesPosition(1:2) = [0.3, 0.5];
+axesPosition(1:2) = [0.2, 0.5];
 set(gca, 'Position', axesPosition);
 print(GEN_SAVE_PATH('figS6.pdf'), '-dpdf');

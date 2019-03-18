@@ -202,7 +202,7 @@ set(gca,'XTickLabel',{...
 set(gca,'YTickLabel',{'1x', '2x', '3x'})
 set(gca, 'units', 'normalized');
 axesPosition = get(gca, 'Position');
-axesPosition(1:2) = [0.5, 0.4];
+axesPosition(1:2) = [0.6, 0.4];
 set(gca, 'Position', axesPosition);
 print(gcf,'-dpdf',GEN_SAVE_PATH('fig4AB-electric-fish.pdf'));
 
@@ -392,7 +392,7 @@ set(gca,'XTickLabel',{...
 set(gca,'YTickLabel',{'0', '2', '4', '6'})
 set(gca, 'units', 'normalized');
 axesPosition = get(gca, 'Position');
-axesPosition(1:2) = [0.5, 0.4];
+axesPosition(1:2) = [0.6, 0.4];
 set(gca, 'Position', axesPosition);
 print(gcf,'-dpdf',GEN_SAVE_PATH('fig4CD-mole.pdf'));
 
@@ -564,7 +564,7 @@ set(gca,'XTickLabel',{...
 set(gca,'YTickLabel',{'0', '2', '4', '6'})
 set(gca, 'units', 'normalized');
 axesPosition = get(gca, 'Position');
-axesPosition(1:2) = [0.5, 0.4];
+axesPosition(1:2) = [0.6, 0.4];
 set(gca, 'Position', axesPosition);
 print(gcf,'-dpdf',GEN_SAVE_PATH('fig4EF-cockroach.pdf'));
 

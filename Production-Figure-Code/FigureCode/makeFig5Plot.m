@@ -63,7 +63,7 @@ set(gca, 'FontName', 'Helvetica');
 ylabel('Fourier Magnitude');
 hLine = findobj(gca,'Type','line');
 opt = [];
-opt.BoxDim = [8, 5]*0.4;
+opt.BoxDim = [8, 5]*0.35;
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
 opt.YMinorTick = 'off';
@@ -101,7 +101,7 @@ patch(...
 xlabel('Frequency');
 ylabel('Fourier Magnitude');
 opt = [];
-opt.BoxDim = [8, 5]*0.4;
+opt.BoxDim = [8, 5]*0.35;
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
 opt.YMinorTick = 'off'; 
@@ -156,7 +156,7 @@ set(gca, 'FontName', 'Helvetica');
 ylabel('Fourier Magnitude');
 hLine = findobj(gca,'Type','line');
 opt = [];
-opt.BoxDim = [8, 5]*0.4;
+opt.BoxDim = [8, 5]*0.35;
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
 opt.YMinorTick = 'off';
@@ -189,13 +189,14 @@ plot(freqTicks, sensorMagLSNR(3, :), ...
 xlabel('Frequency');
 ylabel('Fourier Magnitude');
 opt = [];
-opt.BoxDim = [8, 5]*0.4;
+opt.BoxDim = [8, 5]*0.35;
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
 opt.YMinorTick = 'off'; 
 opt.XTick = [0, 0.25, 1];
 opt.YTick = [];
 opt.XLim = [0, 1];
+opt.YLim = [0, 210];
 opt.FontSize = 12;
 opt.FontName = 'Helvetica';
 opt.Colors = barColors;
@@ -297,7 +298,7 @@ patch(...
     'FaceColor', 'k', 'FaceAlpha', 0.1, ...
     'EdgeAlpha', 0)
 opt = [];
-opt.BoxDim = [8, 5]*0.4;
+opt.BoxDim = [8, 5]*0.35;
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
 opt.YMinorTick = 'off';
@@ -329,7 +330,7 @@ set(gca, 'XTickLabel', ...
 set(gca, 'FontName', 'Helvetica');
 ylabel('Fourier Magnitude');
 opt = [];
-opt.BoxDim = [8, 5]*0.4;
+opt.BoxDim = [8, 5]*0.35;
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
 opt.YMinorTick = 'off';
@@ -389,7 +390,7 @@ set(gca, 'FontName', 'Helvetica');
 ylabel('Fourier Magnitude');
 hLine = findobj(gca,'Type','line');
 opt = [];
-opt.BoxDim = [8, 5]*0.4;
+opt.BoxDim = [8, 5]*0.35;
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
 opt.YMinorTick = 'off';
@@ -424,7 +425,7 @@ patch(...
     'FaceColor', 'k', 'FaceAlpha', 0.1, ...
     'EdgeAlpha', 0)
 opt = [];
-opt.BoxDim = [8, 5]*0.4;
+opt.BoxDim = [8, 5]*0.35;
 opt.ShowBox = 'off';
 opt.YLim = [0, 100];
 opt.XMinorTick = 'off';
@@ -521,7 +522,7 @@ patch(...
     'FaceColor', 'k', 'FaceAlpha', 0.1, ...
     'EdgeAlpha', 0);
 opt = [];
-opt.BoxDim = [8, 5]*0.4;
+opt.BoxDim = [8, 5]*0.35;
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
 opt.YMinorTick = 'off';
@@ -552,7 +553,7 @@ set(gca, 'FontName', 'Helvetica');
 ylabel('Fourier Magnitude');
 hLine = findobj(gca,'Type','line');
 opt = [];
-opt.BoxDim = [8, 5]*0.4;
+opt.BoxDim = [8, 5]*0.35;
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
 opt.YMinorTick = 'off';
@@ -615,10 +616,11 @@ patch(...
     'FaceColor', 'k', 'FaceAlpha', 0.1, ...
     'EdgeAlpha', 0);
 opt = [];
-opt.BoxDim = [8, 5]*0.4;
+opt.BoxDim = [8, 5]*0.35;
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
 opt.YMinorTick = 'off';
+opt.YLim = yRange;
 opt.FontName = 'Helvetica';
 opt.FontSize = 14;
 setAxesProp(opt);
@@ -646,7 +648,7 @@ set(gca, 'FontName', 'Helvetica');
 ylabel('Fourier Magnitude');
 hLine = findobj(gca,'Type','line');
 opt = [];
-opt.BoxDim = [8, 5]*0.4;
+opt.BoxDim = [8, 5]*0.35;
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
 opt.YMinorTick = 'off';
@@ -764,7 +766,7 @@ patch(...
     'FaceColor', 'k', 'FaceAlpha', 0.1, ...
     'EdgeAlpha', 0);
 opt = [];
-opt.BoxDim = [8, 5]*0.4;
+opt.BoxDim = [8, 5]*0.35;
 opt.YLabel = 'Gain'; % ylabel
 opt.XLim = [min(freq'), max(freq')];
 opt.YLim = [0.10, 3.3];
@@ -819,7 +821,7 @@ patch(...
     'FaceColor', 'k', 'FaceAlpha', 0.1, ...
     'EdgeAlpha', 0);
 opt = [];
-opt.BoxDim = [8, 5]*0.4;
+opt.BoxDim = [8, 5]*0.35;
 opt.YLabel = 'Gain'; % ylabel
 opt.XLim = [min(freq'), max(freq')];
 opt.YLim = [0.10, 3.3];
@@ -862,7 +864,7 @@ set(gca, 'FontName', 'Helvetica');
 ylabel('Gain');
 hLine = findobj(gca,'Type','line');
 opt = [];
-opt.BoxDim = [8, 5]*0.4;
+opt.BoxDim = [8, 5]*0.35;
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
 opt.YMinorTick = 'off';
@@ -898,7 +900,7 @@ set(gca, 'FontName', 'Helvetica');
 ylabel('Gain');
 hLine = findobj(gca,'Type','line');
 opt = [];
-opt.BoxDim = [8, 5]*0.4;
+opt.BoxDim = [8, 5]*0.35;
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
 opt.YMinorTick = 'off';

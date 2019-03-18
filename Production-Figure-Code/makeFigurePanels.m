@@ -23,13 +23,13 @@ warning('off', 'MATLAB:rmpath:DirNotFound')
 %       'sm-fig5'-  panels for figure S5
 %       'sm-fig6'-  panels for figure S6
 %
-targetFig = 'all';
+targetFig = 'sm-fig6';
 
 % Control whether or not to use previously simulated dataset
 % Use flag (USE_PUBLISHED_DATASET = flag)
 %   1 | use previouly published dataset (default)
 %   0 | use locally simulated data
-USE_PUBLISHED_DATASET = 0;
+USE_PUBLISHED_DATASET = 1;
 
 %% Internal parameters (do not change)
 FIG_DATA_PATH = './PublishedData/';
