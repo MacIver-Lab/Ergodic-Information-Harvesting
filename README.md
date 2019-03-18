@@ -112,6 +112,8 @@ The figure generation code is written in MATLAB so MATLAB R2017a or a more recen
 
 You should see a new MATLAB figure containing Figure 2 panels. PDF(s) will be saved under `Ergodic-Information-Harvesting/Production-Figure-Code/FigureOutput/fig2/`.
 
+To reproduce all the figures, follow the same steps, but set `targetFig = 'all'`
+
 ### Benchmark Running Time
 - **Benchmark on PC**: `~86.15 hours` on a 2015 MacOS desktop system (iMac 2015, Intel i7 Quad Core with 4.4GHz turboboost, running with `nThreads = 8`)
 - **Benchmark on HPCC**: `~10.79 hours` on Northwestern University QUEST HPCC system's 8th generation computing node with single Intel Xeon Gold 6132 2.6 GHz Intel® QPI 2666 MHz with 3.70 GHz turboboost (Linux OS, 28 physical cores running with `nThreads = 56`)
