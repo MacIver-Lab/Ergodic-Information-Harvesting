@@ -1,7 +1,7 @@
 function makeFigurePanels
 % makeFigurePanels uses the simulated data to reproduce the panels used in
 % the paper
-% 
+%
 % Chen Chen
 
 warning('off', 'MATLAB:MKDIR:DirectoryExists');
@@ -9,6 +9,7 @@ warning('off', 'MATLAB:rmpath:DirNotFound')
 %% Specify Target Figure to Plot (Change this as needed)
 % Target figure panel
 %    Choose one of the following:
+%       'all'    -  reproduce all figures
 %       'fig2'   -  panels for figure 2
 %       'fig3'   -  panels for figure 3
 %       'fig4'   -  panels for figure 4
@@ -21,8 +22,8 @@ warning('off', 'MATLAB:rmpath:DirNotFound')
 %       'sm-fig4'-  panels for figure S4
 %       'sm-fig5'-  panels for figure S5
 %       'sm-fig6'-  panels for figure S6
-% 
-targetFig = 'fig2';
+%
+targetFig = 'all';
 
 % Control whether or not to use previously simulated dataset
 % Use flag (USE_PUBLISHED_DATASET = flag)
@@ -48,6 +49,24 @@ addpath('./FigureCode/common/boundedline/boundedline/');
 addpath('./FigureCode/common/boundedline/Inpaint_nans/');
 
 %% Make production figure panels (do not change)
+if strcmp(targetFig, 'all')
+    allFigs = {'fig2', 'fig3', 'fig4', 'fig5', 'fig6', 'fig7', ...
+        'sm-fig1', 'sm-fig2', 'sm-fig3', 'sm-fig4', 'sm-fig5', 'sm-fig6', 'sm-fig7'};
+    for i = 1:length(allFigs)
+        targetFig = allFigs{i};
+        FIG_OUTPUT_PATH = sprintf('./FigureOutput/%s/', targetFig);
+        if ~USE_PUBLISHED_DATASET && flagNeedSimData(targetFig)
+            FIG_DATA_PATH = FIG_DATA_PATH_LOCAL;
+        else
+            FIG_DATA_PATH = './PublishedData/';
+        end
+        callFigureCode(targetFig, FIG_DATA_PATH, FIG_OUTPUT_PATH, USE_PUBLISHED_DATASET);
+    end
+else
+    callFigureCode(targetFig, FIG_DATA_PATH, FIG_OUTPUT_PATH, USE_PUBLISHED_DATASET)
+end
+
+function callFigureCode(targetFig, FIG_DATA_PATH, FIG_OUTPUT_PATH, USE_PUBLISHED_DATASET)
 mkdir(FIG_OUTPUT_PATH);
 switch targetFig
     case 'fig2'
