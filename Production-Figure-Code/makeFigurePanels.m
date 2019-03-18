@@ -29,7 +29,7 @@ targetFig = 'all';
 % Use flag (USE_PUBLISHED_DATASET = flag)
 %   1 | use previouly published dataset (default)
 %   0 | use locally simulated data
-USE_PUBLISHED_DATASET = 1;
+USE_PUBLISHED_DATASET = 0;
 
 %% Internal parameters (do not change)
 FIG_DATA_PATH = './PublishedData/';
@@ -51,7 +51,7 @@ addpath('./FigureCode/common/boundedline/Inpaint_nans/');
 %% Make production figure panels (do not change)
 if strcmp(targetFig, 'all')
     allFigs = {'fig2', 'fig3', 'fig4', 'fig5', 'fig6', 'fig7', ...
-        'sm-fig1', 'sm-fig2', 'sm-fig3', 'sm-fig4', 'sm-fig5', 'sm-fig6', 'sm-fig7'};
+        'sm-fig1', 'sm-fig2', 'sm-fig3', 'sm-fig4', 'sm-fig5', 'sm-fig6'};
     for i = 1:length(allFigs)
         targetFig = allFigs{i};
         FIG_OUTPUT_PATH = sprintf('./FigureOutput/%s/', targetFig);
