@@ -455,7 +455,7 @@ getCockroachFilename = @(x) dir(GEN_BEHAVIOR_DATA_PATH(...
 for i = 1:length(cockroachData.trial_c12.trial)
     file = getCockroachFilename(cockroachData.trial_c12.trial{i});
     fprintf('Parsing file %s...\n', file.name);
-    rawData = xlsread([file.folder, '/', file.name]);
+    rawData = csvread([file.folder, '/', file.name]);
     rawData = parseCockroachData(rawData);
     % FFT
     [fftTicks, fftMagX_lSNR] = decomposeFourierMag(rawData.head(:, 1), [], 1/15, 2);
@@ -470,7 +470,7 @@ end
 for i = 1:length(cockroachData.trial_c4.trial)
     file = getCockroachFilename(cockroachData.trial_c4.trial{i});
     fprintf('Parsing file %s...\n', file.name);
-    rawData = xlsread([file.folder, '/', file.name]);
+    rawData = csvread([file.folder, '/', file.name]);
     rawData = parseCockroachData(rawData);
     % FFT
     [fftTicks, fftMagX_hSNR] = decomposeFourierMag(rawData.head(:, 1), [], 1/15, 2);
