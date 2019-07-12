@@ -207,12 +207,14 @@ if ~legacyCall
     params.addParameter('style','patch', @(x) ischar(x) && any(strncmp(x,{'patch','line','sdline'},inf)) ); 
     params.addParameter('interval','SEM', @(x) ischar(x) && any(strncmp(x,{'SEM','tInterval'},inf)) ); 
     params.addParameter('markMedian', false, @(x) islogical(x));
-    params.addParameter('alpha', 0.5, @(x) isnumeric(x) & isscalar(x));
+    params.addParameter('alpha', 0.4, @(x) isnumeric(x) & isscalar(x));
     params.addParameter('jitterScale', 0.1, @(x) isnumeric(x) & isscalar(x));
     params.addParameter('dotSize', 60, @(x) isnumeric(x) & isscalar(x));
     params.addParameter('plotColor', 'r', @(x) ischar(x));
     params.addParameter('blendPatchColor', false, @(x) islogical(x));
     params.addParameter('plotRawData', true, @(x) islogical(x));
+    params.addParameter('rawDataMarkerColor', [0.1, 0.1, 0.1], @(x) length(x) == 3);
+    params.addParameter('scaledJitter', false, @(x) islogical(x));
 
     params.parse(varargin{:});
 
@@ -227,7 +229,9 @@ if ~legacyCall
     plotColor = params.Results.plotColor;
     plotRawData = params.Results.plotRawData;
     blendPatchColor = params.Results.blendPatchColor;
-
+    rawDataMarkerColor = params.Results.rawDataMarkerColor;
+    scaledJitter = params.Results.scaledJitter;
+    
     %Set interval function
     switch interval
         case 'SEM'
@@ -243,11 +247,6 @@ end
 
 %If x is logical then the function fails. So let's make sure it's a double
 x=double(x);
-
-if jitter==0 && strcmp(style,'patch') 
-    warning('A zero value for jitter means no patch object visible')
-end
-
 
 if isvector(y) && isvector(x) && length(x)>1
     x=x(:);
@@ -379,8 +378,13 @@ function [h,statsOut]=myPlotter(X,Y)
        else
            h(k).semPtch=patchMaker(SEM(k), [140,140,140]/255.0);
        end
-       h(k).mu=plot([X(k)-jitterScale,X(k)+jitterScale],[mu(k),mu(k)],['-',plotColor],...
-            'linewidth',2);
+       if scaledJitter
+           h(k).mu=plot([X(k)-jitterScale*X(k),X(k)+jitterScale*X(k)],[mu(k),mu(k)],['-',plotColor],...
+               'linewidth',2);
+       else
+           h(k).mu=plot([X(k)-jitterScale,X(k)+jitterScale],[mu(k),mu(k)],['-',plotColor],...
+               'linewidth',2);
+       end
        if markMedian
           statsOut(k).median = med(k);
           h(k).med=plot([X(k)-jitterScale,X(k)+jitterScale],[med(k),med(k)],[':',plotColor],...
@@ -394,8 +398,8 @@ function [h,statsOut]=myPlotter(X,Y)
         
      if plotRawData
          h(k).data=scatter(thisX+J, thisY, dotSize, ...
-             'MarkerFaceColor', [0.1, 0.1, 0.1], ...
-             'MarkerEdgeColor', [0.1, 0.1, 0.1]);
+             'MarkerFaceColor', rawDataMarkerColor, ...
+             'MarkerEdgeColor', rawDataMarkerColor);
          h(k).data.MarkerFaceAlpha = alpha;
          h(k).data.MarkerEdgeAlpha = 0;
      end
@@ -436,8 +440,13 @@ function [h,statsOut]=myPlotter(X,Y)
      function ptch=patchMaker(thisInterval,color)
          l=mu(k)-thisInterval;
          u=mu(k)+thisInterval;
-         ptch=patch([X(k)-jitterScale, X(k)+jitterScale, X(k)+jitterScale, X(k)-jitterScale],...
+         if scaledJitter
+             ptch=patch([X(k)-jitterScale*X(k), X(k)+jitterScale*X(k), X(k)+jitterScale*X(k), X(k)-jitterScale*X(k)],...
                 [l,l,u,u], 0);
+         else
+             ptch=patch([X(k)-jitterScale, X(k)+jitterScale, X(k)+jitterScale, X(k)-jitterScale],...
+                 [l,l,u,u], 0);
+         end
          set(ptch,'edgecolor',color*0.8,'facecolor',color)
      end %function patchMaker
 

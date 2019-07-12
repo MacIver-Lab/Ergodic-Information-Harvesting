@@ -112,6 +112,7 @@ def SimulationMain(dataFiles, nThread=1):
             eidParam.filename = (
                 filename
                 .replace('SNR', 'SNR-' + str(eidParam.SNR))
+                .replace('wC', 'wC-' + str(ergParam.wControl))
                 .replace('RandSeed', 'RandSeed-' + str(eidParam.randSeed))
             )
 

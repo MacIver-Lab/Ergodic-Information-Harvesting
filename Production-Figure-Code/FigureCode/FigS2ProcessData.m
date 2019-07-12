@@ -1,4 +1,4 @@
-function [snrErg, snrInf, RE_Erg, RE_Inf] = FigS3ProcessData(dataPath, savePath)
+function [snrErg, snrInf, RE_Erg, RE_Inf] = FigS2ProcessData(dataPath, savePath)
 
 warning('off', 'MATLAB:print:FigureTooLargeForPage');
 warning('off', 'MATLAB:MKDIR:DirectoryExists');

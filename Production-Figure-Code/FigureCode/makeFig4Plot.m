@@ -9,580 +9,976 @@ GEN_SAVE_PATH = @(fname) fullfile(savePath, fname);
 rng(0);
 
 %% Electric Fish Behavioral Trials
-FPS = 60;
-cumDist = @(x) sum(abs(diff(x)));
-disp('*****************************************************');
-disp('Electric fish behavioral tracking data');
-% Strong Signal, n = 10 trials, with volitational motion cropped
-load(GEN_BEHAVIOR_DATA_PATH('/ElectricFish/Eigenmannia-sp-StrongSignal.mat'), 'averageTrialLenInSec', 'trialLength', 'strongSigData');
-nTrials = length(trialLength);
-strongSig = zeros(nTrials, 2, 'double');
-for i = 1:nTrials
-    strongSig(i,1) = cumDist(strongSigData{i,1});
-    strongSig(i,2) = cumDist(strongSigData{i,2});
+medFreqRange = [0.25, 1];
+cmap = [56, 180, 74; ...
+    161, 30, 34] / 255;
+barColors = [[75, 111, 182]/255; cmap];
+rng(0);
+% Load behavior data
+fish_HSNR = load(GEN_BEHAVIOR_DATA_PATH('ElectricFish/Eigenmannia-sp-StrongSignal.mat'), 'strongSigData');
+fish_HSNR = fish_HSNR.strongSigData;
+fish_LSNR = load(GEN_BEHAVIOR_DATA_PATH('ElectricFish/Eigenmannia-sp-WeakSignal.mat'), 'weakSigData');
+fish_LSNR = fish_LSNR.weakSigData;
+
+for i = 1:length(fish_HSNR)
+    % loop through strong signal trials
+    fishTraj = fish_HSNR{i, 1};
+    % FFT
+    [freqTicks, fishMagHSNR(i, :)] = decomposeFourierMag(fishTraj, [], 1/60);
 end
-fprintf('Strong signal trials, n = %d, average trial length = %.2f seconds\n', ...
-    length(trialLength), averageTrialLenInSec);
-
-% Weak Signal, n = 11
-load(GEN_BEHAVIOR_DATA_PATH('/ElectricFish/Eigenmannia-sp-WeakSignal.mat'), 'averageTrialLenInSec', 'trialLength', 'weakSigData');
-nTrials = length(trialLength);
-weakSig = zeros(nTrials, 2, 'double');
-for i = 1:nTrials
-    weakSig(i,1) = cumDist(weakSigData{i,1});
-    weakSig(i,2) = cumDist(weakSigData{i,2});
+for i = 1:length(fish_LSNR)
+    % loop through weak signal trials
+    fishTraj = fish_LSNR{i, 1};
+    % FFT
+    [freqTicks, fishMagLSNR(i, :)] = decomposeFourierMag(fishTraj, [], 1/60);
 end
-fprintf('Weak signal trials, n = %d, average trial length = %.2f seconds\n', ...
-    length(trialLength), averageTrialLenInSec);
+% Compute averaged medium frequency range magnitude
+freqIdxStart = find(freqTicks <= medFreqRange(1), 1,'last'); % starting index
+freqIdxEnd = find(freqTicks >= medFreqRange(2), 1,'first');  % start index
+freqIdxRange = freqIdxStart:freqIdxEnd;
+medMagHSNR = mean(fishMagHSNR(:, freqIdxRange), 2);
+medMagLSNR = mean(fishMagLSNR(:, freqIdxRange), 2);
 
-% Statistical Analysis
-% Compute relative exploration (re)
-reStrongSignalFish = strongSig(:,1) ./ strongSig(:, 2);
-reWeakSignalFish = weakSig(:,1) ./ weakSig(:, 2);
+magList = [medMagHSNR', medMagLSNR'];
+magList = magList / max(magList);
+magLabel = [ones(1,length(medMagHSNR)), 2*ones(1,length(medMagLSNR))];
 
-% Ergodic Harvesting Data
-% Load Ergodic data
-EH_lSNR_files = dir(GEN_DATA_PATH('EIH-ElectricFish-WeakSignal-RandSeed-*.mat'));
-EH_hSNR_files = dir(GEN_DATA_PATH('EIH-ElectricFish-StrongSignal-RandSeed-*.mat'));
-IT_lSNR_files = dir(GEN_DATA_PATH('Infotaxis-ElectricFish-WeakSignal-RandSeed-*.mat'));
-IT_hSNR_files = dir(GEN_DATA_PATH('Infotaxis-ElectricFish-StrongSignal-RandSeed-*.mat'));
-
-reErgSS = zeros(1, length(EH_lSNR_files), 'double');
-reErgWS = zeros(1, length(EH_hSNR_files), 'double');
-reInfSS = zeros(1, length(IT_lSNR_files), 'double');
-reInfWS = zeros(1, length(IT_hSNR_files), 'double');
-
-for i = 1:length(EH_lSNR_files)
-    EH_lSNR = load(GEN_DATA_PATH(EH_lSNR_files(i).name), 'oTrajList', 'sTrajList', 'dt');
-    EH_hSNR = load(GEN_DATA_PATH(EH_hSNR_files(i).name), 'oTrajList', 'sTrajList', 'dt');
-    IT_lSNR = load(GEN_DATA_PATH(IT_lSNR_files(i).name), 'oTrajList', 'sTrajList', 'dt');
-    IT_hSNR = load(GEN_DATA_PATH(IT_hSNR_files(i).name), 'oTrajList', 'sTrajList', 'dt');
-    
-    % Filter trajectory
-    trajHighCutFreq = 2.10;
-    EH_lSNR.sTrajList = LPF(EH_lSNR.sTrajList, 1/EH_lSNR.dt, trajHighCutFreq);
-    EH_hSNR.sTrajList = LPF(EH_hSNR.sTrajList, 1/EH_hSNR.dt, trajHighCutFreq);
-    IT_lSNR.sTrajList = LPF(IT_lSNR.sTrajList, 1/IT_lSNR.dt, trajHighCutFreq);
-    IT_hSNR.sTrajList = LPF(IT_hSNR.sTrajList, 1/IT_hSNR.dt, trajHighCutFreq);
-    
-    % Cumulative 1D distance traveled
-    EH_hSNR.sPower = cumDist(EH_hSNR.sTrajList(100:end));
-    EH_hSNR.oPower = cumDist(EH_hSNR.oTrajList(100:end));
-    EH_lSNR.sPower = cumDist(EH_lSNR.sTrajList(100:end));
-    EH_lSNR.oPower = cumDist(EH_lSNR.oTrajList(100:end));
-    IT_hSNR.sPower = cumDist(IT_hSNR.sTrajList(100:end));
-    IT_hSNR.oPower = cumDist(IT_hSNR.oTrajList(100:end));
-    IT_lSNR.sPower = cumDist(IT_lSNR.sTrajList(100:end));
-    IT_lSNR.oPower = cumDist(IT_lSNR.oTrajList(100:end));
-    
-    reErgSS(i) = EH_hSNR.sPower/EH_hSNR.oPower;
-    reErgWS(i) = EH_lSNR.sPower/EH_lSNR.oPower;
-    reInfSS(i) = IT_hSNR.sPower/IT_hSNR.oPower;
-    reInfWS(i) = IT_lSNR.sPower/IT_lSNR.oPower;
-end
-reErgSS_Mean = mean(reErgSS);
-reErgWS_Mean = mean(reErgWS);
-reInfSS_Mean = mean(reInfSS);
-reInfWS_Mean = mean(reInfWS);
-reErgSS_SEM = 1.96 * std(reErgSS) / sqrt(length(reErgSS));
-reErgWS_SEM = 1.96 * std(reErgWS) / sqrt(length(reErgWS));
-reInfSS_SEM = 1.96 * std(reInfSS) / sqrt(length(reInfSS));
-reInfWS_SEM = 1.96 * std(reInfWS) / sqrt(length(reInfWS));
-
-fprintf(['---------------------------------------------------------\n',...
-    '|         Relative exploration (mean +/- 95%% CI)        |\n', ...
-    '|--------------------------------------------------------|',...
-    '\n|> Ergodic Harvesting (strong signal) = %.3f +/- %.3f <|', ...
-    '\n|> Ergodic Harvesting (weak signal)   = %.3f +/- %.3f <|',...
-    '\n|>     Infotaxis (strong signal)      = %.3f +/- %.3f <|', ...
-    '\n|>     Infotaxis (weak signal)        = %.3f +/- %.3f <|\n',...
-    '----------------------------------------------------------\n'], ...
-    reErgSS_Mean, reErgSS_SEM, reErgWS_Mean, reErgWS_SEM, ...
-    reInfSS_Mean, reInfSS_SEM, reInfWS_Mean, reInfWS_SEM);
-
-
-% Compute statistics
-% Ranksum test, right tail = median of A is greater than median of B
-[P, ~, Stats] = ranksum(reWeakSignalFish, reStrongSignalFish,...
-    'tail', 'right');
-fprintf('Behavior statistics: Wilcoxon rank sum test (one-sided) - p = %.4f (n = %d)\n', ...
-    P, length([reWeakSignalFish; reStrongSignalFish]));
-[P, ~, Stats] = ranksum(reErgWS, reErgSS,...
-    'tail', 'right');
-fprintf('EIH statistics: Wilcoxon rank sum test (one-sided) - p = %.4f (n = %d)\n', ...
-    P, length([reErgWS, reErgSS]));
-
-
-% Plot group data
-figure(1); clf; hold on;
+% Behavior spectrum statistics
+figure(1); clf;
 set(gcf, ...
     'units','normalized','outerposition',[0 0 1 1], ...
     'PaperPositionMode','auto', ...
     'PaperOrientation','landscape', ...
-    'PaperSize', [13 8]);
-hL = line([0,3], [1,1], 'LineStyle', '--', ...
-    'Color', [140,140,140]/255.0, 'LineWidth',4);
-hBoxPlot = notBoxPlot([reStrongSignalFish',reWeakSignalFish'], ...
-    [1.1*ones(1,length(reStrongSignalFish)), 1.9*ones(1,length(reWeakSignalFish))], ...
-    'jitter', 0.04, 'alpha', 0.5);
+    'PaperSize', [16 8]);
+notBoxPlot(magList, magLabel, 'jitter', 0.05, 'alpha', 0.5);
+ylim([0, 1.2])
+xlim([0.5, 2.5]);
+set(gca, 'YTick', []);
+set(gca, 'XTick', [1, 2]);
+set(gca, 'XTickLabel', ...
+    {'\color[rgb]{0.1961,0.7059,0.2902}Strong Signal', ...
+    '\color[rgb]{0.6353,0,0}Weak Signal'});
+set(gca, 'FontName', 'Helvetica');
+ylabel('Fourier Magnitude');
+hLine = findobj(gca,'Type','line');
 opt = [];
-opt.BoxDim = [8,5]*0.6;
-opt.YLabel = 'Relative Exploration'; % ylabel
-opt.XLim = [0.5, 2.5];
-opt.YLim = [0.75, 3.5];
-opt.YTick = [1, 2, 3];
+opt.BoxDim = [8, 5]*0.35;
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
 opt.YMinorTick = 'off';
+opt.YTick = [0, 1];
 opt.FontName = 'Helvetica';
+opt.FontSize = 12;
 setAxesProp(opt);
-hLine = findobj(gca,'Type','line');
-hL.Color = [140,140,140]/255.0;
-hL.LineWidth = 4;
-hL.LineStyle = '--';
-hLine(1).LineWidth = 5;
-hLine(2).LineWidth = 5;
-hLine(1).Color = [162,0,0]/255.0;
-hLine(2).Color = [50,180,74]/255.0;
-legend(gca, 'off');
-set(gca,'XTickLabel',{...
-    '\color[rgb]{0.1961,0.7059,0.2902}Strong Signal',...
-    '\color[rgb]{0.6353,0,0}Weak Signal'})
-set(gca,'YTickLabel',{'1x', '2x', '3x'})
+legend('off');
+hLine(1).LineWidth = 4;
+hLine(1).Color = cmap(2, :);
+hLine(2).LineWidth = 4;
+hLine(2).Color = cmap(1, :);
 set(gca, 'units', 'normalized');
 axesPosition = get(gca, 'Position');
-axesPosition(1:2) = [0.2, 0.4];
+axesPosition(1:2) = [0.5, 0.5];
 set(gca, 'Position', axesPosition);
+title('Electric Fish (Behavior)', 'FontSize', 12)
+% Test statistics (non-parametric ANOVA)
+p = kruskalwallis(magList, magLabel, 'off');
 
-% EIH and Infotaxis
+% Behavior FFT
 axes; hold on;
-hL = line([-1,5], [1,1], 'LineStyle', '--', ...
-    'Color', [140,140,140]/255.0, 'LineWidth',4);
-hBoxPlot = notBoxPlot([reErgSS, reInfSS, reErgWS, reInfWS], ...
-    [0.5*ones(1,length(reErgSS)), ...
-    0.75*ones(1,length(reInfSS)), ...
-    1.25*ones(1,length(reErgWS)),...
-    1.5*ones(1,length(reInfWS))], ...
-    'jitter', 0.04, 'alpha', 0.5);
-cmap = [...
-    85, 1, 159; ...
-    255, 196, 3;...
-    85, 1, 159; ...
-    255, 196, 3;...
-    ] ./ 255;
+[~, refugeMag] = decomposeFourierMag(fish_HSNR{1, 2}, [], 1/60);
+nrmFactor = max([fishMagHSNR(2, :),fishMagLSNR(1, :),refugeMag']);
+plot(freqTicks, refugeMag/nrmFactor, ...
+        'LineWidth', 2, 'Color', barColors(1, :));
+plot(freqTicks, fishMagHSNR(2, :)/nrmFactor, ...
+        'LineWidth', 2, 'Color', cmap(1, :));
+plot(freqTicks, fishMagLSNR(1, :)/nrmFactor, ...
+    'LineWidth', 2, 'Color', cmap(2, :));
+ylim([0, 1]);
+patch(...
+    'Vertices', [0.25, 0; 1, 0; 1, 1.7e5; 0.25, 1.7e5], ...
+    'Faces', [1, 2, 3, 4], ...
+    'FaceColor', 'k', 'FaceAlpha', 0.1, ...
+    'EdgeAlpha', 0)
+xlabel('Frequency');
+ylabel('Fourier Magnitude');
 opt = [];
-opt.BoxDim = [8,5]*0.6;
-opt.YLabel = 'Relative Exploration'; % ylabel
-opt.YLim = [0.75, 3.5];
-opt.YTick = [1, 2, 3];
-opt.XLim = [0,2];
-opt.XTick = [0.625, 1.375];
+opt.BoxDim = [8, 5]*0.35;
+opt.ShowBox = 'off';
+opt.XMinorTick = 'off';
+opt.YMinorTick = 'off'; 
+opt.XTick = [0, 0.25, 1];
+opt.YTick = [0, 1];
+opt.XLim = [0.0, 1];
+opt.FontSize = 12;
+opt.FontName = 'Helvetica';
+opt.Colors = barColors;
+setAxesProp(opt);
+legend(gca, 'off');
+set(gca, 'units', 'normalized');
+axesPosition = get(gca, 'Position');
+axesPosition(1:2) = [0.1, 0.5];
+set(gca, 'Position', axesPosition);
+title('Electric Fish (Behavior)', 'FontSize', 12)
+
+% Load simulation data
+eihFilesHSNR = dir(GEN_DATA_PATH('EIH-ElectricFish-StrongSignal-RandSeed-*.mat'));
+eihFilesLSNR = dir(GEN_DATA_PATH('EIH-ElectricFish-WeakSignal-RandSeed-*.mat'));
+for i = 1:length(eihFilesHSNR)
+    dat = load(GEN_DATA_PATH(eihFilesHSNR(i).name), 'oTrajList', 'sTrajList', 'dt');
+    % loop through strong signal trials
+    sensorTraj = dat.sTrajList;
+    % FFT
+    [freqTicks, sensorMagHSNR(i, :)] = decomposeFourierMag(sensorTraj, [], dat.dt/2);
+end
+for i = 1:length(eihFilesLSNR)
+    dat = load(GEN_DATA_PATH(eihFilesLSNR(i).name), 'oTrajList', 'sTrajList', 'dt');
+    % loop through strong signal trials
+    sensorTraj = dat.sTrajList;
+    % FFT
+    [freqTicks, sensorMagLSNR(i, :)] = decomposeFourierMag(sensorTraj, [], dat.dt/2);
+end
+% Compute averaged medium frequency range magnitude
+medMagHSNR_EIH = mean(sensorMagHSNR(:, freqIdxRange), 2);
+medMagLSNR_EIH = mean(sensorMagLSNR(:, freqIdxRange), 2);
+
+magList = [medMagHSNR_EIH', medMagLSNR_EIH'];
+magList = magList / max(magList);
+magLabel = [ones(1,length(medMagHSNR_EIH)), 2*ones(1,length(medMagLSNR_EIH))];
+
+axes; hold on;
+notBoxPlot(magList, magLabel, 'jitter', 0.05, 'alpha', 0.5);
+ylim([0, 1.2]);
+xlim([0.5, 2.5]);
+set(gca, 'YTick', []);
+set(gca, 'XTick', [1, 2]);
+set(gca, 'XTickLabel', ...
+    {'\color[rgb]{0.1961,0.7059,0.2902}Strong Signal', ...
+    '\color[rgb]{0.6353,0,0}Weak Signal'});
+set(gca, 'FontName', 'Helvetica');
+ylabel('Fourier Magnitude');
+hLine = findobj(gca,'Type','line');
+opt = [];
+opt.BoxDim = [8, 5]*0.35;
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
 opt.YMinorTick = 'off';
+opt.YTick = [0, 1];
 opt.FontName = 'Helvetica';
-opt.Colors = cmap;
+opt.FontSize = 12;
 setAxesProp(opt);
-hLine = findobj(gca,'Type','line');
-hL.Color = [140,140,140]/255.0;
-hL.LineWidth = 4;
-hL.LineStyle = '--';
-hLine(1).LineWidth = 5;
-hLine(2).LineWidth = 5;
-hLine(3).LineWidth = 5;
-hLine(4).LineWidth = 5;
-hLine(1).Color = cmap(1, :);
-hLine(2).Color = cmap(2, :);
-hLine(3).Color = cmap(1, :);
-hLine(4).Color = cmap(2, :);
-legend(gca, 'off');
-set(gca,'XTickLabel',{...
-    '\color[rgb]{0.1961,0.7059,0.2902}Strong Signal',...
-    '\color[rgb]{0.6353,0,0}Weak Signal'})
-set(gca,'YTickLabel',{'1x', '2x', '3x'})
+legend('off');
+hLine(1).LineWidth = 4;
+hLine(1).Color = cmap(2, :);
+hLine(2).LineWidth = 4;
+hLine(2).Color = cmap(1, :);
 set(gca, 'units', 'normalized');
 axesPosition = get(gca, 'Position');
-axesPosition(1:2) = [0.6, 0.4];
+axesPosition(1:2) = [0.7, 0.5];
 set(gca, 'Position', axesPosition);
-print(gcf,'-dpdf',GEN_SAVE_PATH('fig4AB-electric-fish.pdf'));
+title('Electric Fish (Simulation)', 'FontSize', 12)
+% Test statistics (non-parametric ANOVA)
+p = kruskalwallis(magList, magLabel, 'off');
+
+% Plot FFT
+axes; hold on;
+dat = load(GEN_DATA_PATH(eihFilesHSNR(1).name), 'oTrajList', 'dt');
+[~, trajMag] = decomposeFourierMag(dat.oTrajList, [], dat.dt/2);
+nrmFactor = max([sensorMagHSNR(3, :),sensorMagLSNR(3, :),trajMag]);
+plot(freqTicks, trajMag/nrmFactor, ...
+        'LineWidth', 2, 'Color', [75, 111, 182]/255);
+plot(freqTicks, sensorMagHSNR(3, :)/nrmFactor, ...
+        'LineWidth', 2, 'Color', cmap(1, :));
+plot(freqTicks, sensorMagLSNR(3, :)/nrmFactor, ...
+    'LineWidth', 2, 'Color', cmap(2, :));
+xlabel('Frequency');
+ylabel('Fourier Magnitude');
+opt = [];
+opt.BoxDim = [8, 5]*0.35;
+opt.ShowBox = 'off';
+opt.XMinorTick = 'off';
+opt.YMinorTick = 'off'; 
+opt.XTick = [0, 0.25, 1];
+opt.YTick = [0, 1];
+opt.XLim = [0, 1];
+opt.YLim = [0, 1];
+opt.FontSize = 12;
+opt.FontName = 'Helvetica';
+opt.Colors = barColors;
+setAxesProp(opt, gca);
+legend(gca, 'off');
+set(gca, 'units', 'normalized');
+axesPosition = get(gca, 'Position');
+axesPosition(1:2) = [0.3, 0.5];
+set(gca, 'Position', axesPosition);
+title('Electric Fish (Simulation)', 'FontSize', 12)
+patch(...
+    'Vertices', [0.25, 0; 1, 0; 1, 250; 0.25, 250], ...
+    'Faces', [1, 2, 3, 4], ...
+    'FaceColor', 'k', 'FaceAlpha', 0.1, ...
+    'EdgeAlpha', 0)
+print(gcf,'-dpdf',GEN_SAVE_PATH('fig4-electric-fish.pdf'));
 
 %% Mole behavioral data
-cumAngularDist = @(x) sum(abs(diff(x)));
-disp('*****************************************************');
-disp('Mole behavioral tracking data from Cata13a');
-fNames = dir(GEN_BEHAVIOR_DATA_PATH('/Mole/fig*.mat'));
-nFiles = length(fNames);
-reNrm = [];
-reBlk = [];
-for i = 1:nFiles
-    load(GEN_BEHAVIOR_DATA_PATH(['/Mole/', fNames(i).name]));
-    
+cmap = [56, 180, 74; ...
+    161, 30, 34] / 255;
+barColors = [[75, 111, 182]/255; cmap];
+% Behavior
+fNames = dir(GEN_BEHAVIOR_DATA_PATH('Mole/fig*.mat'));
+idx_lSNR = 1;
+idx_hSNR = 1;
+findAngle = @(a, b) acosd(min(1,max(-1, a(:).' * b(:) / norm(a) / norm(b) )));
+for i = 1:length(fNames)
+    moleData = load([fNames(i).folder, '/', fNames(i).name]);
+    disp(fNames(i).name);
+    if ~contains(fNames(i).name, 'b1')
+        % all figures other than b1* have inverted input
+        % due to digitization
+        moleData.molePath = moleData.molePath(end:-1:1, :);
+        moleData.refPath = moleData.refPath(end:-1:1, :);
+    end
+    refVec = moleData.refPath(2, :) - moleData.refPath(1, :);
+    refAngle = findAngle(refVec/norm(refVec), [0, 1]);
+    if refVec(1) > 0
+        refAngle = -refAngle;
+    end
+    rotPath = rotate2D(moleData.molePath, refAngle);
+    rotRef = rotate2D(moleData.refPath, refAngle);
     % Process data
     if ~contains(fNames(i).name,'normal')
-        %%%%%%- One-side nostril block - Low SNR data -%%%%%%
-        % Relative exploration
-        reBlk = [reBlk, calcSumLength2D(molePath)/calcSumLength2D(refPath)];
+        %%%%%%- One-side nostril block - Low SNR -%%%%%%
+        % FFT
+        [fftTicks, MoleFreqMagRawX_lSNR(:, idx_lSNR)] = ...
+            decomposeFourierMag(rotPath(:, 1), [], 1/15, 2);
+        [~, MoleFreqMagRawY_lSNR(:, idx_lSNR)] = ...
+            decomposeFourierMag(rotPath(:, 2), [], 1/15, 2);
+        fprintf('Trial length %.2f\n', size(rotPath, 1)/15);
+        % Compute averaged spectrum magnitude
+        MoleFreqMagX_lSNR(idx_lSNR) = mean(MoleFreqMagRawX_lSNR(:, idx_lSNR));
+        MoleFreqMagY_lSNR(idx_lSNR) = mean(MoleFreqMagRawY_lSNR(:, idx_lSNR));
+        idx_lSNR = idx_lSNR + 1;
     else
-        %%%%%%- Normal - High SNR data -%%%%%%
-        % Relative exploration
-        reNrm = [reNrm, calcSumLength2D(molePath)/calcSumLength2D(refPath)];
+        %%%%%%- Normal - High SNR -%%%%%%
+        % FFT
+        [fftTicks, MoleFreqMagRawX_hSNR(:, idx_hSNR)] = ...
+            decomposeFourierMag(rotPath(:, 1), [], 1/15, 2);
+        [~, MoleFreqMagRawY_hSNR(:, idx_hSNR)] = ...
+            decomposeFourierMag(rotPath(:, 2), [], 1/15, 2);
+        fprintf('Trial length %.2f\n', size(rotPath, 1)/15);
+        % Compute averaged spectrum magnitude
+        MoleFreqMagX_hSNR(idx_hSNR) = mean(MoleFreqMagRawX_hSNR(:, idx_hSNR));
+        MoleFreqMagY_hSNR(idx_hSNR) = mean(MoleFreqMagRawY_hSNR(:, idx_hSNR));
+        idx_hSNR = idx_hSNR + 1;
     end
 end
-fprintf('Strong signal trials, n = %d\n', length(reNrm));
-fprintf('Weak signal trials, n = %d\n', length(reBlk));
-
-% Mole Odor Localization
-% Ergodic Harvesting
-EH_lSNR_files = dir(GEN_DATA_PATH('EIH-Mole-WeakSignal-RandSeed-*.mat'));
-EH_hSNR_files = dir(GEN_DATA_PATH('EIH-Mole-StrongSignal-RandSeed-*.mat'));
-IT_lSNR_files = dir(GEN_DATA_PATH('Infotaxis-Mole-WeakSignal-RandSeed-*.mat'));
-IT_hSNR_files = dir(GEN_DATA_PATH('Infotaxis-Mole-StrongSignal-RandSeed-*.mat'));
-
-reErgSS = zeros(1, length(EH_lSNR_files), 'double');
-reErgWS = zeros(1, length(EH_hSNR_files), 'double');
-reInfSS = zeros(1, length(IT_lSNR_files), 'double');
-reInfWS = zeros(1, length(IT_hSNR_files), 'double');
-
-
-for i = 1:length(EH_lSNR_files)
-    EH_lSNR = load(GEN_DATA_PATH(EH_lSNR_files(i).name), 'oTrajList', 'sTrajList', 'dt');
-    EH_hSNR = load(GEN_DATA_PATH(EH_hSNR_files(i).name), 'oTrajList', 'sTrajList', 'dt');
-    IT_lSNR = load(GEN_DATA_PATH(IT_lSNR_files(i).name), 'oTrajList', 'sTrajList', 'dt');
-    IT_hSNR = load(GEN_DATA_PATH(IT_hSNR_files(i).name), 'oTrajList', 'sTrajList', 'dt');
-    
-    % Filter trajectory
-    trajHighCutFreq = 3.0;
-    EH_lSNR.sTrajList = LPF(EH_lSNR.sTrajList, 1/EH_lSNR.dt, trajHighCutFreq);
-    EH_hSNR.sTrajList = LPF(EH_hSNR.sTrajList, 1/EH_hSNR.dt, trajHighCutFreq);
-    IT_lSNR.sTrajList = LPF(IT_lSNR.sTrajList, 1/IT_lSNR.dt, trajHighCutFreq);
-    IT_hSNR.sTrajList = LPF(IT_hSNR.sTrajList, 1/IT_hSNR.dt, trajHighCutFreq);
-    
-    % Reference distance (straight to the target)
-    EH_lSNR.refDist = abs(EH_lSNR.sTrajList(1) - EH_lSNR.oTrajList(1));
-    EH_hSNR.refDist = abs(EH_hSNR.sTrajList(1) - EH_hSNR.oTrajList(1));
-    IT_lSNR.refDist = abs(IT_lSNR.sTrajList(1) - IT_lSNR.oTrajList(1));
-    IT_hSNR.refDist = abs(IT_hSNR.sTrajList(1) - IT_hSNR.oTrajList(1));
-    
-    % Relative exploration effort - Angular distance traveled
-    % crop to ignore the distance due to different initial 
-    % position
-    EH_hSNR.moleDist = cumAngularDist(EH_hSNR.sTrajList(100:end));
-    EH_lSNR.moleDist = cumAngularDist(EH_lSNR.sTrajList(100:end));
-    IT_hSNR.moleDist = cumAngularDist(IT_hSNR.sTrajList(100:end));
-    IT_lSNR.moleDist = cumAngularDist(IT_lSNR.sTrajList(100:end));
-    
-    reErgSS(i) = EH_hSNR.moleDist;
-    reErgWS(i) = EH_lSNR.moleDist;
-    reInfSS(i) = IT_hSNR.moleDist;
-    reInfWS(i) = IT_lSNR.moleDist;
-end
-reErgSS_Mean = mean(reErgSS);
-reErgWS_Mean = mean(reErgWS);
-reInfSS_Mean = mean(reInfSS);
-reInfWS_Mean = mean(reInfWS);
-reErgSS_SEM = 1.96 * std(reErgSS) / sqrt(length(reErgSS));
-reErgWS_SEM = 1.96 * std(reErgWS) / sqrt(length(reErgWS));
-reInfSS_SEM = 1.96 * std(reInfSS) / sqrt(length(reInfSS));
-reInfWS_SEM = 1.96 * std(reInfWS) / sqrt(length(reInfWS));
-
-fprintf(['---------------------------------------------------------\n',...
-    '|         Relative exploration (mean +/- 95%% CI)        |\n', ...
-    '|--------------------------------------------------------|',...
-    '\n|> Ergodic Harvesting (strong signal) = %.3f +/- %.3f <|', ...
-    '\n|> Ergodic Harvesting (weak signal)   = %.3f +/- %.3f <|',...
-    '\n|>     Infotaxis (strong signal)      = %.3f +/- %.3f <|', ...
-    '\n|>     Infotaxis (weak signal)        = %.3f +/- %.3f <|\n',...
-    '----------------------------------------------------------\n'], ...
-    reErgSS_Mean, reErgSS_SEM, reErgWS_Mean, reErgWS_SEM, ...
-    reInfSS_Mean, reInfSS_SEM, reInfWS_Mean, reInfWS_SEM);
-
-% Compute statistics
-% Ranksum test, right tail = median of A is greater than median of B
-[P, ~, Stats] = ranksum(reBlk, reNrm,...
-    'tail', 'right');
-fprintf('Behavior statistics: Wilcoxon rank sum test (one-sided) - p = %.4f (n = %d)\n', ...
-    P, length([reBlk, reNrm]));
-[P, ~, Stats] = ranksum(reErgWS, reErgSS,...
-    'tail', 'right');
-fprintf('EIH statistics: Wilcoxon rank sum test (one-sided) - p = %.4f (n = %d)\n', ...
-    P, length([reErgWS, reErgSS]));
-
-
-% Plot group data
-figure(3); clf;
+% Lateral
+magListX = [...
+    MoleFreqMagX_hSNR, ...
+    MoleFreqMagX_lSNR];
+magListX = magListX / max(magListX);
+magLabelX = [...
+    1*ones(1, length(MoleFreqMagX_hSNR)), ...
+    2*ones(1, length(MoleFreqMagX_lSNR))];
+%%%% Main plot %%%%
+figure(2); clf;
 set(gcf, ...
     'units','normalized','outerposition',[0 0 1 1], ...
     'PaperPositionMode','auto', ...
     'PaperOrientation','landscape', ...
-    'PaperSize', [13 8]);
-hBoxPlot = notBoxPlot([reBlk,reNrm], ...
-    [1.9*ones(1,length(reBlk)), 1.1*ones(1,length(reNrm))], ...
-    'jitter', 0.04, 'alpha', 0.5);
-opt = [];
-opt.BoxDim = [8,5]*0.6;
-opt.YLabel = 'Relative Exploration'; % ylabel
-opt.XLim = [0.5, 2.5];
-opt.YLim = [1, 6];
-opt.YTick = [1, 2, 4, 6];
-opt.ShowBox = 'off';
-opt.XMinorTick = 'off';
-opt.YMinorTick = 'off';
-opt.FontName = 'Helvetica';
-setAxesProp(opt);
-hLine = findobj(gca,'Type','line');
-hLine(1).LineWidth = 5;
-hLine(2).LineWidth = 5;
-hLine(1).Color = [162,0,0]/255.0;
-hLine(2).Color = [50,180,74]/255.0;
-legend(gca, 'off');
-set(gca,'XTickLabel',{...
-    '\color[rgb]{0.1961,0.7059,0.2902}Strong Signal',...
-    '\color[rgb]{0.6353,0,0}Weak Signal'})
-set(gca,'YTickLabel',{'1x', '2x', '4x', '6x'})
-set(gca, 'units', 'normalized');
-axesPosition = get(gca, 'Position');
-axesPosition(1:2) = [0.2, 0.4];
-set(gca, 'Position', axesPosition);
-
-% EIH and Infotaxis data
+    'PaperSize', [16 8]);
+%%% Spectrum (Lateral) %%%
 axes; hold on;
-% hL = line([-1,5], [1,1], 'LineStyle', '--', ...
-%     'Color', [140,140,140]/255.0, 'LineWidth',4);
-hBoxPlot = notBoxPlot([reErgSS, reInfSS, reErgWS, reInfWS], ...
-    [0.5*ones(1,length(reErgSS)), ...
-    0.75*ones(1,length(reInfSS)), ...
-    1.25*ones(1,length(reErgWS)),...
-    1.5*ones(1,length(reInfWS))], ...
-    'jitter', 0.04, 'alpha', 0.5);
-cmap = [...
-    85, 1, 159; ...
-    255, 196, 3;...
-    85, 1, 159; ...
-    255, 196, 3;...
-    ] ./ 255;
+nrmFactor = max([MoleFreqMagRawX_lSNR(:, 4); MoleFreqMagRawX_hSNR(:, 4)]);
+plot(fftTicks, MoleFreqMagRawX_lSNR(:, 4)/nrmFactor, '-', ...
+    'LineWidth', 2, 'Color', [0.5, 0, 0, 0.9]);
+plot(fftTicks, MoleFreqMagRawX_hSNR(:, 4)/nrmFactor, '-', ...
+    'LineWidth', 2, 'Color', [0, 0.5, 0, 0.9]);
+set(gca, 'YTick', [0, 1]);
+set(gca, 'XTick', [0, 2]);
+set(gca, 'FontName', 'Helvetica');
+xlabel('Frequency');
+ylabel('Fourier Magnitude');
+hLine = findobj(gca,'Type','line');
+patch(...
+    'Vertices', [0, 0; 2, 0; 2, 1.7e5; 0, 1.7e5], ...
+    'Faces', [1, 2, 3, 4], ...
+    'FaceColor', 'k', 'FaceAlpha', 0.1, ...
+    'EdgeAlpha', 0)
 opt = [];
-opt.BoxDim = [8,5]*0.6;
-opt.YLabel = 'Exploration'; % ylabel
-opt.YLim = [0, 6];
-opt.YTick = [0, 2, 4, 6];
-opt.XLim = [0.2, 1.8];
-opt.XTick = [0.625, 1.375];
+opt.BoxDim = [8, 5]*0.35;
+opt.ShowBox = 'off';
+opt.XMinorTick = 'off';
+opt.YMinorTick = 'off';
+opt.XLim = [0, 2];
+opt.YLim = [0, 1];
+opt.YTick = [0, 1];
+opt.FontName = 'Helvetica';
+opt.FontSize = 12;
+setAxesProp(opt);
+hLine(1).LineWidth = 2;
+hLine(1).Color = [0, 0.5, 0, 0.9];
+hLine(2).LineWidth = 2;
+hLine(2).Color = [0.5, 0, 0, 0.9];
+legend('off');
+set(gca, 'units', 'normalized');
+axesPosition = get(gca, 'Position');
+axesPosition(1:2) = [0.1, 0.5];
+set(gca, 'Position', axesPosition);
+title('Mole (Behavior)', 'FontSize', 12)
+%%% Spectrum Statistics %%%
+hAxe = axes; 
+notBoxPlot(magListX, magLabelX);
+xlim([0.5, 2.5]);
+ylim([0, 1.2])
+set(gca, 'YTick', [0, 1]);
+set(gca, 'XTick', [1, 2]);
+set(gca, 'XTickLabel', ...
+    {'\color[rgb]{0.1961,0.7059,0.2902}Strong Signal', ...
+    '\color[rgb]{0.6353,0,0}Weak Signal'});
+set(gca, 'FontName', 'Helvetica');
+ylabel('Fourier Magnitude');
+opt = [];
+opt.BoxDim = [8, 5]*0.35;
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
 opt.YMinorTick = 'off';
 opt.FontName = 'Helvetica';
-opt.Colors = cmap;
+opt.FontSize = 12;
 setAxesProp(opt);
+legend('off');
 hLine = findobj(gca,'Type','line');
-% hL.Color = [140,140,140]/255.0;
-% hL.LineWidth = 4;
-% hL.LineStyle = '--';
-hLine(1).LineWidth = 5;
-hLine(2).LineWidth = 5;
-hLine(3).LineWidth = 5;
-hLine(4).LineWidth = 5;
-hLine(1).Color = cmap(1, :);
-hLine(2).Color = cmap(2, :);
-hLine(3).Color = cmap(1, :);
-hLine(4).Color = cmap(2, :);
-legend(gca, 'off');
-set(gca,'XTickLabel',{...
-    '\color[rgb]{0.1961,0.7059,0.2902}Strong Signal',...
-    '\color[rgb]{0.6353,0,0}Weak Signal'})
-set(gca,'YTickLabel',{'0', '2', '4', '6'})
+hLine(1).LineWidth = 4;
+hLine(1).Color = cmap(2, :);
+hLine(2).LineWidth = 4;
+hLine(2).Color = cmap(1, :);
 set(gca, 'units', 'normalized');
 axesPosition = get(gca, 'Position');
-axesPosition(1:2) = [0.6, 0.4];
+axesPosition(1:2) = [0.5, 0.5];
 set(gca, 'Position', axesPosition);
-print(gcf,'-dpdf',GEN_SAVE_PATH('fig4CD-mole.pdf'));
+title('Mole (Behavior)', 'FontSize', 12)
+% Test statistics (non-parametric ANOVA)
+pX = kruskalwallis(magListX, magLabelX, 'off');
+
+% EIH
+EH_lSNR_files = dir(GEN_DATA_PATH('EIH-Mole-WeakSignal*.mat'));
+EH_hSNR_files = dir(GEN_DATA_PATH('EIH-Mole-StrongSignal*.mat'));
+for i = 1:length(EH_lSNR_files)
+    Mole_EIH_lSNR = load(GEN_DATA_PATH(EH_lSNR_files(i).name), 'oTrajList', 'sTrajList', 'dt');
+    Mole_EIH_hSNR = load(GEN_DATA_PATH(EH_hSNR_files(i).name), 'oTrajList', 'sTrajList', 'dt');
+    % crop the segment before sensor crosses over the target
+    % the first time
+    crossIdx_lSNR = find(Mole_EIH_lSNR.sTrajList < Mole_EIH_lSNR.oTrajList(1), 1);
+    crossIdx_hSNR = find(Mole_EIH_hSNR.sTrajList > Mole_EIH_hSNR.oTrajList(1), 1);
+    % FFT
+    [fftTicks, MoleEIHMag_lSNR(:, i)] = ...
+        decomposeFourierMag(Mole_EIH_lSNR.sTrajList(crossIdx_lSNR:end), [], Mole_EIH_lSNR.dt);
+    [fftTicks, MoleEIHMag_hSNR(:, i)] = ...
+        decomposeFourierMag(Mole_EIH_hSNR.sTrajList(crossIdx_hSNR:end), [], Mole_EIH_hSNR.dt);
+    % Compute averaged spectrum magnitude
+    MoleFreqMagEIH_lSNR(i) = mean(MoleEIHMag_lSNR(:, i));
+    MoleFreqMagEIH_hSNR(i) = mean(MoleEIHMag_hSNR(:, i));
+end
+magListEIH = [...
+    MoleFreqMagEIH_hSNR, ...
+    MoleFreqMagEIH_lSNR];
+magListEIH = magListEIH / max(magListEIH);
+magLabelEIH = [...
+    1*ones(1, length(MoleFreqMagEIH_hSNR)), ...
+    2*ones(1, length(MoleFreqMagEIH_lSNR))];
+%%% Spectrum Statistics %%%
+axes; hold on;
+notBoxPlot(magListEIH, magLabelEIH);
+xlim([0.5, 2.5])
+ylim([0, 1.2])
+set(gca, 'YTick', [0, 1]);
+set(gca, 'XTick', [1, 2]);
+set(gca, 'XTickLabel', ...
+    {'\color[rgb]{0.1961,0.7059,0.2902}Strong Signal', ...
+    '\color[rgb]{0.6353,0,0}Weak Signal'});
+set(gca, 'FontName', 'Helvetica');
+ylabel('Fourier Magnitude');
+hLine = findobj(gca,'Type','line');
+opt = [];
+opt.BoxDim = [8, 5]*0.35;
+opt.ShowBox = 'off';
+opt.XMinorTick = 'off';
+opt.YMinorTick = 'off';
+opt.FontName = 'Helvetica';
+opt.FontSize = 12;
+setAxesProp(opt);
+legend('off');
+hLine(1).LineWidth = 4;
+hLine(1).Color = cmap(2, :);
+hLine(2).LineWidth = 4;
+hLine(2).Color = cmap(1, :);
+set(gca, 'units', 'normalized');
+axesPosition = get(gca, 'Position');
+axesPosition(1:2) = [0.7, 0.5];
+set(gca, 'Position', axesPosition);
+title('Mole (Simulation)', 'FontSize', 12)
+%%% Spectrum %%%
+axes; hold on;
+nrmFactor = max([MoleEIHMag_lSNR(:, 1);MoleEIHMag_hSNR(:, 1)]);
+plot(fftTicks, MoleEIHMag_lSNR(:, 1)/nrmFactor, '-', ...
+    'LineWidth', 2, 'Color', [0.5, 0, 0, 0.9]);
+plot(fftTicks, MoleEIHMag_hSNR(:, 1)/nrmFactor, '-', ...
+    'LineWidth', 2, 'Color', [0, 0.5, 0, 0.9]);
+set(gca, 'YTick', [0, 1]);
+set(gca, 'XTick', [0, 0.5, 1]);
+set(gca, 'FontName', 'Helvetica');
+xlabel('Frequency');
+ylabel('Fourier Magnitude');
+hLine = findobj(gca,'Type','line');
+patch(...
+    'Vertices', [0, 0; 1, 0; 1, 1.7e5; 0, 1.7e5], ...
+    'Faces', [1, 2, 3, 4], ...
+    'FaceColor', 'k', 'FaceAlpha', 0.1, ...
+    'EdgeAlpha', 0)
+opt = [];
+opt.BoxDim = [8, 5]*0.35;
+opt.ShowBox = 'off';
+opt.YLim = [0, 1];
+opt.XMinorTick = 'off';
+opt.YMinorTick = 'off';
+opt.FontName = 'Helvetica';
+opt.FontSize = 12;
+setAxesProp(opt);
+hLine(1).LineWidth = 2;
+hLine(1).Color = [0, 0.5, 0, 0.9];
+hLine(2).LineWidth = 2;
+hLine(2).Color = [0.5, 0, 0, 0.9];
+legend('off');
+set(gca, 'units', 'normalized');
+axesPosition = get(gca, 'Position');
+axesPosition(1:2) = [0.3, 0.5];
+set(gca, 'Position', axesPosition);
+title('Mole (Simulation)', 'FontSize', 12)
+p = kruskalwallis(magListEIH, magLabelEIH, 'off');
+print(gcf,'-dpdf',GEN_SAVE_PATH('fig4-mole.pdf'));
 
 %% Cockroach
-disp('*****************************************************');
-disp('Cockroach behavioral tracking data from Lock15a');
-cockroachData = load(GEN_BEHAVIOR_DATA_PATH('/Cockroach/cockroach_data.mat'));
-% 4mm trials
-re4 = calcRE(cockroachData.trial_c4);
-% 1, 2 mm trials
-re12 = calcRE(cockroachData.trial_c12);
-fprintf('Strong signal trials, n = %d\n', length(re4));
-fprintf('Weak signal trials, n = %d\n', length(re12));
-
-% Mole Odor Localization
-% Ergodic Harvesting
-EH_lSNR_files = dir(GEN_DATA_PATH('EIH-Cockroach-WeakSignal*.mat'));
-EH_hSNR_files = dir(GEN_DATA_PATH('EIH-Cockroach-StrongSignal*.mat'));
-IT_lSNR_files = dir(GEN_DATA_PATH('Infotaxis-Cockroach-WeakSignal*.mat'));
-IT_hSNR_files = dir(GEN_DATA_PATH('Infotaxis-Cockroach-StrongSignal*.mat'));
-
-reErgSS = zeros(1, length(EH_lSNR_files), 'double');
-reErgWS = zeros(1, length(EH_hSNR_files), 'double');
-reInfSS = zeros(1, length(IT_lSNR_files), 'double');
-reInfWS = zeros(1, length(IT_hSNR_files), 'double');
-
-
-for i = 1:length(EH_lSNR_files)
-    EH_lSNR = load(GEN_DATA_PATH(EH_lSNR_files(i).name), 'oTrajList', 'sTrajList', 'dt');
-    EH_hSNR = load(GEN_DATA_PATH(EH_hSNR_files(i).name), 'oTrajList', 'sTrajList', 'dt');
-    IT_lSNR = load(GEN_DATA_PATH(IT_lSNR_files(i).name), 'oTrajList', 'sTrajList', 'dt');
-    IT_hSNR = load(GEN_DATA_PATH(IT_hSNR_files(i).name), 'oTrajList', 'sTrajList', 'dt');
-    
-    % Filter trajectory
-    trajHighCutFreq = 3.0;
-    EH_lSNR.sTrajList = LPF(EH_lSNR.sTrajList, 1/EH_lSNR.dt, trajHighCutFreq);
-    EH_hSNR.sTrajList = LPF(EH_hSNR.sTrajList, 1/EH_hSNR.dt, trajHighCutFreq);
-    IT_lSNR.sTrajList = LPF(IT_lSNR.sTrajList, 1/IT_lSNR.dt, trajHighCutFreq);
-    IT_hSNR.sTrajList = LPF(IT_hSNR.sTrajList, 1/IT_hSNR.dt, trajHighCutFreq);
-    
-    % Relative exploration effort - Angular distance traveled
-    % crop to ignore the distance due to different initial 
-    % position
-    EH_hSNR.moleDist = cumDist(EH_hSNR.sTrajList(100:end));
-    EH_lSNR.moleDist = cumDist(EH_lSNR.sTrajList(100:end));
-    IT_hSNR.moleDist = cumDist(IT_hSNR.sTrajList(100:end));
-    IT_lSNR.moleDist = cumDist(IT_lSNR.sTrajList(100:end));
-    
-    reErgSS(i) = EH_hSNR.moleDist;
-    reErgWS(i) = EH_lSNR.moleDist;
-    reInfSS(i) = IT_hSNR.moleDist;
-    reInfWS(i) = IT_lSNR.moleDist;
+cmap = [56, 180, 74; ...
+    161, 30, 34] / 255;
+barColors = [[75, 111, 182]/255; cmap];
+cockroachData = load(GEN_BEHAVIOR_DATA_PATH('Cockroach/cockroach_data.mat'));
+getCockroachFilename = @(x) dir(GEN_BEHAVIOR_DATA_PATH(...
+    ['Cockroach/raw_tracked_data/', x, '*_side_c.csv']));
+for i = 1:length(cockroachData.trial_c12.trial)
+    file = getCockroachFilename(cockroachData.trial_c12.trial{i});
+    fprintf('Parsing file %s...\n', file.name);
+    rawData = csvread([file.folder, '/', file.name]);
+    rawData = parseCockroachData(rawData);
+    % FFT
+    [fftTicks, fftMagX_lSNR] = decomposeFourierMag(rawData.head(:, 1), [], 1/15, 2);
+    [~, fftMagY_lSNR] = decomposeFourierMag(rawData.head(:, 2), [], 1/15, 2);
+    % Keep a copy of FFT for showing illustrational frequency spectrum
+    pltMagX_lSNR(:, i) = fftMagX_lSNR;
+    pltMagY_lSNR(:, i) = fftMagY_lSNR;
+    % Compute averaged spectrum magnitude
+    CockroachFreqMagX_lSNR(i) = mean(fftMagX_lSNR);
+    CockroachFreqMagY_lSNR(i) = mean(fftMagY_lSNR);
 end
-reErgSS_Mean = mean(reErgSS);
-reErgWS_Mean = mean(reErgWS);
-reInfSS_Mean = mean(reInfSS);
-reInfWS_Mean = mean(reInfWS);
-reErgSS_SEM = 1.96 * std(reErgSS) / sqrt(length(reErgSS));
-reErgWS_SEM = 1.96 * std(reErgWS) / sqrt(length(reErgWS));
-reInfSS_SEM = 1.96 * std(reInfSS) / sqrt(length(reInfSS));
-reInfWS_SEM = 1.96 * std(reInfWS) / sqrt(length(reInfWS));
+for i = 1:length(cockroachData.trial_c4.trial)
+    file = getCockroachFilename(cockroachData.trial_c4.trial{i});
+    fprintf('Parsing file %s...\n', file.name);
+    rawData = csvread([file.folder, '/', file.name]);
+    rawData = parseCockroachData(rawData);
+    % FFT
+    [fftTicks, fftMagX_hSNR] = decomposeFourierMag(rawData.head(:, 1), [], 1/15, 2);
+    [~, fftMagY_hSNR] = decomposeFourierMag(rawData.head(:, 2), [], 1/15, 2);
+    % Keep a copy of FFT for showing illustrational frequency spectrum
+    pltMagX_hSNR(:, i) = fftMagX_hSNR;
+    pltMagY_hSNR(:, i) = fftMagY_hSNR;
+    % Compute averaged spectrum magnitude
+    CockroachFreqMagX_hSNR(i) = mean(fftMagX_hSNR);
+    CockroachFreqMagY_hSNR(i) = mean(fftMagY_hSNR);
+end
+magListX = [...
+    CockroachFreqMagX_hSNR, ...
+    CockroachFreqMagX_lSNR];
+magLabelX = [...
+    0.85*ones(1, length(CockroachFreqMagX_hSNR)), ...
+    1.15*ones(1, length(CockroachFreqMagX_lSNR))];
+magListY = [...
+    CockroachFreqMagY_hSNR, ...
+    CockroachFreqMagY_lSNR];
+magLabelY = [...
+    1*ones(1, length(CockroachFreqMagY_hSNR)), ...
+    2*ones(1, length(CockroachFreqMagY_lSNR))];
 
-fprintf(['---------------------------------------------------------\n',...
-    '|         Relative exploration (mean +/- 95%% CI)        |\n', ...
-    '|--------------------------------------------------------|',...
-    '\n|> Ergodic Harvesting (strong signal) = %.3f +/- %.3f <|', ...
-    '\n|> Ergodic Harvesting (weak signal)   = %.3f +/- %.3f <|',...
-    '\n|>     Infotaxis (strong signal)      = %.3f +/- %.3f <|', ...
-    '\n|>     Infotaxis (weak signal)        = %.3f +/- %.3f <|\n',...
-    '----------------------------------------------------------\n'], ...
-    reErgSS_Mean, reErgSS_SEM, reErgWS_Mean, reErgWS_SEM, ...
-    reInfSS_Mean, reInfSS_SEM, reInfWS_Mean, reInfWS_SEM);
-
-% Compute statistics
-% Ranksum test, right tail = median of A is greater than median of B
-[P, ~, Stats] = ranksum(re12, re4,...
-    'tail', 'right');
-fprintf('Behavior statistics: Wilcoxon rank sum test (one-sided) - p = %.4f (n = %d)\n', ...
-    P, length([re12; re4]));
-[P, ~, Stats] = ranksum(reErgWS, reErgSS,...
-    'tail', 'right');
-fprintf('EIH statistics: Wilcoxon rank sum test (one-sided) - p = %.4f (n = %d)\n', ...
-    P, length([reErgWS, reErgSS]));
-
-% Plot group data
-figure(5); clf;
+%%%% Main plot %%%%
+figure(3); clf; 
 set(gcf, ...
     'units','normalized','outerposition',[0 0 1 1], ...
     'PaperPositionMode','auto', ...
     'PaperOrientation','landscape', ...
-    'PaperSize', [13 8]);
-hL = line([0,3], [1,1], 'LineStyle', '--', ...
-    'Color', [140,140,140]/255.0, 'LineWidth',4);
-hBoxPlot = notBoxPlot([re4', re12'], ...
-    [1.1*ones(1,length(re4)), 1.9*ones(1,length(re12))]);
-opt = [];
-opt.BoxDim = [8,5]*0.6;
-opt.YLabel = 'Relative Exploration'; % ylabel
-opt.XLim = [0.5, 2.5];
-opt.YLim = [0, 12];
-opt.YTick = [1, 3:3:12];
-opt.ShowBox = 'off';
-opt.XMinorTick = 'off';
-opt.YMinorTick = 'off';
-opt.FontName = 'Helvetica';
-setAxesProp(opt);
-hLine = findobj(gca,'Type','line');
-hL.Color = [140,140,140]/255.0;
-hL.LineWidth = 4;
-hL.LineStyle = '--';
-hLine(1).LineWidth = 5;
-hLine(2).LineWidth = 5;
-hLine(1).Color = [162,0,0]/255.0;
-hLine(2).Color = [50,180,74]/255.0;
-legend(gca, 'off');
-set(gca,'XTickLabel',{...
-    '\color[rgb]{0.1961,0.7059,0.2902}Strong Signal',...
-    '\color[rgb]{0.6353,0,0}Weak Signal'})
-set(gca,'YTickLabel',{'1x', '3x', '6x', '9x', '12x'})
-set(gca, 'units', 'normalized');
-axesPosition = get(gca, 'Position');
-axesPosition(1:2) = [0.2, 0.4];
-set(gca, 'Position', axesPosition);
-
-% EIH and Infotaxis data
+    'PaperSize', [16 8]);
+%%% Illustrational frequency spectrum %%%
 axes; hold on;
-% hL = line([-1,5], [1,1], 'LineStyle', '--', ...
-%     'Color', [140,140,140]/255.0, 'LineWidth',4);
-hBoxPlot = notBoxPlot([reErgSS, reInfSS, reErgWS, reInfWS], ...
-    [0.5*ones(1,length(reErgSS)), ...
-    0.75*ones(1,length(reInfSS)), ...
-    1.25*ones(1,length(reErgWS)),...
-    1.5*ones(1,length(reInfWS))]);
-cmap = [...
-    85, 1, 159; ...
-    255, 196, 3;...
-    85, 1, 159; ...
-    255, 196, 3;...
-    ] ./ 255;
+nrmFactor = max([pltMagY_lSNR(:, 7);pltMagY_hSNR(:, 7)]);
+plot(fftTicks, pltMagY_lSNR(:, 7)/nrmFactor, '-', ...
+    'LineWidth', 2, 'Color', [0.5, 0, 0, 0.9]);
+plot(fftTicks, pltMagY_hSNR(:, 7)/nrmFactor, '-', ...
+    'LineWidth', 2, 'Color', [0, 0.5, 0, 0.9]);
+set(gca, 'YTick', [0, 1]);
+set(gca, 'XTick', [0, 2]);
+set(gca, 'FontName', 'Helvetica');
+ylim([0, 1]);
+xlabel('Frequency');
+ylabel('Fourier Magnitude');
+hLine = findobj(gca,'Type','line');
+yRange = ylim;
+patch(...
+    'Vertices', [0, 0; 2, 0; 2, yRange(2); 0, yRange(2)], ...
+    'Faces', [1, 2, 3, 4], ...
+    'FaceColor', 'k', 'FaceAlpha', 0.1, ...
+    'EdgeAlpha', 0);
 opt = [];
-opt.BoxDim = [8,5]*0.6;
-opt.YLabel = 'Exploration'; % ylabel
-opt.YLim = [0, 6];
-opt.YTick = [0, 2, 4, 6];
-opt.XLim = [0.2, 1.8];
-opt.XTick = [0.625, 1.375];
+opt.BoxDim = [8, 5]*0.35;
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
 opt.YMinorTick = 'off';
 opt.FontName = 'Helvetica';
-opt.Colors = cmap;
+opt.FontSize = 14;
 setAxesProp(opt);
-hLine = findobj(gca,'Type','line');
-% hL.Color = [140,140,140]/255.0;
-% hL.LineWidth = 4;
-% hL.LineStyle = '--';
-hLine(1).LineWidth = 5;
-hLine(2).LineWidth = 5;
-hLine(3).LineWidth = 5;
-hLine(4).LineWidth = 5;
-hLine(1).Color = cmap(1, :);
-hLine(2).Color = cmap(2, :);
-hLine(3).Color = cmap(1, :);
-hLine(4).Color = cmap(2, :);
-legend(gca, 'off');
-set(gca,'XTickLabel',{...
-    '\color[rgb]{0.1961,0.7059,0.2902}Strong Signal',...
-    '\color[rgb]{0.6353,0,0}Weak Signal'})
-set(gca,'YTickLabel',{'0', '2', '4', '6'})
+hLine(1).LineWidth = 2;
+hLine(1).Color = [0, 0.5, 0, 0.9];
+hLine(2).LineWidth = 2;
+hLine(2).Color = [0.5, 0, 0, 0.9];
+legend('off');
 set(gca, 'units', 'normalized');
 axesPosition = get(gca, 'Position');
-axesPosition(1:2) = [0.6, 0.4];
+axesPosition(1:2) = [0.1, 0.5];
 set(gca, 'Position', axesPosition);
-print(gcf,'-dpdf',GEN_SAVE_PATH('fig4EF-cockroach.pdf'));
+title('Cockroach Behavior', 'FontSize', 12)
+%%% Statistics %%%
+axes;
+magListY = magListY / max(magListY);
+notBoxPlot(magListY, magLabelY);
+xlim([0.5, 2.5])
+ylim([0, 1.2])
+set(gca, 'YTick', []);
+set(gca, 'XTick', [1, 2]);
+set(gca, 'XTickLabel', ...
+    {'\color[rgb]{0.1961,0.7059,0.2902}Strong Signal', ...
+    '\color[rgb]{0.6353,0,0}Weak Signal'});
+set(gca, 'FontName', 'Helvetica');
+ylabel('Fourier Magnitude');
+hLine = findobj(gca,'Type','line');
+opt = [];
+opt.BoxDim = [8, 5]*0.35;
+opt.ShowBox = 'off';
+opt.YTick = [0, 1];
+opt.XMinorTick = 'off';
+opt.YMinorTick = 'off';
+opt.FontName = 'Helvetica';
+opt.FontSize = 14;
+setAxesProp(opt);
+legend('off');
+hLine(1).LineWidth = 4;
+hLine(1).Color = cmap(2, :);
+hLine(2).LineWidth = 4;
+hLine(2).Color = cmap(1, :);
+set(gca, 'units', 'normalized');
+axesPosition = get(gca, 'Position');
+axesPosition(1:2) = [0.5, 0.5];
+set(gca, 'Position', axesPosition);
+title('Cockroach Behavior', 'FontSize', 12)
+hAxe = gca;
+% Test statistics (non-parametric ANOVA)
+pX = kruskalwallis(magListX, magLabelX, 'off');
+pY = kruskalwallis(magListY, magLabelY, 'off');
 
-
-function dist = calcSumLength2D(path)
-%% Calculates the cumulative 2D euclidean distance of a given 2D curve
-distMat = pdist(path, 'euclidean');
-distMat = squareform(distMat);
-
-dist = 0;
-for i = 2:size(path,1)
-    dist = dist + distMat(i, i-1);
+% EIH
+EH_lSNR_files = dir(GEN_DATA_PATH('EIH-Cockroach-WeakSignal*.mat'));
+EH_hSNR_files = dir(GEN_DATA_PATH('EIH-Cockroach-StrongSignal*.mat'));
+for i = 1:length(EH_lSNR_files)
+    Cockroach_EIH_lSNR = load(GEN_DATA_PATH(EH_lSNR_files(i).name), 'oTrajList', 'sTrajList', 'dt');
+    Cockroach_EIH_hSNR = load(GEN_DATA_PATH(EH_hSNR_files(i).name), 'oTrajList', 'sTrajList', 'dt');   
+    % FFT
+    [Cockroach_EIH_hSNR.fftTicks, Cockroach_EIH_hSNR.fftMag] = ...
+        decomposeFourierMag(Cockroach_EIH_hSNR.sTrajList, [], Cockroach_EIH_hSNR.dt);
+    [Cockroach_EIH_lSNR.fftTicks, Cockroach_EIH_lSNR.fftMag] = ...
+        decomposeFourierMag(Cockroach_EIH_lSNR.sTrajList, [], Cockroach_EIH_lSNR.dt);
+    % Compute averaged spectrum magnitude
+    CockroachFreqMagEIH_hSNR(i) = mean(Cockroach_EIH_hSNR.fftMag);
+    CockroachFreqMagEIH_lSNR(i) = mean(Cockroach_EIH_lSNR.fftMag);
 end
+magListEIH = [...
+    CockroachFreqMagEIH_hSNR, ...
+    CockroachFreqMagEIH_lSNR];
+magLabelEIH = [...
+    1*ones(1, length(CockroachFreqMagEIH_hSNR)), ...
+    2*ones(1, length(CockroachFreqMagEIH_lSNR))];
+figure(3); 
+%%% Spectrum %%%
+axes; hold on;
+nrmFactor = max([Cockroach_EIH_lSNR.fftMag, Cockroach_EIH_hSNR.fftMag]);
+plot(Cockroach_EIH_lSNR.fftTicks, Cockroach_EIH_lSNR.fftMag/nrmFactor, '-', ...
+    'LineWidth', 2, 'Color', [0.5, 0, 0, 0.9]);
+plot(Cockroach_EIH_hSNR.fftTicks, Cockroach_EIH_hSNR.fftMag/nrmFactor, '-', ...
+    'LineWidth', 2, 'Color', [0, 0.5, 0, 0.9]);
+set(gca, 'YTick', [0, 1]);
+set(gca, 'XTick', [0, 1]);
+set(gca, 'FontName', 'Helvetica');
+xlabel('Frequency');
+ylabel('Fourier Magnitude');
+hLine = findobj(gca,'Type','line');
+ylim([0, 1]);
+yRange = ylim;
+patch(...
+    'Vertices', [0, 0; 1, 0; 1, yRange(2); 0, yRange(2)], ...
+    'Faces', [1, 2, 3, 4], ...
+    'FaceColor', 'k', 'FaceAlpha', 0.1, ...
+    'EdgeAlpha', 0);
+opt = [];
+opt.BoxDim = [8, 5]*0.35;
+opt.ShowBox = 'off';
+opt.XMinorTick = 'off';
+opt.YMinorTick = 'off';
+opt.YLim = yRange;
+opt.FontName = 'Helvetica';
+opt.FontSize = 14;
+setAxesProp(opt);
+hLine(1).LineWidth = 2;
+hLine(1).Color = [0, 0.5, 0, 0.9];
+hLine(2).LineWidth = 2;
+hLine(2).Color = [0.5, 0, 0, 0.9];
+legend('off');
+set(gca, 'units', 'normalized');
+axesPosition = get(gca, 'Position');
+axesPosition(1:2) = [0.3, 0.5];
+set(gca, 'Position', axesPosition);
+title('Cockroach Simulation', 'FontSize', 12)
+%%% Statistics %%%
+axes;
+magListEIH = magListEIH / max(magListEIH);
+notBoxPlot(magListEIH, magLabelEIH);
+xlim([0.5, 2.5])
+ylim([0, 1.2])
+set(gca, 'YTick', [0, 1]);
+set(gca, 'XTick', [1, 2]);
+set(gca, 'XTickLabel', ...
+    {'\color[rgb]{0.1961,0.7059,0.2902}Strong Signal', ...
+    '\color[rgb]{0.6353,0,0}Weak Signal'});
+set(gca, 'FontName', 'Helvetica');
+ylabel('Fourier Magnitude');
+hLine = findobj(gca,'Type','line');
+opt = [];
+opt.BoxDim = [8, 5]*0.35;
+opt.ShowBox = 'off';
+opt.XMinorTick = 'off';
+opt.YMinorTick = 'off';
+opt.FontName = 'Helvetica';
+opt.FontSize = 14;
+setAxesProp(opt);
+legend('off');
+hLine(1).LineWidth = 4;
+hLine(1).Color = cmap(2, :);
+hLine(2).LineWidth = 4;
+hLine(2).Color = cmap(1, :);
+set(gca, 'units', 'normalized');
+axesPosition = get(gca, 'Position');
+axesPosition(1:2) = [0.7, 0.5];
+set(gca, 'Position', axesPosition);
+title('Cockroach Simulation (Lateral Position)', 'FontSize', 12)
+p = kruskalwallis(magListEIH, magLabelEIH, 'off');
+print(gcf,'-dpdf',GEN_SAVE_PATH('fig4-cockroach.pdf'));
 
-function re = calcRE(dat)
-% Computes relative exploration
-len = size(dat, 1);
-re = zeros(len, 1, 'double');
-for i = 1:len
-    re(i) = dat.walk_dist(i) / dat.distRef(i);
+
+%% Hawkmoth
+FreqResolution = 0.001;
+CutOffFreq = 3.5;
+LPFHighCutFreq = 6.0;
+NPeaks = 18;
+hsnrFiles = dir(GEN_DATA_PATH('EIH-Moth-StrongSignal*.mat'));
+lsnrFiles = dir(GEN_DATA_PATH('EIH-Moth-WeakSignal*.mat'));
+hsnrBodeGain = zeros(length(hsnrFiles), NPeaks, 'double');
+lsnrBodeGain = zeros(length(lsnrFiles), NPeaks, 'double');
+locs = [53, 73, 126, 177, 276, 325, 427, 475, 576, 725, 926, ...
+    1075, 1325, 1526, 1975, 2225, 2825, 3426];
+calcDist = @(x) sum(abs(diff(x)));
+for i = 1:length(hsnrFiles)
+    load([hsnrFiles(i).folder, '/', hsnrFiles(i).name], ...
+        'dt', 'oTrajList', 'sTrajList');      
+    reHSNR_EIH(i) = calcDist(sTrajList) / calcDist(oTrajList);
+    Fs = 1 / dt;
+    nFFTSamples = round(Fs / FreqResolution);
+    CutOffIdx = round(CutOffFreq / FreqResolution);
+    freqIdx = FreqResolution:FreqResolution:CutOffFreq;
+    oPos = oTrajList;
+    sPos = sTrajList;
+    oPos = LPF(oPos, Fs, LPFHighCutFreq);
+    sPos = LPF(sPos, Fs, LPFHighCutFreq);
+    
+    oFFT = fft(oPos-mean(oPos), nFFTSamples);
+    sFFT = fft(sPos-mean(sPos), nFFTSamples);
+    oFFT = abs(oFFT(1:CutOffIdx));
+    sFFT = abs(sFFT(1:CutOffIdx));
+    oLocs = findLocalPeaks(oFFT, locs);
+    sFFTLocs = findLocalPeaks(sFFT, oLocs);
+    hsnrBodeGain(i, :) = sFFT(sFFTLocs) ./ oFFT(oLocs);
+    fprintf('file %s processed\n', hsnrFiles(i).name);
+end
+for i = 1:length(lsnrFiles)
+    load([lsnrFiles(i).folder, '/', lsnrFiles(i).name], ...
+        'dt', 'oTrajList', 'sTrajList');        
+    reLSNR_EIH(i) = calcDist(sTrajList) / calcDist(oTrajList);
+    Fs = 1 / dt;
+    nFFTSamples = round(Fs / FreqResolution);
+    CutOffIdx = round(CutOffFreq / FreqResolution);
+    freqIdx = FreqResolution:FreqResolution:CutOffFreq;
+    oPos = oTrajList;
+    sPos = sTrajList;
+    oPos = LPF(oPos, Fs, LPFHighCutFreq);
+    sPos = LPF(sPos, Fs, LPFHighCutFreq);
+    
+    oFFT = fft(oPos-mean(oPos), nFFTSamples);
+    sFFT = fft(sPos-mean(sPos), nFFTSamples);
+    oFFT = abs(oFFT(1:CutOffIdx));
+    sFFT = abs(sFFT(1:CutOffIdx));
+    oLocs = findLocalPeaks(oFFT, locs);
+    sFFTLocs = findLocalPeaks(sFFT, oLocs);
+    lsnrBodeGain(i, :) = sFFT(sFFTLocs) ./ oFFT(oLocs);
+    fprintf('file %s processed\n', lsnrFiles(i).name);
+end
+meanHSNR = mean(hsnrBodeGain);
+meanLSNR = mean(lsnrBodeGain);
+semHSNR = 1.96 * std(hsnrBodeGain) ./ sqrt(size(hsnrBodeGain,1));
+semLSNR = 1.96 * std(lsnrBodeGain) ./ sqrt(size(lsnrBodeGain,1));
+medFreqGainHSNR = mean(hsnrBodeGain(:, 8:11), 2, 'omitnan');
+medFreqGainLSNR = mean(lsnrBodeGain(:, 8:11), 2, 'omitnan');
+lowFreqGainHSNR = mean(hsnrBodeGain(:, 1:7), 2, 'omitnan');
+lowFreqGainLSNR = mean(lsnrBodeGain(:, 1:7), 2, 'omitnan');
+medFreqGainData = [medFreqGainHSNR; medFreqGainLSNR];
+medFreqGainLabel = [ones(length(medFreqGainHSNR),1); 2*ones(length(medFreqGainLSNR),1)];
+cmap = [56, 180, 74; ...
+    161, 30, 34] / 255;
+
+figure(4); clf; hold on;
+set(gcf, ...
+    'units','normalized','outerposition',[0 0 1 1], ...
+    'PaperPositionMode','auto', ...
+    'PaperOrientation','landscape', ...
+    'PaperSize', [16 8]);
+freq = [0.2;0.3;0.5;0.7;1.100;1.300;1.700;1.900;2.300;2.900;3.700;4.300;5.300;6.100;7.900;8.900;11.30;13.7];
+boundedline(freq, [meanHSNR; meanLSNR], [semLSNR',semHSNR'], ...
+    'alpha', 'transparency', 0.4, 'cmap', cmap);
+set(gca, 'XScale', 'log');
+set(gca, 'YScale', 'log');
+hLines = findobj(gca, 'Type', 'line');
+yRange = ylim;
+patch(...
+    'Vertices', [freq(8)-0.1, 1e-5; freq(11)+0.25, 1e-5; freq(11)+0.25, 3.5; freq(8)-0.1, 3.5], ...
+    'Faces', [1, 2, 3, 4], ...
+    'FaceColor', 'k', 'FaceAlpha', 0.1, ...
+    'EdgeAlpha', 0);
+opt = [];
+opt.BoxDim = [8, 5]*0.35;
+opt.XLabel = 'Frequency'; % xlabel
+opt.YLabel = 'Gain'; % ylabel
+opt.XLim = [min(freq'), max(freq')];
+opt.YLim = [0.10, 3.3];
+opt.YTick = [0.2, 1];
+opt.ShowBox = 'off';
+opt.XMinorTick = 'on';
+opt.YMinorTick = 'on';
+opt.FontName = 'Helvetica';
+opt.FontSize = 16;
+% opt.Colors = cmap;
+setAxesProp(opt);
+hLines(1).Marker = '.';
+hLines(2).Marker = '.';
+hLines(1).MarkerSize = 16;
+hLines(2).MarkerSize = 16;
+hLines(1).LineWidth = 2;
+hLines(2).LineWidth = 2;
+hLines(1).Color = cmap(2, :);
+hLines(2).Color = cmap(1, :);
+legend('off');
+set(gca, 'XTickLabel', [])
+set(gca, 'YTickLabel', {'0.2', '1'})
+set(gca, 'units', 'normalized');
+axesPosition = get(gca, 'Position');
+axesPosition(1:2) = [0.3, 0.5];
+set(gca, 'Position', axesPosition);
+title('Simulation', 'FontSize', 16)
+
+%%BEHAVIOR DATA%%
+dat = load(GEN_BEHAVIOR_DATA_PATH('Moth/MothBodeData_Macroglossum.mat'));
+dat = dat.AnalysisMacroglossum;
+for i = 1:3
+    g{i} = dat(dat.Group == i, 'Gain').Gain;
+    g{i} = reshape(g{i}, length(freq), length(g{i})/length(freq));
+    meanG{i} = mean(g{i}, 2, 'omitnan');
+    semG{i} = 1.96 * std(g{i}, 0, 2, 'omitnan') ./ sqrt(size(g{i},2));
+    lowGain{i} = mean(g{i}(1:7, :), 'omitnan')';
+    medGain{i} = mean(g{i}(8:11, :), 'omitnan')';
+end
+axes; hold on;
+boundedline(freq, meanG{1}, semG{1}, ...
+    'alpha', 'transparency', 0.4, 'cmap', cmap(1,:));
+boundedline(freq, meanG{3}, semG{3}, ...
+    'alpha', 'transparency', 0.4, 'cmap', cmap(2,:));
+set(gca, 'XScale', 'log');
+set(gca, 'YScale', 'log');
+hLines = findobj(gca, 'Type', 'line');
+yRange = ylim;
+patch(...
+    'Vertices', [freq(8)-0.1, 1e-5; freq(11)+0.25, 1e-5; freq(11)+0.25, 3.5; freq(8)-0.1, 3.5], ...
+    'Faces', [1, 2, 3, 4], ...
+    'FaceColor', 'k', 'FaceAlpha', 0.1, ...
+    'EdgeAlpha', 0);
+opt = [];
+opt.BoxDim = [8, 5]*0.35;
+opt.XLabel = 'Frequency'; % xlabel
+opt.YLabel = 'Gain'; % ylabel
+opt.XLim = [min(freq'), max(freq')];
+opt.YLim = [0.10, 3.3];
+opt.YTick = [0.2, 1];
+opt.ShowBox = 'off';
+opt.XMinorTick = 'on';
+opt.YMinorTick = 'on';
+opt.FontName = 'Helvetica';
+opt.FontSize = 16;
+% opt.Colors = cmap;
+setAxesProp(opt);
+hLines(1).Marker = '.';
+hLines(2).Marker = '.';
+hLines(1).MarkerSize = 16;
+hLines(2).MarkerSize = 16;
+hLines(1).LineWidth = 2;
+hLines(2).LineWidth = 2;
+hLines(1).Color = cmap(2, :);
+hLines(2).Color = cmap(1, :);
+legend('off');
+set(gca, 'XTickLabel', [])
+set(gca, 'YTickLabel', {'0.2', '1'})
+set(gca, 'units', 'normalized');
+axesPosition = get(gca, 'Position');
+axesPosition(1:2) = [0.1, 0.5];
+set(gca, 'Position', axesPosition);
+title('Behavior', 'FontSize', 16)
+% Simulation
+axes; hold on;
+notBoxPlot(medFreqGainData, medFreqGainLabel, ...
+    'jitter', 0.02, 'alpha', 0.125);
+xlim([0.5, 2.5]);
+ylim([1, 3.7]);
+set(gca, 'YTick', 1:3);
+set(gca, 'XTick', [1, 2]);
+set(gca, 'XTickLabel', ...
+    {'\color[rgb]{0.1961,0.7059,0.2902}Strong Signal', ...
+    '\color[rgb]{0.6353,0,0}Weak Signal'});
+set(gca, 'FontName', 'Helvetica');
+ylabel('Gain');
+hLine = findobj(gca,'Type','line');
+opt = [];
+opt.BoxDim = [8, 5]*0.35;
+opt.ShowBox = 'off';
+opt.XMinorTick = 'off';
+opt.YMinorTick = 'off';
+opt.FontName = 'Helvetica';
+opt.FontSize = 16;
+setAxesProp(opt);
+legend('off');
+hLine(1).LineWidth = 4;
+hLine(1).Color = cmap(2, :);
+hLine(2).LineWidth = 4;
+hLine(2).Color = cmap(1, :);
+set(gca, 'units', 'normalized');
+axesPosition = get(gca, 'Position');
+axesPosition(1:2) = [0.7, 0.5];
+set(gca, 'Position', axesPosition);
+title('Simulation', 'FontSize', 16)
+% Test statistics (non-parametric ANOVA)
+p = kruskalwallis(medFreqGainData, medFreqGainLabel, 'off');
+
+% Behavior
+medGainData = [medGain{1}; medGain{3}];
+medGainLabel = [ones(length(medGain{1}),1); 2*ones(length(medGain{3}),1)];
+axes; hold on;
+notBoxPlot(medGainData, medGainLabel, 'jitter', 0.05, 'alpha', 0.3);
+xlim([0.5, 2.5]);
+ylim([1, 3.7]);
+set(gca, 'YTick', 1:3);
+set(gca, 'XTick', [1, 2]);
+set(gca, 'XTickLabel', ...
+    {'\color[rgb]{0.1961,0.7059,0.2902}Strong Signal', ...
+    '\color[rgb]{0.6353,0,0}Weak Signal'});
+set(gca, 'FontName', 'Helvetica');
+ylabel('Gain');
+hLine = findobj(gca,'Type','line');
+opt = [];
+opt.BoxDim = [8, 5]*0.35;
+opt.ShowBox = 'off';
+opt.XMinorTick = 'off';
+opt.YMinorTick = 'off';
+opt.FontName = 'Helvetica';
+opt.FontSize = 16;
+setAxesProp(opt);
+legend('off');
+hLine(1).LineWidth = 4;
+hLine(1).Color = cmap(2, :);
+hLine(2).LineWidth = 4;
+hLine(2).Color = cmap(1, :);
+set(gca, 'units', 'normalized');
+axesPosition = get(gca, 'Position');
+axesPosition(1:2) = [0.5, 0.5];
+set(gca, 'Position', axesPosition);
+title('Behavior', 'FontSize', 16)
+print(gcf,'-dpdf',GEN_SAVE_PATH('fig4-moth.pdf'));
+% Test statistics (non-parametric ANOVA)
+p = kruskalwallis(medGainData, medGainLabel, 'off');
+
+
+function out = parseCockroachData(dat)
+out.head = dat(:, 1:2);
+out.tail = dat(:, 3:4);
+out.src = dat(1, 5:6);
+
+
+function x = rotate2D(x, theta)
+offset = x(1, :);
+x = x - offset;
+rot2x = [cosd(theta) -sind(theta); sind(theta) cosd(theta)];
+for i = 1:size(x, 1)
+    x(i, :) = x(i, :) * rot2x;
+end
+x = x + offset;
+
+function [freqTicks, gainX] = decomposeFourierMag(x, highCut, varargin)
+dFreq = 0.005;
+maxFreq = 1;
+if length(varargin) == 1
+    dt = varargin{1};
+elseif length(varargin) == 2
+    dt = varargin{1};
+    maxFreq = varargin{2};
+elseif length(varargin) == 3
+    dt = varargin{1};
+    minFreq = varargin{2};
+    maxFreq = varargin{3};
+end
+fftEndIdx = floor(maxFreq/dFreq) + 1;
+freqTicks = dFreq:dFreq:maxFreq;
+if isempty(highCut)
+    highCutFreq = 2.10;
+else
+    highCutFreq = highCut;
+end
+nFreqSamps = @(t) ceil((dFreq*t)^-1);
+% apply zero-phase low-pass filter to traj
+fs = 1 / dt;
+x = LPF(x, fs, highCutFreq);
+% FFT
+fftX = fft(x-mean(x), nFreqSamps(dt));
+gainX = abs(fftX(2:fftEndIdx));
+
+function locs = findLocalPeaks(x, refLocs)
+winWidth = 3;
+locs = zeros(size(refLocs));
+for i = 1:length(refLocs)
+    searchWin = (refLocs(i)-winWidth):(refLocs(i)+winWidth);
+    [~, idx] = max(x(searchWin));
+    locs(i) = searchWin(idx);
 end

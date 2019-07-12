@@ -1,237 +1,261 @@
 function makeFigS5Plot(dataPath, savePath)
-%% Plot supplement figure 5
+%% Plot individual panels for figure S5
 % Chen Chen
 
 close all;
 warning('off', 'MATLAB:print:FigureTooLargeForPage');
-warning('off', 'MATLAB:MKDIR:DirectoryExists');
-GEN_DATA_PATH = @(fname) fullfile(dataPath, 'search_sim', fname);
+GEN_DATA_PATH = @(fname) fullfile(dataPath, 'behavior_sim', fname);
 GEN_BEHAVIOR_DATA_PATH = @(fname) fullfile('./PublishedData/', 'animal_behavior_data', fname);
 GEN_SAVE_PATH = @(fname) fullfile(savePath, fname);
-sTrajHighCutFreq = 2.10; % Hz
+barColor = [72, 110, 181;...
+    50, 180, 74; ...
+    236, 29, 36] / 255;
+% Lambda function handle for computing cumulative 1D distance travelled
+cumDist = @(x) sum(abs(diff(x)));
+% Whether nor not to plot EER band
+% set to 1 to enable EER plot overlay
+% note that due to the complexity of EER bands, it's can be fairly slow 
+% to plot the EER bands
 global PLOT_EER_BAND
-PLOT_EER_BAND = 0;
-% SET this to 1 if you are having issues with creating vector graphic PDFs
-% it will save the complex EER band overlay into a separate tiff image
-USE_SPLIT_PRINT = 0;
+PLOT_EER_BAND = 1;
+% Use split plot method to generate vector graphic plots
+% This is a workaround for the buffer issue in MATLAB due
+% to the EER patch is too complex for the interal save
+% function to save as a vector graphic PDF
+SPLIT_PLOT = 0;
 
-%% Re-engage searching
-% Load and Process Data
-% Ergodic Harvesting data
-dat = load(GEN_DATA_PATH('EIH-Rat-SearchSim.mat'), ...
-    'dt', 'oTrajList', 'sTrajList', 'phi');
-sTraj = dat.sTrajList(1:end);
-oTraj = dat.oTrajList(1:end);
-dat.eidList = flattenResultList(dat.phi(:,:,1:end-1))';
-dt = dat.dt;
-blindIdx = [810, 1500];
-% blindIdx = [900, 1510];
-% Filter Sensor Trajectory
-sTraj = LPF(sTraj, 1/dt, sTrajHighCutFreq);
+%% Rat Odor Tracking
+% Load Data
+lSNR = load(GEN_DATA_PATH('EIH-Rat-WeakSignal.mat'));
+hSNR = load(GEN_DATA_PATH('EIH-Rat-StrongSignal.mat'));
+khan = load(GEN_BEHAVIOR_DATA_PATH('Rat/Khan12a_fig2.mat'));
+khan.lSNR.sTraj = khan.fig2b_nose;
+khan.lSNR.oTraj = khan.fig2b_trail;
+khan.hSNR.sTraj = khan.fig2a_nose;
+khan.hSNR.oTraj = khan.fig2a_trail;
 
-% Rat behavior data
-ratDat = load(GEN_BEHAVIOR_DATA_PATH('Rat/Khan12a-fig1c.mat'));
-ratDat.rat = ratDat.rat(17:end-7, :);
-ratDat.odor = ratDat.odor(5:end-12, :);
+% Adjust time horizon to fit into the actual data length (provided in Khan12a)
+lSNR.dt = 7.8947 / length(lSNR.sTrajList);
+hSNR.dt = 6.8421 / length(hSNR.sTrajList);
+khan.lSNR.dt = 7.8947 / length(khan.lSNR.sTraj);
+khan.hSNR.dt = 6.8421 / length(khan.hSNR.sTraj);
 
-% Plot
-figure(1), clf;
+% Compute cumulative 1D distance travelled
+% Exclude initial global search before converge to ensure data consistency
+% The criteria is to crop the initial searching trajectory until the sensor
+% crosses the target for the first time
+dist_hSNR_Sensor = cumDist(hSNR.sTrajList(1:end));
+dist_hSNR_Trail = cumDist(hSNR.oTrajList(1:end));
+dist_lSNR_Sensor = cumDist(lSNR.sTrajList(1:end));
+dist_lSNR_Trail = cumDist(lSNR.oTrajList(1:end));
+dist_rat_hSNR_Sensor = cumDist(khan.hSNR.sTraj);
+dist_rat_hSNR_Trail = cumDist(khan.hSNR.oTraj);
+dist_rat_lSNR_Sensor = cumDist(khan.lSNR.sTraj);
+dist_rat_lSNR_Trail = cumDist(khan.lSNR.oTraj);
+
+%--------- Rat Odor Tracking data from Khan12a ---------%
+% Strong Signal Trajectory plot
+figure(2);clf; hold on;
 set(gcf, ...
     'units','normalized','outerposition',[0 0 1 1], ...
     'PaperPositionMode','auto', ...
     'PaperOrientation','landscape', ...
     'PaperSize', [13 8]);
-% Part #1 - Ergodic Harvesting Search
-hold on;
-hS = plot(sTraj, 'LineWidth', 2, ...
-    'Color', [238, 46, 47]/255.0);
-hO = plot(oTraj, 'LineWidth', 2, ...
-    'Color', [57, 83, 164]/255.0);
-rectangle('Position',[blindIdx(1) 0 diff(blindIdx) 1], ...
-    'LineWidth', 4, 'EdgeColor', [15, 128, 64]/255.0);
-set(gca,'YLim',[0, 1]);
-% Layered EER Patch
-mPlotContinuousEID(dat);
-% Prettify Figure
+plot(khan.hSNR.oTraj, ...
+    'LineWidth', 2, ...
+    'Color', barColor(1,:));
+plot(khan.hSNR.sTraj, ...
+    'LineWidth', 2, ...
+    'Color', barColor(2,:));
+xlabel('Time');
+ylabel('Position');
 opt = [];
-opt.BoxDim = [8,4] * 0.5;
-opt.YLim = [0, 1];
-opt.XLim = [130, length(sTraj)];
+opt.BoxDim = [8,4] * 0.354;
+opt.ShowBox = 'off';
+opt.XMinorTick = 'off';
+opt.YMinorTick = 'off'; 
 opt.XTick = [];
 opt.YTick = [];
-opt.XMinorTick = 'off';
-opt.YMinorTick = 'off';
-opt.ShowBox = 'off';
+opt.XLim = [0, length(khan.hSNR.oTraj)];
+opt.YLim = [mean(khan.hSNR.oTraj)-50, mean(khan.hSNR.oTraj)+50];
+opt.FontSize = 10;
 opt.FontName = 'Helvetica';
+opt.Colors = barColor(1:2,:);
 setAxesProp(opt, gca);
 legend(gca, 'off');
-hS.Color = [238, 46, 47]/255.0;
-hO.Color = [57, 83, 164]/255.0;
+set(gca,  'Position', [1    4    2.8320    1.7700]);
 set(gca, 'units', 'normalized');
 axesPosition = get(gca, 'Position');
-axesPosition(1:2) = [0.4, 0.2];
+axesPosition(1:2) = [0.2, 0.6];
 set(gca, 'Position', axesPosition);
-
-% Part #2 - Rat Search
-h = axes; hold on;
-hS = plot(ratDat.rat(:, 1), ratDat.rat(:, 2), 'LineWidth', 2, ...
-    'Color', [238, 46, 47]/255.0);
-hO = plot(ratDat.odor(:, 1), ratDat.odor(:, 2), 'LineWidth', 2, ...
-    'Color', [57, 83, 164]/255.0);
-rectangle('Position',[179, mean(ratDat.rat(:, 2))-120, 75.8, 240], ...
-    'LineWidth', 4, 'EdgeColor', [15, 136, 64]/255.0);
-% Prettify Figure
+% Weak Signal Trajectory
+trajAxes = axes; hold on;
+plot(khan.lSNR.oTraj, ...
+    'LineWidth', 2, ...
+    'Color', barColor(1,:));
+plot(khan.lSNR.sTraj, ...
+    'LineWidth', 2, ...
+    'Color', barColor(3,:));
+xlabel('Time');
+ylabel('Position');
 opt = [];
-opt.BoxDim = [8,4] * 0.5;
-opt.YLim = [mean(ratDat.rat(:, 2))-120, mean(ratDat.rat(:, 2))+120];
-opt.XLim = [min(ratDat.rat(:, 1)), max(ratDat.rat(:, 1))-10];
+opt.BoxDim = [8,4] * 0.354;
+opt.ShowBox = 'off';
+opt.XMinorTick = 'off';
+opt.YMinorTick = 'off'; 
 opt.XTick = [];
 opt.YTick = [];
-opt.XMinorTick = 'off';
-opt.YMinorTick = 'off';
-opt.ShowBox = 'off';
+opt.XLim = [0, length(khan.lSNR.oTraj)];
+opt.YLim = [mean(khan.lSNR.oTraj)-50, mean(khan.lSNR.oTraj)+50];
+opt.FontSize = 10;
 opt.FontName = 'Helvetica';
-setAxesProp(opt, h);
-hS.Color = [238, 46, 47]/255.0;
-hO.Color = [57, 83, 164]/255.0;
+opt.Colors = barColor([1,3],:);
+setAxesProp(opt, trajAxes);
 legend(gca, 'off');
 set(gca, 'units', 'normalized');
-axesPosition = get(gca, 'Position');
-axesPosition(1:2) = [0.4, 0.5];
+axesPosition(1:2) = [0.4, 0.6];
+set(gca, 'Position', axesPosition);
+% Relative Exploration bar plot
+barAxes = axes; hold on;
+barData = [1, dist_rat_hSNR_Sensor/dist_rat_hSNR_Trail, dist_rat_lSNR_Sensor/dist_rat_lSNR_Trail];
+for i = 1:3
+    bar(i, barData(i), 0.4, 'BaseValue', -1, ...
+        'FaceColor', barColor(i,:));
+end
+opt = [];
+opt.BoxDim = [8,5] * 0.354;
+opt.ShowBox = 'off';
+opt.XMinorTick = 'off';
+opt.YMinorTick = 'off'; 
+opt.XTick = [1, 2, 3];
+opt.YTick = [1, 5];
+opt.YLim = [-1, 5];
+opt.FontSize = 8;
+opt.FontName = 'Helvetica';
+setAxesProp(opt, barAxes);
+set(gca,'YTickLabel', {'1x', '5x'});
+set(gca,'XTickLabel', {'Target', 'Strong Signal', 'Weak Signal'});
+legend(gca, 'off');
+set(gca, 'units', 'normalized');
+axesPosition(1:2) = [0.6, 0.6];
 set(gca, 'Position', axesPosition);
 
-if USE_SPLIT_PRINT
+%--------- Ergodic Harvesting Simulation Trajectory ---------%
+% Strong Signal Trajectory plot
+trajAxes = axes; hold on;
+plot(hSNR.oTrajList, ...
+    'LineWidth', 2, ...
+    'Color', barColor(1,:));
+plot(hSNR.sTrajList, ...
+    'LineWidth', 2, ...
+    'Color', barColor(2,:));
+xlabel('Time');
+ylabel('Position');
+opt = [];
+opt.BoxDim = [8,4] * 0.354;
+opt.ShowBox = 'off';
+opt.XMinorTick = 'off';
+opt.YMinorTick = 'off'; 
+opt.XTick = [];
+opt.YTick = [];
+opt.XLim = [0, length(hSNR.oTrajList)];
+opt.YLim = [0, 1];
+opt.FontSize = 10;
+opt.FontName = 'Helvetica';
+opt.Colors = barColor(1:2,:);
+setAxesProp(opt, trajAxes);
+legend(gca, 'off');
+mPlotContinuousEID(hSNR);
+set(gca, 'units', 'normalized');
+axesPosition(1:2) = [0.2, 0.3];
+set(gca, 'Position', axesPosition);
+% Weak Signal Trajectory
+trajAxes = axes; hold on;
+plot(lSNR.oTrajList, ...
+    'LineWidth', 2, ...
+    'Color', barColor(1,:));
+plot(lSNR.sTrajList, ...
+    'LineWidth', 2, ...
+    'Color', barColor(3,:));
+xlabel('Time');
+ylabel('Position');
+opt = [];
+opt.BoxDim = [8,4] * 0.354;
+opt.ShowBox = 'off';
+opt.XMinorTick = 'off';
+opt.YMinorTick = 'off'; 
+opt.XTick = [];
+opt.YTick = [];
+opt.XLim = [0, length(lSNR.oTrajList)];
+opt.YLim = [0, 1];
+opt.FontSize = 10;
+opt.FontName = 'Helvetica';
+opt.Colors = barColor([1,3],:);
+setAxesProp(opt, trajAxes);
+legend(gca, 'off');
+mPlotContinuousEID(lSNR);
+set(gca, 'units', 'normalized');
+axesPosition(1:2) = [0.4, 0.3];
+set(gca, 'Position', axesPosition);
+% Bar plot
+barAxes = axes; hold on;
+barData = [1, dist_hSNR_Sensor/dist_hSNR_Trail, dist_lSNR_Sensor/dist_lSNR_Trail];
+for i = 1:3
+    bar(i, barData(i), 0.4, 'BaseValue', -1, ...
+        'FaceColor', barColor(i,:));
+end
+opt = [];
+opt.BoxDim = [8,5] * 0.354;
+opt.ShowBox = 'off';
+opt.XMinorTick = 'off';
+opt.YMinorTick = 'off'; 
+opt.XTick = [1, 2, 3];
+opt.YTick = [1, 5];
+opt.YLim = [-1, 5];
+opt.FontSize = 8;
+opt.FontName = 'Helvetica';
+setAxesProp(opt, barAxes);
+set(gca,'YTickLabel', {'1x', '5x'});
+set(gca,'XTickLabel', {'Target', 'Strong Signal', 'Weak Signal'});
+legend(gca, 'off');
+set(gca, 'units', 'normalized');
+axesPosition(1:2) = [0.6, 0.3];
+set(gca, 'Position', axesPosition);
+
+% All set, now print the first section into PDF
+if SPLIT_PLOT
     splitprint(gcf,... %separate the current figure
-        GEN_SAVE_PATH('fig5A'),... % filenames
+        GEN_SAVE_PATH('figS5-Rat'),... %filenames will begin with 'disp2'
         {{'line';'text'},{'surface';'patch';'image'}}, ...% types of objects
-        {'-depsc2','-dtiff'},... %file formats
+        {'-dpdf','-dtiff'},... %file formats
         0,... %alignment mark will not be added
         [1 0],... %axes in first figure will be visible
         {'','-r400'});
-    close(2:4);
 else
-    print(GEN_SAVE_PATH('fig5A.pdf'), '-dpdf');
+    print(GEN_SAVE_PATH('figS5-Rat.pdf'),'-dpdf');
 end
 
-%% Initial searching
-% Load and Process Data
-% Ergodic Harvesting data
-dat = load(GEN_DATA_PATH('EIH-Mole-SearchSim.mat'), ...
-    'dt', 'oTrajList', 'sTrajList', 'phi');
-sTraj = dat.sTrajList(1:1860);
-oTraj = dat.oTrajList(1:1860);
-dat.eidList = flattenResultList(dat.phi(:,:,1:end-1))';
-dt = dat.dt;
-% Filter Sensor Trajectory
-sTraj = LPF(sTraj, 1/dt, sTrajHighCutFreq);
 
-% Rat behavior data
-moleDat = load(GEN_BEHAVIOR_DATA_PATH('Mole/fig2-rBlock-green.mat'), 'angleData');
-moleDat.angleData = moleDat.angleData;
-
-% Plot
-figure(2), clf;
-set(gcf, ...
-    'units','normalized','outerposition',[0 0 1 1], ...
-    'PaperPositionMode','auto', ...
-    'PaperOrientation','landscape', ...
-    'PaperSize', [13 8]);
-% Part #1 - Ergodic Harvesting Search
-hold on;
-blindIdx = [0, 1120];
-hS = plot(sTraj, 'LineWidth', 2, ...
-    'Color', [238, 46, 47]/255.0);
-hO = plot(oTraj, 'LineWidth', 2, ...
-    'Color', [57, 83, 164]/255.0);
-rectangle('Position',[blindIdx(1) 0 diff(blindIdx) 1], ...
-    'LineWidth', 4, 'EdgeColor', [15, 128, 64]/255.0);
-set(gca,'YLim',[0, 1]);
-% Layered EID Patch
-mPlotContinuousEID(dat, 1860);
-% Prettify Figure
-opt = [];
-opt.BoxDim = [8,4] * 0.5;
-opt.YLim = [0, 1];
-opt.XLim = [0, length(sTraj)];
-opt.XTick = [];
-opt.YTick = [];
-opt.XMinorTick = 'off';
-opt.YMinorTick = 'off';
-opt.ShowBox = 'off';
-opt.FontName = 'Helvetica';
-setAxesProp(opt, gca);
-legend(gca, 'off');
-hS.Color = [238, 46, 47]/255.0;
-hO.Color = [57, 83, 164]/255.0;
-hO.LineStyle = '--';
-set(gca, 'units', 'normalized');
-axesPosition = get(gca, 'Position');
-axesPosition(1:2) = [0.4, 0.2];
-set(gca, 'Position', axesPosition);
-
-% Part #2 - Mole Search
-h = axes; hold on;
-hS = plot(moleDat.angleData, 'LineWidth', 2, ...
-    'Color', [238, 46, 47]/255.0);
-hO = line([0, length(moleDat.angleData)], [0, 0], 'LineWidth', 2, ...
-    'Color', [57, 83, 164]/255.0);
-rectangle('Position',[0, -80, 50, 180], ...
-    'LineWidth', 4, 'EdgeColor', [15, 136, 64]/255.0);
-% Prettify Figure
-opt = [];
-opt.BoxDim = [8,4] * 0.5;
-opt.YLim = [-80, 100];
-opt.XLim = [0, 83];
-opt.XTick = [];
-opt.YTick = [];
-opt.XMinorTick = 'off';
-opt.YMinorTick = 'off';
-opt.ShowBox = 'off';
-opt.FontName = 'Helvetica';
-setAxesProp(opt, h);
-hS.Color = [238, 46, 47]/255.0;
-hO.Color = [57, 83, 164]/255.0;
-hO.LineStyle = '--';
-legend(gca, 'off');
-set(gca, 'units', 'normalized');
-axesPosition = get(gca, 'Position');
-axesPosition(1:2) = [0.4, 0.5];
-set(gca, 'Position', axesPosition);
-if USE_SPLIT_PRINT
-    splitprint(gcf,... %separate the current figure
-        GEN_SAVE_PATH('fig5B'),... % filenames
-        {{'line';'text'},{'surface';'patch';'image'}}, ...% types of objects
-        {'-depsc2','-dtiff'},... %file formats
-        0,... %alignment mark will not be added
-        [1 0],... %axes in first figure will be visible
-        {'','-r400'});
-    close(2:4);
-else
-    print(GEN_SAVE_PATH('fig5B.pdf'), '-dpdf');
-end
-
-function mPlotContinuousEID(dat, varargin)
+function mPlotContinuousEID(dat)
 global PLOT_EER_BAND
 if ~PLOT_EER_BAND
     return;
 end
-if nargin == 2
-    termIdx = varargin{1};
-else
-    termIdx = inf;
-end
 %% Plot Parameters
-tScale = 5;   % Interval of EID plot update, set to 1 will plot all of the EID map
-nBins = 80;   % Color resolution in the y axis
+tScale = 10;   % Interval of EID plot update, set to 1 will plot all of the EID map
+nBins = 40;   % Color resolution in the y axis
 alpha = 0.5;  % Transparency of the EID color
+cmap = [0.7 0 0.4];
 
-eidList = dat.eidList;
+%% Prepare data
+eidList = flattenResultList(dat.phi(:,:,1:end-1))';
 tRes = length(dat.oTrajList) / (size(eidList,2)-1);
 sRes = size(eidList,1);
 s = 1 / sRes;
 faces = 1:4;
+idxList = tScale:tScale:floor(length(dat.oTrajList) / tRes);
 
-idxList = 1:tScale:floor(length(dat.oTrajList) / tRes);
+%% Plot
 for idx = 1:length(idxList)
     i = idxList(idx);
     [~,~,bin] = histcounts(eidList(:,i), nBins);
@@ -239,27 +263,22 @@ for idx = 1:length(idxList)
         if bin(k) <= 2
             continue;
         end
-        
         verts = [(i-tScale)*tRes, (k-1)*s;...
             (i-0)*tRes, (k-1)*s;...
             (i-0)*tRes, (k-0)*s;...
             (i-tScale)*tRes, (k-0)*s];
         patch('Faces',faces,'Vertices',verts,...
-            'FaceColor', [0.7 0 0.4],...
+            'FaceColor', cmap,...
             'FaceAlpha', alpha*bin(k)/nBins,...
             'EdgeColor', 'none');
     end
     drawnow;
-    if idx > termIdx
-        break;
-    end
 end
-
 
 function outList = flattenResultList(list)
-outList = zeros(size(list,2)*size(list,3), size(list,1));
-for i = 1:size(list,3)
-    for j = 1:size(list,2)
-        outList((i-1)*size(list,2) + j,:) = list(:,j,i)';
+    outList = zeros(size(list,2)*size(list,3), size(list,1));
+    for i = 1:size(list,3)
+        for j = 1:size(list,2)
+            outList((i-1)*size(list,2) + j,:) = list(:,j,i)';
+        end
     end
-end

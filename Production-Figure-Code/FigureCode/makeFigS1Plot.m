@@ -1,5 +1,5 @@
 function makeFigS1Plot(dataPath, savePath)
-%% Plot simulated trajectory in figure 1 d-e
+%% Plot simulated trajectory in figure S1
 % Chen Chen
 
 warning('off', 'MATLAB:print:FigureTooLargeForPage');
@@ -13,7 +13,7 @@ IT_hSNR = load(GEN_DATA_PATH('Infotaxis-Intro-SufficientLight.mat'), 'oTrajList'
 
 %% Make plot
 close all;
-% Panel d - low light condition
+% Weak signal condition
 figure(1); clf; hold on;
 set(gcf, ...
     'units','normalized','outerposition',[0 0 1 1], ...
@@ -49,8 +49,7 @@ axesPosition = get(gca, 'Position');
 axesPosition(1:2) = [0.2, 0.4];
 set(gca, 'Position', axesPosition);
 
-
-% Panel e - high light condition
+% Strong signal condition
 axes; hold on;
 plot(EH_hSNR.oTrajList(1:1201), ...
     'LineWidth', 2);

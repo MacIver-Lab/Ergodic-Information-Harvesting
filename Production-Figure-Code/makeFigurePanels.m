@@ -15,15 +15,15 @@ warning('off', 'MATLAB:rmpath:DirNotFound')
 %       'fig4'   -  panels for figure 4
 %       'fig5'   -  panels for figure 5
 %       'fig6'   -  panels for figure 6
-%       'fig7'   -  panels for figure 7
 %       'sm-fig1'-  panels for figure S1
 %       'sm-fig2'-  panels for figure S2
 %       'sm-fig3'-  panels for figure S3
 %       'sm-fig4'-  panels for figure S4
 %       'sm-fig5'-  panels for figure S5
 %       'sm-fig6'-  panels for figure S6
+%       'sm-fig7'-  panels for figure S7
 %
-targetFig = 'sm-fig6';
+targetFig = 'all';
 
 % Control whether or not to use previously simulated dataset
 % Use flag (USE_PUBLISHED_DATASET = flag)
@@ -37,7 +37,7 @@ FIG_DATA_PATH = './PublishedData/';
 FIG_DATA_PATH_LOCAL = '../SimulationCode/SimData/';
 FIG_OUTPUT_PATH = sprintf('./FigureOutput/%s/', targetFig);
 
-flagNeedSimData = @(s) isempty(find(ismember({'sm-fig4', 'sm-fig6'}, s), 1));
+flagNeedSimData = @(s) isempty(find(ismember({'sm-fig4', 'sm-fig7'}, s), 1));
 if ~USE_PUBLISHED_DATASET && flagNeedSimData(targetFig)
     FIG_DATA_PATH = FIG_DATA_PATH_LOCAL;
 end
@@ -50,8 +50,8 @@ addpath('./FigureCode/common/boundedline/Inpaint_nans/');
 
 %% Make production figure panels (do not change)
 if strcmp(targetFig, 'all')
-    allFigs = {'fig2', 'fig3', 'fig4', 'fig5', 'fig6', 'fig7', ...
-        'sm-fig1', 'sm-fig2', 'sm-fig3', 'sm-fig4', 'sm-fig5', 'sm-fig6'};
+    allFigs = {'fig2', 'fig3', 'fig4', 'fig5', 'fig6', ...
+        'sm-fig1', 'sm-fig2', 'sm-fig3', 'sm-fig4', 'sm-fig5', 'sm-fig6', 'sm-fig7'};
     for i = 1:length(allFigs)
         targetFig = allFigs{i};
         FIG_OUTPUT_PATH = sprintf('./FigureOutput/%s/', targetFig);
@@ -76,26 +76,26 @@ switch targetFig
     case 'fig4'
         makeFig4Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'fig5'
+        if ~USE_PUBLISHED_DATASET
+            Fig5ProcessData(FIG_DATA_PATH, FIG_OUTPUT_PATH);
+        end
         makeFig5Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'fig6'
-        if ~USE_PUBLISHED_DATASET
-            Fig6ProcessData(FIG_DATA_PATH, FIG_OUTPUT_PATH);
-        end
         makeFig6Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
-    case 'fig7'
-        makeFig7Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'sm-fig1'
         makeFigS1Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'sm-fig2'
-        makeFigS2Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
+        makeFigS2Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH, USE_PUBLISHED_DATASET);
     case 'sm-fig3'
-        makeFigS3Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH, USE_PUBLISHED_DATASET);
+        makeFigS3Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'sm-fig4'
         makeFigS4Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'sm-fig5'
         makeFigS5Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'sm-fig6'
         makeFigS6Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
+    case 'sm-fig7'
+        makeFigS7Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     otherwise
         error('Target figure not found!');
 end

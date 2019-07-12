@@ -1,21 +1,9 @@
-function Fig6ProcessData(dataPath, savePath)
-%% Process simulated data for figure 6
+function Fig5ProcessData(dataPath, savePath)
+%% Process simulated data for figure 5
 % Chen Chen
 
 GEN_DATA_PATH = @(fname) fullfile(dataPath, 'wiggle_attenuation_sim', 'rawdata', fname);
 GEN_SAVE_PATH = @(fname) fullfile(savePath, fname);
-
-%% Global Constants
-% Directory
-% DIR_ROOT = fullfile(srcPath, 'SimData/');
-% DIR_TRIAL_PREFIX = 'SimTrial-';
-% DIR_TRIAL_ATTEN_TRAJ_PREFIX = 'AttenTraj/';
-% DIR_TRIAL_SIM_TRAJ_PREFIX = 'SimTraj/';
-% DIR_FIND_MATFILE = @(d)dir([d,'*.mat']);
-% DIR_GET_FULL_PATH = @(l,idx)[l(idx).folder, '/', l(idx).name];
-% DIR_TRIAL_ATTEN_TRAJ = REPDIR([DIR_TRIAL_ROOT, DIR_TRIAL_ATTEN_TRAJ_PREFIX]);
-% DIR_TRIAL_SIM_TRAJ = REPDIR([DIR_TRIAL_ROOT, DIR_TRIAL_SIM_TRAJ_PREFIX]);
-
 
 %% STEP #1 - Performance Evaluation
 fprintf('********* STEP #1 - Performance Evaluation *********\n');
@@ -52,7 +40,7 @@ nTrackingSimTrials = length(attenTrialData);
 attenTrialData = rmfield(attenTrialData, 'srcObjPos');
 attenTrialData = rmfield(attenTrialData, 'trackingSimFileNamePrefix');
 
-fprintf('\n--------- STEP #3 Success, %d trials analyzed ---------\n', nTrackingSimTrials);
+fprintf('\n--------- STEP #1 Success, %d trials analyzed ---------\n', nTrackingSimTrials);
 
 %% STEP #2 - Group and Analyze Data
 fprintf('********* STEP #2 - Group and Analyze Data *********\n');
@@ -115,7 +103,7 @@ PerfData.meanEntropy = meanEntropy(sortIdx);
 PerfData.rmsEntropy = rmsEntropy(sortIdx);
 PerfData.varEntropy = varEntropy(sortIdx);
 
-fprintf('--------- STEP #4 Success, %d trials analyzed ---------\n', nTrackingSimTrials);
+fprintf('--------- STEP #2 Success, %d trials analyzed ---------\n', nTrackingSimTrials);
 
 
 %% Clean up and save data
