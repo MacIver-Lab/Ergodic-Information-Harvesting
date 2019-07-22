@@ -101,7 +101,7 @@ will run 20 threads in parallel.
 Once all the simulation jobs are done, exit the Singularity shell environment by calling the `exit` command. 
 
 ### 5. Reproduce Figure Results
-The figure generation code is written in MATLAB so MATLAB R2017a or a more recent version is required. To start, open the `makeFigurePanels.m` code in MATLAB under the `Production-Figure-Code` folder. To reproduce figure 2, for example, use the following procedure:
+The figure generation code is written in MATLAB so MATLAB R2017a or a more recent version is required. To start, open the `makeFigurePanels.m` code in MATLAB under the `Production-Figure-Code` folder. 
 - Launch `Ergodic-Information-Harvesting/Production-Figure-Code/makeFigurePanels.m` using MATLAB. Note that the code has been tested with MATLAB `R2017a` and `R2018a`.
 - Specify input parameters
   - Specify which figures to reproduce. Default: `targetFig = 'all'`. Example for one figure: set `targetFig = 'fig2'` to select figure 2 as the target.
