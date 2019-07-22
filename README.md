@@ -35,13 +35,13 @@ cd Ergodic-Information-Harvesting
 git lfs install
 git lfs pull
 ```
-If successeded, you should see files being downloaded by `git-lfs`.
+If you succeeded, you should see files being downloaded by `git-lfs`.
 
 ### 2. Install Singularity or Docker and Pull the EIH Container Image
 The following steps are different depending on the operating system environment. Please follow the instructions that best suits your system.
 
 #### Linux and Linux based HPCC/Cloud Environments
-[Singularity](https://www.sylabs.io/singularity/) is software for building, managing, and executing container images on Linux. It is required to run the simulations through our prebuilt container image on Linux and is easier to setup. For HPCC (High Performance Computing Cluster) environments, Singularity is usually used against Docker for security reasons. To install Singularity, follow the [official installation guide for Linux](https://www.sylabs.io/guides/2.6/user-guide/installation.html).
+[Singularity](https://www.sylabs.io/singularity/) is software for building, managing, and executing container images on Linux. It is required to run the simulations through our prebuilt container image on Linux and is easier to setup. For HPCC (High Performance Computing Cluster) environments, Singularity is usually used ahead of Docker for security reasons. To install Singularity, follow the [official installation guide for Linux](https://www.sylabs.io/guides/2.6/user-guide/installation.html).
 
 Once Singularity is installed, open a command line tool at the EIH directory `./Ergodic-Information-Harvesting/` and pull the prebuilt EIH container image from the cloud by running the following command on the command line:
 ```bash
@@ -49,7 +49,7 @@ singularity pull --name EIH.img shub://MacIver-Lab/Ergodic-Information-Harvestin
 ```
 
 #### Windows and MacOS
-[Docker](https://en.wikipedia.org/wiki/Docker_%28software%29) is used on Windows and MacOS for running EIH container image since Singularity only have native support for Linux OS. To install Docker, follow the official installation guide for [Windows](https://hub.docker.com/editions/community/docker-ce-desktop-windows) or [MacOS](https://hub.docker.com/editions/community/docker-ce-desktop-mac).
+[Docker](https://en.wikipedia.org/wiki/Docker_%28software%29) is used on Windows and MacOS for running the EIH container image since Singularity only has native support for Linux OS. To install Docker, follow the official installation guide for [Windows](https://hub.docker.com/editions/community/docker-ce-desktop-windows) or [MacOS](https://hub.docker.com/editions/community/docker-ce-desktop-mac).
 
 Once installed, first go to the Docker settings and update the desired number of CPUs and memory available for Docker (and EIH simulation) to use. The number of CPU thread available during the simulation is limited by this configuration.
 
@@ -92,7 +92,7 @@ You are all set for the environment setup. As the code will take several days to
 cd /EIH/SimulationCode/
 python3 RunAllSims.py
 ```
-By default, `RunAllSims.py` will check the number of available CPU threads and automally run parallel simulation jobs with the maximum number of threads possible. Nonetheless, the number of threads can be manually specified by passing the desired parallel thread count argument to it, for example
+By default, `RunAllSims.py` will check the number of available CPU threads and automally run parallel simulation jobs with the maximum number of threads possible. Nonetheless, the number of threads can be manually specified by passing the desired parallel thread count argument, for example
 ```bash
 python3 RunAllSims.py 20
 ```
