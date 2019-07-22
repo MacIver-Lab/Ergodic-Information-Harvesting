@@ -87,7 +87,7 @@ chmod +x ./BuildCython.sh
 . ./BuildCython.sh
 ```
 
-You are all set for the environment setup. You can start reproducing all the simulation results by running the main simulation code:
+You are all set for the environment setup. As the code will take several days to run (see benchmarks below), you may need to **prevent your system from going to sleep**. This is necessary with MacOS. With MacOS: Open a terminal, and type `caffeinate` and hit return. Your system will be prevented from sleeping until you hit Control-C. You can start reproducing all the simulation results by running the main simulation code:
 ```bash
 cd /EIH/SimulationCode/
 python3 RunAllSims.py
@@ -97,8 +97,6 @@ By default, `RunAllSims.py` will check the number of available CPU threads and a
 python3 RunAllSims.py 20
 ```
 will run 20 threads in parallel.
-
-**NOTE**: The simulation will take a long time to finish. Depending on your operating system, you may need to **prevent your system from going to sleep**. This is necessary with MacOS. With MacOS: Open a terminal, and type `caffeinate` and hit return. Your system will be prevented from sleeping until you hit Control-C.
 
 Once all the simulation jobs are done, exit the Singularity shell environment by calling the `exit` command. 
 
@@ -115,7 +113,7 @@ You should see a new MATLAB figure containing Figure 2 panels. PDF(s) will be sa
 To reproduce all the figures, follow the same steps, but set `targetFig = 'all'`
 
 ### Benchmark Running Time
-- **Benchmark on PC**: `~86.15 hours` on a 2015 MacOS desktop system (iMac 2015, Intel i7 Quad Core with 4.4GHz turboboost, running with Docker preferences set to use 4 cores (see above))
+- **Benchmark on PC**: `~98.2 hours` on a 2015 MacOS desktop system (iMac 2015, Intel i7 Quad Core with 4.4GHz turboboost, running with Docker preferences set to use 4 cores (see above))
 - **Benchmark on HPCC**: `~10.79 hours` on Northwestern University QUEST HPCC system's 8th generation computing node with single Intel Xeon Gold 6132 2.6 GHz Intel® QPI 2666 MHz with 3.70 GHz turboboost (Linux OS, 28 physical cores running with `nThreads = 56`)
 
 ### Additional Note for Linux and MacOS Users
