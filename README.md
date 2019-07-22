@@ -104,13 +104,11 @@ Once all the simulation jobs are done, exit the Singularity shell environment by
 The figure generation code is written in MATLAB so MATLAB R2017a or a more recent version is required. To start, open the `makeFigurePanels.m` code in MATLAB under the `Production-Figure-Code` folder. To reproduce figure 2, for example, use the following procedure:
 - Launch `Ergodic-Information-Harvesting/Production-Figure-Code/makeFigurePanels.m` using MATLAB. Note that the code has been tested with MATLAB `R2017a` and `R2018a`.
 - Specify input parameters
-  - Set `targetFig = 'fig2'` to select figure 2 as the target
-  - Set `USE_PUBLISHED_DATASET = 1` to use the published dataset included in the repository. Alternatively, if the local simulation jobs are completed, use of `USE_PUBLISHED_DATASET = 0` will force the code to use reproduced data located at `Ergodic-Information-Harvesting/SimulationCode/SimData/`
+  - Specify which figures to reproduce. Default: `targetFig = 'all'`. Example for one figure: set `targetFig = 'fig2'` to select figure 2 as the target.
+  - Specify whether to generate figures on the published data, or your locally simulated data. Default: `USE_PUBLISHED_DATASET = 1`, which uses the published dataset included in the repository. Alternatively, set `USE_PUBLISHED_DATASET = 0`; this will force the code to use your simulation results located at `Ergodic-Information-Harvesting/SimulationCode/SimData/`. 
 - Run the MATLAB code
 
-You should see a new MATLAB figure containing Figure 2 panels. PDF(s) will be saved under `Ergodic-Information-Harvesting/Production-Figure-Code/FigureOutput/fig2/`.
-
-To reproduce all the figures, follow the same steps, but set `targetFig = 'all'`
+PDF(s) will be saved under `Ergodic-Information-Harvesting/Production-Figure-Code/FigureOutput`.
 
 ### Benchmark Running Time
 - **Benchmark on PC**: `~98.2 hours` on a 2015 MacOS desktop system (iMac 2015, Intel i7 Quad Core with 4.4GHz turboboost, running with Docker preferences set to use 4 cores (see above))
