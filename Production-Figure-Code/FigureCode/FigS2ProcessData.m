@@ -8,8 +8,7 @@ GEN_SAVE_PATH = @(fname) fullfile(savePath, fname);
 eihTrials = dir(GEN_DATA_PATH('*EIH*.mat'));
 ifTrials = dir(GEN_DATA_PATH('*Infotaxis*.mat'));
 if isempty(eihTrials) || isempty(ifTrials)
-    error(['Cannot found simulation data, please make sure sm-fig1 ', ...
-           'simulation has finished or use USE_PREV_DATASET = 1']);
+    error('Cannot found simulation data, please make sure local simulation has finished or use USE_PREV_DATASET = 1');
 end
 
 %% Process data
