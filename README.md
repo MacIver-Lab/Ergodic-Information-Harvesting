@@ -7,7 +7,7 @@
 [![nbviewer](https://camo.githubusercontent.com/bfeb5472ee3df9b7c63ea3b260dc0c679be90b97/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f72656e6465722d6e627669657765722d6f72616e67652e7376673f636f6c6f72423d66333736323626636f6c6f72413d346434643464)](https://nbviewer.jupyter.org/github/MacIver-Lab/Ergodic-Information-Harvesting/blob/master/Tutorial/Ergodic_Information_Harvesting_Tutorial.ipynb)
 
 # Ergodic Information Harvesting (EIH) Video & Tutorial
-- Video explainer of key concepts underlying ergodic information harvesting, and an example application of the EIH algorithm to control an underwater electrolocation robot: [Link to YouTube](https://youtu.be/eF6J-YmPdIA)
+- Video explainer of key concepts underlying ergodic information harvesting [Link to YouTube](https://youtu.be/vOAzSa6Pna4), and an example application of the EIH algorithm to control an underwater electrolocation robot: [Link to YouTube](https://youtu.be/kHKvaxuLnq4)
 - Jupyter notebook tutorial on how to compute EID, click to view online: [![nbviewer](https://camo.githubusercontent.com/bfeb5472ee3df9b7c63ea3b260dc0c679be90b97/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f72656e6465722d6e627669657765722d6f72616e67652e7376673f636f6c6f72423d66333736323626636f6c6f72413d346434643464)](https://nbviewer.jupyter.org/github/MacIver-Lab/Ergodic-Information-Harvesting/blob/master/Tutorial/Ergodic_Information_Harvesting_Tutorial.ipynb)
 
 # Steps to reproduce the results shown in the EIH paper
