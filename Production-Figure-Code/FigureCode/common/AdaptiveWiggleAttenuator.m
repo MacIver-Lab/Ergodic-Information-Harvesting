@@ -9,7 +9,7 @@ if isempty(savePDF)
     savePDF = 0;
 end
 
-%% Configure Filter - Methods #2
+%% Configure Filter
 lpFilt = designfilt('lowpassiir',...
          'PassbandFrequency', freqWin(1),...
          'StopbandFrequency', freqWin(2), ...
@@ -24,16 +24,13 @@ sPosOut = filtfilt(lpFilt, sPos);
 
 % Parameters
 FreqResolution = 0.001; % [Hz]
-% MaxFrequency = 2.0; % [Hz]
 PlotMaxFrequency = 1.5; % [Hz]
-freqIdx = freqWin / FreqResolution + 1;
 
 sPosFFT = fft(sPos-mean(sPos), round(Fs/FreqResolution));
 sPosFFT_filt = fft(sPosOut-mean(sPosOut), round(Fs/FreqResolution));
 
 %% Evaluate Filter's Magnitude Response
 nPts = 2^12;
-% freqWin(2) = 1.5;
 [h, f] = freqz(lpFilt, nPts, Fs);
 [cutoffIdx, ~] = findNearestIdx(f, freqWin(1));
 freqIdx = f(f < freqWin(2));
@@ -48,7 +45,6 @@ AttenuateMetrics.freqWin = freqWin;
 AttenuateMetrics.magResponsedB = magResponsedB;
 AttenuateMetrics.magResponseFreqIdx = freqIdx;
 AttenuateMetrics.cutoffIdx = cutoffIdx;
-
 AttenuateMetrics.sPosFFT = sPosFFT;
 AttenuateMetrics.sPosFiltFFT = sPosFFT_filt;
 
@@ -59,7 +55,6 @@ if plotSW
     plot(freqIdx(1:cutoffIdx), magResponsedB(1:cutoffIdx), 'LineWidth', 2); hold on;
     hLine = line([freqWin(1), freqWin(1)], [-200, 0], ...
         'LineStyle', '--', 'LineWidth', 2);
-    
     % Second segment - attenuating band
     plot(freqIdx(cutoffIdx:end), magResponsedB(cutoffIdx:end), 'LineWidth', 2)
     
@@ -102,14 +97,13 @@ if plotSW
     opt.YLabel = 'Magnitude';
     opt.YLim = [0, 105];
     opt.XLim = [0, freqWin(2)];
-%     opt.XTick = [];
     opt.FontName = 'Helvetica';
     setPlotProp(opt);
     hLine.LineStyle = '--';
     if savePDF
         print(sprintf('Filter-%ddB-FFT.pdf', stopBandAtt),'-dpdf');
     end
-    
+ 
     figure(3); clf;
     simTimestamp = (1:length(sPos)) * dt;
     plot(simTimestamp, sPos, 'LineWidth',2); hold on;
@@ -126,7 +120,6 @@ if plotSW
     opt.YMinorTick = 'off';
     opt.XLabel = 'Time (Seconds)';
     opt.YLabel = 'Position';
-%     opt.XLim = [0, 1.5];
     opt.YTick = [];
     opt.FontName = 'Helvetica';
     setPlotProp(opt);

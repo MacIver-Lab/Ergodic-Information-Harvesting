@@ -3,7 +3,7 @@
 # chenchen.bme@gmail.com
 
 # based on miniconda3
-FROM continuumio/miniconda3
+FROM continuumio/miniconda3:4.7.12
 
 # get gcc and g++ for compiling Cython
 RUN apt-get update --fix-missing && \
@@ -17,7 +17,7 @@ RUN export conda=/opt/conda/bin/conda && \
     export python=python3
 
 # install python dependencies
-RUN conda install -c conda-forge -y -q tqdm cython numba scipy=1.0.1 numpy=1.16.1 && \
+RUN conda install -c conda-forge -y -q tqdm=4.46.0 cython=0.29.17 numba=0.49.0 scipy=1.4.1 numpy=1.18.4 && \
     conda clean --all -y -q
 
 # create binding point for EIH repository

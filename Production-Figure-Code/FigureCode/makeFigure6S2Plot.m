@@ -1,6 +1,5 @@
-function makeFigS5Plot(dataPath, savePath)
-%% Plot individual panels for figure S5
-% Chen Chen
+function makeFigure6S2Plot(dataPath, savePath)
+%% Plot figure 6---figure supplement 2
 
 close all;
 warning('off', 'MATLAB:print:FigureTooLargeForPage');
@@ -18,16 +17,14 @@ cumDist = @(x) sum(abs(diff(x)));
 % to plot the EER bands
 global PLOT_EER_BAND
 PLOT_EER_BAND = 1;
-% Use split plot method to generate vector graphic plots
-% This is a workaround for the buffer issue in MATLAB due
-% to the EER patch is too complex for the interal save
-% function to save as a vector graphic PDF
-SPLIT_PLOT = 0;
 
 %% Rat Odor Tracking
 % Load Data
 lSNR = load(GEN_DATA_PATH('EIH-Rat-WeakSignal.mat'));
 hSNR = load(GEN_DATA_PATH('EIH-Rat-StrongSignal.mat'));
+lSNR.eidList = flattenResultList(lSNR.phi(:,:,1:end-1))';
+hSNR.eidList = flattenResultList(hSNR.phi(:,:,1:end-1))';
+
 khan = load(GEN_BEHAVIOR_DATA_PATH('Rat/Khan12a_fig2.mat'));
 khan.lSNR.sTraj = khan.fig2b_nose;
 khan.lSNR.oTraj = khan.fig2b_trail;
@@ -223,17 +220,7 @@ axesPosition(1:2) = [0.6, 0.3];
 set(gca, 'Position', axesPosition);
 
 % All set, now print the first section into PDF
-if SPLIT_PLOT
-    splitprint(gcf,... %separate the current figure
-        GEN_SAVE_PATH('figS5-Rat'),... %filenames will begin with 'disp2'
-        {{'line';'text'},{'surface';'patch';'image'}}, ...% types of objects
-        {'-dpdf','-dtiff'},... %file formats
-        0,... %alignment mark will not be added
-        [1 0],... %axes in first figure will be visible
-        {'','-r400'});
-else
-    print(GEN_SAVE_PATH('figS5-Rat.pdf'),'-dpdf');
-end
+print(GEN_SAVE_PATH('fig6s2.pdf'),'-dpdf');
 
 
 function mPlotContinuousEID(dat)
@@ -242,20 +229,17 @@ if ~PLOT_EER_BAND
     return;
 end
 %% Plot Parameters
-tScale = 10;   % Interval of EID plot update, set to 1 will plot all of the EID map
-nBins = 40;   % Color resolution in the y axis
+tScale = 5;   % Interval of EID plot update, set to 1 will plot all of the EID map
+nBins = 256;   % Color resolution in the y axis
 alpha = 0.5;  % Transparency of the EID color
 cmap = [0.7 0 0.4];
-
-%% Prepare data
-eidList = flattenResultList(dat.phi(:,:,1:end-1))';
+eidList = dat.eidList;
 tRes = length(dat.oTrajList) / (size(eidList,2)-1);
 sRes = size(eidList,1);
 s = 1 / sRes;
 faces = 1:4;
-idxList = tScale:tScale:floor(length(dat.oTrajList) / tRes);
 
-%% Plot
+idxList = tScale:tScale:floor(length(dat.oTrajList) / tRes);
 for idx = 1:length(idxList)
     i = idxList(idx);
     [~,~,bin] = histcounts(eidList(:,i), nBins);
@@ -272,7 +256,6 @@ for idx = 1:length(idxList)
             'FaceAlpha', alpha*bin(k)/nBins,...
             'EdgeColor', 'none');
     end
-    drawnow;
 end
 
 function outList = flattenResultList(list)

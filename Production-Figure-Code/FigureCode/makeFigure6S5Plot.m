@@ -1,9 +1,8 @@
-function makeFigS3Plot(dataPath, savePath)
-%% Analyze sensitivity simulations on R/Lambda ratio
+function makeFigure6S5Plot(dataPath, savePath)
+%% Plot figure 6---figure supplement 5
+% Analyze sensitivity simulations on R/Lambda ratio
 % R/Lambda ratio controls the trade-off between energy and ergodicity
-% Chen Chen
 
-close all;
 warning('off', 'MATLAB:print:FigureTooLargeForPage');
 warning('off', 'MATLAB:MKDIR:DirectoryExists');
 GEN_DATA_PATH = @(fname) fullfile(dataPath, fname);
@@ -28,7 +27,8 @@ for i = 1:length(wsFiles)
 end
 
 %% Make plots
-wsDataR = [wsData.R];
+lambda = 5.0;
+wsDataRoverLambda = [wsData.R] / lambda;
 wsDataRE = [wsData.RE];
 figure(1); clf; hold on;
 set(gcf, ...
@@ -36,7 +36,7 @@ set(gcf, ...
     'PaperPositionMode','auto', ...
     'PaperOrientation','landscape', ...
     'PaperSize', [16 8]);
-notBoxPlot(wsDataRE, wsDataR/5, ...
+notBoxPlot(wsDataRE, wsDataRoverLambda, ...
     'jitter', 0, 'jitterScale', 0.1, ...
     'plotRawData', false, 'plotColor', 'b', 'blendPatchColor', true, ...
     'scaledJitter', true);
@@ -50,6 +50,7 @@ opt.ShowBox = 'off';
 opt.XTick = 10.^(-1:2);
 opt.XLim = [10^-1.1, 10^2.1];
 opt.YLim = [0, 4];
+opt.YTick = 0:4;
 opt.XMinorTick = 'on';
 opt.YMinorTick = 'off';
 opt.FontName = 'Helvetica';
@@ -59,4 +60,13 @@ opt.YLabel = 'Relative exploration';
 opt.IgnoreLines = true;
 setAxesProp(opt);
 legend('off');
-print(gcf,'-dpdf',GEN_SAVE_PATH('figS3.pdf'));
+print(gcf,'-dpdf',GEN_SAVE_PATH('fig6s5.pdf'));
+
+avgRE_RoverLambda_1 = mean(wsDataRE( abs(wsDataRoverLambda - 1.0)  < 1e-3));
+avgRE_RoverLambda_10 = mean(wsDataRE(abs(wsDataRoverLambda - 10.0) < 1e-3));
+fprintf(...
+    'Average relative exploration for R over lambda == 1 is  %.2f\n', ...
+    avgRE_RoverLambda_1);
+fprintf(...
+    'Average relative exploration for R over lambda == 10 is %.2f\n', ...
+    avgRE_RoverLambda_10);

@@ -1,4 +1,4 @@
-function makeFig4Plot(dataPath, savePath)
+function makeFigure7Plot(dataPath, savePath)
 
 close all;
 warning('off', 'MATLAB:print:FigureTooLargeForPage');
@@ -40,7 +40,7 @@ medMagHSNR = mean(fishMagHSNR(:, freqIdxRange), 2);
 medMagLSNR = mean(fishMagLSNR(:, freqIdxRange), 2);
 
 magList = [medMagHSNR', medMagLSNR'];
-magList = magList / max(magList);
+magList = (magList - mean(medMagHSNR)) / max(magList);
 magLabel = [ones(1,length(medMagHSNR)), 2*ones(1,length(medMagLSNR))];
 
 % Behavior spectrum statistics
@@ -51,7 +51,7 @@ set(gcf, ...
     'PaperOrientation','landscape', ...
     'PaperSize', [16 8]);
 notBoxPlot(magList, magLabel, 'jitter', 0.05, 'alpha', 0.5);
-ylim([0, 1.2])
+ylim([-0.3, 1])
 xlim([0.5, 2.5]);
 set(gca, 'YTick', []);
 set(gca, 'XTick', [1, 2]);
@@ -82,6 +82,8 @@ set(gca, 'Position', axesPosition);
 title('Electric Fish (Behavior)', 'FontSize', 12)
 % Test statistics (non-parametric ANOVA)
 p = kruskalwallis(magList, magLabel, 'off');
+fprintf('Statistics (electric fish behavior): Kruskal-wallis test - p = %.4f (n = %d)\n', ...
+    p, length(magList));
 
 % Behavior FFT
 axes; hold on;
@@ -142,12 +144,12 @@ medMagHSNR_EIH = mean(sensorMagHSNR(:, freqIdxRange), 2);
 medMagLSNR_EIH = mean(sensorMagLSNR(:, freqIdxRange), 2);
 
 magList = [medMagHSNR_EIH', medMagLSNR_EIH'];
-magList = magList / max(magList);
+magList = (magList - mean(medMagHSNR_EIH)) / max(magList);
 magLabel = [ones(1,length(medMagHSNR_EIH)), 2*ones(1,length(medMagLSNR_EIH))];
 
 axes; hold on;
 notBoxPlot(magList, magLabel, 'jitter', 0.05, 'alpha', 0.5);
-ylim([0, 1.2]);
+ylim([-0.3, 1])
 xlim([0.5, 2.5]);
 set(gca, 'YTick', []);
 set(gca, 'XTick', [1, 2]);
@@ -178,6 +180,8 @@ set(gca, 'Position', axesPosition);
 title('Electric Fish (Simulation)', 'FontSize', 12)
 % Test statistics (non-parametric ANOVA)
 p = kruskalwallis(magList, magLabel, 'off');
+fprintf('Statistics (electric fish simulation): Kruskal-wallis test - p = %.4f (n = %d)\n', ...
+    p, length(magList));
 
 % Plot FFT
 axes; hold on;
@@ -216,7 +220,7 @@ patch(...
     'Faces', [1, 2, 3, 4], ...
     'FaceColor', 'k', 'FaceAlpha', 0.1, ...
     'EdgeAlpha', 0)
-print(gcf,'-dpdf',GEN_SAVE_PATH('fig4-electric-fish.pdf'));
+print(gcf,'-dpdf',GEN_SAVE_PATH('fig7A-D.pdf'));
 
 %% Mole behavioral data
 cmap = [56, 180, 74; ...
@@ -274,7 +278,7 @@ end
 magListX = [...
     MoleFreqMagX_hSNR, ...
     MoleFreqMagX_lSNR];
-magListX = magListX / max(magListX);
+magListX = (magListX - mean(MoleFreqMagX_hSNR)) / max(magListX);
 magLabelX = [...
     1*ones(1, length(MoleFreqMagX_hSNR)), ...
     2*ones(1, length(MoleFreqMagX_lSNR))];
@@ -328,7 +332,7 @@ title('Mole (Behavior)', 'FontSize', 12)
 hAxe = axes; 
 notBoxPlot(magListX, magLabelX);
 xlim([0.5, 2.5]);
-ylim([0, 1.2])
+ylim([-0.3, 1]);
 set(gca, 'YTick', [0, 1]);
 set(gca, 'XTick', [1, 2]);
 set(gca, 'XTickLabel', ...
@@ -357,6 +361,9 @@ set(gca, 'Position', axesPosition);
 title('Mole (Behavior)', 'FontSize', 12)
 % Test statistics (non-parametric ANOVA)
 pX = kruskalwallis(magListX, magLabelX, 'off');
+fprintf('Statistics (mole behavior): Kruskal-wallis test - p = %.4f (n = %d)\n', ...
+    pX, length(magListX));
+
 
 % EIH
 EH_lSNR_files = dir(GEN_DATA_PATH('EIH-Mole-WeakSignal*.mat'));
@@ -380,7 +387,7 @@ end
 magListEIH = [...
     MoleFreqMagEIH_hSNR, ...
     MoleFreqMagEIH_lSNR];
-magListEIH = magListEIH / max(magListEIH);
+magListEIH = (magListEIH - mean(MoleFreqMagEIH_hSNR)) / max(magListEIH);
 magLabelEIH = [...
     1*ones(1, length(MoleFreqMagEIH_hSNR)), ...
     2*ones(1, length(MoleFreqMagEIH_lSNR))];
@@ -388,7 +395,7 @@ magLabelEIH = [...
 axes; hold on;
 notBoxPlot(magListEIH, magLabelEIH);
 xlim([0.5, 2.5])
-ylim([0, 1.2])
+ylim([-0.3, 1])
 set(gca, 'YTick', [0, 1]);
 set(gca, 'XTick', [1, 2]);
 set(gca, 'XTickLabel', ...
@@ -417,10 +424,10 @@ set(gca, 'Position', axesPosition);
 title('Mole (Simulation)', 'FontSize', 12)
 %%% Spectrum %%%
 axes; hold on;
-nrmFactor = max([MoleEIHMag_lSNR(:, 1);MoleEIHMag_hSNR(:, 1)]);
-plot(fftTicks, MoleEIHMag_lSNR(:, 1)/nrmFactor, '-', ...
+nrmFactor = max([MoleEIHMag_lSNR(:, 2);MoleEIHMag_hSNR(:, 2)]);
+plot(fftTicks, MoleEIHMag_lSNR(:, 2)/nrmFactor, '-', ...
     'LineWidth', 2, 'Color', [0.5, 0, 0, 0.9]);
-plot(fftTicks, MoleEIHMag_hSNR(:, 1)/nrmFactor, '-', ...
+plot(fftTicks, MoleEIHMag_hSNR(:, 2)/nrmFactor, '-', ...
     'LineWidth', 2, 'Color', [0, 0.5, 0, 0.9]);
 set(gca, 'YTick', [0, 1]);
 set(gca, 'XTick', [0, 0.5, 1]);
@@ -453,7 +460,10 @@ axesPosition(1:2) = [0.3, 0.5];
 set(gca, 'Position', axesPosition);
 title('Mole (Simulation)', 'FontSize', 12)
 p = kruskalwallis(magListEIH, magLabelEIH, 'off');
-print(gcf,'-dpdf',GEN_SAVE_PATH('fig4-mole.pdf'));
+fprintf('Statistics (mole simulation): Kruskal-wallis test - p = %.4f (n = %d)\n', ...
+    p, length(magListEIH));
+
+print(gcf,'-dpdf',GEN_SAVE_PATH('fig7E-H.pdf'));
 
 %% Cockroach
 cmap = [56, 180, 74; ...
@@ -552,10 +562,10 @@ set(gca, 'Position', axesPosition);
 title('Cockroach Behavior', 'FontSize', 12)
 %%% Statistics %%%
 axes;
-magListY = magListY / max(magListY);
+magListY = (magListY - mean(CockroachFreqMagY_hSNR)) / max(magListY);
 notBoxPlot(magListY, magLabelY);
 xlim([0.5, 2.5])
-ylim([0, 1.2])
+ylim([-0.3, 1])
 set(gca, 'YTick', []);
 set(gca, 'XTick', [1, 2]);
 set(gca, 'XTickLabel', ...
@@ -587,6 +597,9 @@ hAxe = gca;
 % Test statistics (non-parametric ANOVA)
 pX = kruskalwallis(magListX, magLabelX, 'off');
 pY = kruskalwallis(magListY, magLabelY, 'off');
+fprintf('Statistics (cockroach behavior): Kruskal-wallis test - p = %.4f (n = %d)\n', ...
+    pY, length(magListY));
+
 
 % EIH
 EH_lSNR_files = dir(GEN_DATA_PATH('EIH-Cockroach-WeakSignal*.mat'));
@@ -651,10 +664,10 @@ set(gca, 'Position', axesPosition);
 title('Cockroach Simulation', 'FontSize', 12)
 %%% Statistics %%%
 axes;
-magListEIH = magListEIH / max(magListEIH);
+magListEIH = (magListEIH - mean(CockroachFreqMagEIH_hSNR)) / max(magListEIH);
 notBoxPlot(magListEIH, magLabelEIH);
 xlim([0.5, 2.5])
-ylim([0, 1.2])
+ylim([-0.3, 1])
 set(gca, 'YTick', [0, 1]);
 set(gca, 'XTick', [1, 2]);
 set(gca, 'XTickLabel', ...
@@ -682,7 +695,10 @@ axesPosition(1:2) = [0.7, 0.5];
 set(gca, 'Position', axesPosition);
 title('Cockroach Simulation (Lateral Position)', 'FontSize', 12)
 p = kruskalwallis(magListEIH, magLabelEIH, 'off');
-print(gcf,'-dpdf',GEN_SAVE_PATH('fig4-cockroach.pdf'));
+fprintf('Statistics (cockroach simulation): Kruskal-wallis test - p = %.4f (n = %d)\n', ...
+    p, length(magListEIH));
+
+print(gcf,'-dpdf',GEN_SAVE_PATH('fig7I-L.pdf'));
 
 
 %% Hawkmoth
@@ -892,6 +908,8 @@ set(gca, 'Position', axesPosition);
 title('Simulation', 'FontSize', 16)
 % Test statistics (non-parametric ANOVA)
 p = kruskalwallis(medFreqGainData, medFreqGainLabel, 'off');
+fprintf('Statistics (moth simulation): Kruskal-wallis test - p = %.4f (n = %d)\n', ...
+    p, length(medFreqGainData));
 
 % Behavior
 medGainData = [medGain{1}; medGain{3}];
@@ -926,9 +944,11 @@ axesPosition = get(gca, 'Position');
 axesPosition(1:2) = [0.5, 0.5];
 set(gca, 'Position', axesPosition);
 title('Behavior', 'FontSize', 16)
-print(gcf,'-dpdf',GEN_SAVE_PATH('fig4-moth.pdf'));
+print(gcf,'-dpdf',GEN_SAVE_PATH('fig7M-P.pdf'));
 % Test statistics (non-parametric ANOVA)
 p = kruskalwallis(medGainData, medGainLabel, 'off');
+fprintf('Statistics (moth behavior): Kruskal-wallis test - p = %.4f (n = %d)\n', ...
+    p, length(medGainData));
 
 
 function out = parseCockroachData(dat)

@@ -324,17 +324,19 @@
         "pLSigmaAmp": 100,
         "blindIdx": false,
         "blind": "n/a",
-        "simType": "IF",
+        "simType": "EH",
         "rawTraj": false,
         "maxT": 50,
-        "objCenter": 0.5,
+        "objCenter": 0.55,
         "sInitPos": 0.4,
         "stepSize": 0.005,
         "planDepth": 3,
-        "saveDir": "./SimData/intro_sim/"
+        "saveDir": "./SimData/distractor_sim/",
+        "multiTargetTracking": "distractor",
+        "multiTargetInitialPos": 0.45
     },
     "SNR": [
-        10
+        30
     ],
     "wControl": [
         10
@@ -343,10 +345,10 @@
         0.06
     ],
     "objAmp": [
-        0.2
+        0.0
     ],
-    "figName": "fig2",
-    "filename": "Infotaxis-Intro-InsufficientLight.mat",
+    "figName": "fig2s2",
+    "filename": "EIH-DistractorSim.mat",
     "procNoiseSigma": [
         0.02
     ],

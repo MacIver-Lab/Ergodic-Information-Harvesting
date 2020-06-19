@@ -1,4 +1,4 @@
-function makeFig6Plot(dataPath, savePath)
+function makeFigure5Plot(dataPath, savePath)
 close all;
 warning('off', 'MATLAB:print:FigureTooLargeForPage');
 GEN_DATA_PATH = @(fname) fullfile(dataPath, '/wiggle_attenuation_sim', fname);
@@ -185,60 +185,35 @@ set(gca, 'units', 'normalized');
 axesPosition = get(gca, 'Position');
 axesPosition(1:2) = [0.4, 0.2];
 set(gca, 'Position', axesPosition);
-print(gcf,'-dpdf',GEN_SAVE_PATH('fig6.pdf'));
+print(gcf,'-dpdf',GEN_SAVE_PATH('fig5.pdf'));
 
 
-function [fTraj, rTraj] = normalizeFishTraj(fTraj, rTraj)
-%% Fit fish behavioral trajectory into normalized simulation workspace
-refSimAmp = 0.2;  % Amplitude of simulated target trajectory
-refSimMean = 0.5; % Center of simulated target trajectory
-peakH = findpeaks(rTraj, ...
-    'SortStr', 'descend', ...
-    'MinPeakHeight', max(rTraj)-5);
-peakL = abs(findpeaks(-rTraj, ...
-    'SortStr', 'descend', ...
-    'MinPeakHeight', max(-rTraj)-5));
-refAmpPixel = (mean(peakH) - mean(peakL)) / 2.0;
-% Remove offset
-rTraj = rTraj - (refAmpPixel + mean(peakL));
-fTraj = fTraj - mean(fTraj);
-% Scale and offset to match simulated amplitude
-rTraj = rTraj / refAmpPixel * refSimAmp + refSimMean;
-fTraj = fTraj / refAmpPixel * refSimAmp + refSimMean;
-
-clf; hold on;
-plot(rTraj);
-plot(fTraj);
 
 function [relativeEffort, perfData] = calcForce(fTraj, rTraj)
 %% Estimate the amount of force required for the acceleration
-%  Using simple F = ma model
+%  Using simple F = m * a model
 USE_DRAG = 0;
 IGNORE_NEG_EFFORT = 0;
 
 % Video has a 46.8 pixel/cm (DPC) pixel density in the longitudinal axis
-% The refuge measures 15 cm long
+% The refuge measures 15 cm long.
 videoDPC = 46.8;
 refugeLenCM = 15.0;
 fishLenCM = 14.36;
-% Video FPS
+% Video FPS, i.e. the sampling frequency.
 videoFPS = 60.0; % [frame/second]
 
 % Fish body weight
 % This is estimated by using black ghost knifefish as a reference
-% According to MacI10a Energy-Information Trade-Offs between Movement and Sensing
-% black ghost knifefish weights 23 grams with a body length of 19 cm
-% Therefore, we can estimate eigenmannia's weight considering its body
-% length is 14.36 cm by assuming it has the similar density, note that this
-% will likely to slightly overestimate the weight since eigenmannia's body
-% is slimmer than black ghost, especially near the caudal part. Hence, we 
-% discounted the overall weight by a ratio of 0.8 to take that into
-% consideration.
-% Added mass is taken from Clai08a
+% According to MacI10a (Energy-Information Trade-Offs between Movement and
+% Sensing), the black ghost knifefish weights 23 grams with a body length 
+% of 19 cm.
+% Added mass is taken from Clai08a (cited in the paper) to account for drag
+% so a separate drag model is not needed. The code still provides a separate 
+% drag model to be used for convenient exploration though it's not used
+% here.
 addedMass = 6.04;
-fishWeightGram = 23 + addedMass;
-% fishWeightGram = 14.36 * (23.0 / 19.0) + addedMass;
-fishWeightGram = fishWeightGram * 1.0;
+fishWeightGram = 23.0 + addedMass;
 
 % Drag model
 rho = 1.0;        % Density of fluit, water = 1.0 [g/cm^3]
@@ -253,7 +228,7 @@ dragForce = @(v) dragConstant * (v.^2); % unit [g*cm/sec^2]
 
 %% Filter raw trajectory
 % Position unit [pixel]
-stopFreq = 1.6; % [Hz]
+stopFreq = 2.10; % [Hz]
 fTraj = LPF(fTraj, videoFPS, stopFreq);
 rTraj = LPF(rTraj, videoFPS, stopFreq);
 % flatten
@@ -311,7 +286,7 @@ fEffort = trapz(time, fPow);
 rEffort = trapz(time, rPow);
 
 % Convert unit to micro-J
-% unit [g*cm^2/sec^2] = [1e-7 J]
+% unit 1e-1 * [g*cm^2/sec^2] = 1e-1 * [uJ]
 fEffort = 1e-1 * fEffort;
 rEffort = 1e-1 * rEffort;
 

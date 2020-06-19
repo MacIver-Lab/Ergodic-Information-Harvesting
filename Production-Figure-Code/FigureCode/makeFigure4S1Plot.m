@@ -1,6 +1,5 @@
-function makeFigS4Plot(dataPath, savePath)
-%% Plot supplement figure 4
-% Chen Chen
+function makeFigure4S1Plot(dataPath, savePath)
+%% Make figure 4---figure supplement 1 plot
 
 close all;
 warning('off', 'MATLAB:print:FigureTooLargeForPage');
@@ -10,10 +9,12 @@ GEN_SAVE_PATH = @(fname) fullfile(savePath, fname);
 
 %% Load Source Trajectory
 load(GEN_DATA_PATH('EIH-ElectricFish-WeakSignal-Reference.mat'), 'sTrajList', 'dt');
+% account for time scaling: target is moving at 0.1 Hz.
+dt = dt / 2;
 sPosRaw = sTrajList;
 
 %% Attenuate the Wiggle Frequencies
-freqWin = [0.1, 1.5];
+freqWin = [0.2, 1.5];
 attenSamp = [50, 150];
 for i = 1:length(attenSamp)
     [so, am] = AdaptiveWiggleAttenuator(sPosRaw, dt, freqWin, attenSamp(i), 0, 0);
@@ -76,7 +77,7 @@ for i = 1:length(attenSamp)
 end
 xlabel('Time');
 ylabel('Position');
-set(gca,'XLim',[0,50]);
+set(gca,'XLim',[0, 25]);
 set(gca,'YLim',[0.1,0.9]);
 opt = [];
 opt.BoxDim = [8, 5] * 0.4;
@@ -130,6 +131,6 @@ set(gca, 'units', 'normalized');
 axesPosition = get(gca, 'Position');
 axesPosition(1:2) = [0.4, 0.4];
 set(gca, 'Position', axesPosition);
-print(GEN_SAVE_PATH('figS4.pdf'), '-dpdf');
+print(GEN_SAVE_PATH('fig4s1.pdf'), '-dpdf');
 
 fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));

@@ -1,6 +1,5 @@
-function makeFigS6Plot(dataPath, savePath)
-%% Plot supplement figure 5
-% Chen Chen
+function makeFigure6S3Plot(dataPath, savePath)
+%% Plot figure 6---figure supplement 3
 
 close all;
 warning('off', 'MATLAB:print:FigureTooLargeForPage');
@@ -11,9 +10,6 @@ GEN_SAVE_PATH = @(fname) fullfile(savePath, fname);
 sTrajHighCutFreq = 2.10; % Hz
 global PLOT_EER_BAND
 PLOT_EER_BAND = 1;
-% SET this to 1 if you are having issues with creating vector graphic PDFs
-% it will save the complex EER band overlay into a separate tiff image
-USE_SPLIT_PRINT = 0;
 
 %% Re-engage searching
 % Load and Process Data
@@ -99,18 +95,7 @@ axesPosition = get(gca, 'Position');
 axesPosition(1:2) = [0.4, 0.5];
 set(gca, 'Position', axesPosition);
 
-if USE_SPLIT_PRINT
-    splitprint(gcf,... %separate the current figure
-        GEN_SAVE_PATH('fig6A'),... % filenames
-        {{'line';'text'},{'surface';'patch';'image'}}, ...% types of objects
-        {'-depsc2','-dtiff'},... %file formats
-        0,... %alignment mark will not be added
-        [1 0],... %axes in first figure will be visible
-        {'','-r400'});
-    close(2:4);
-else
-    print(GEN_SAVE_PATH('fig6A.pdf'), '-dpdf');
-end
+print(GEN_SAVE_PATH('fig6s3A.pdf'), '-dpdf');
 
 %% Initial searching
 % Load and Process Data
@@ -146,7 +131,7 @@ rectangle('Position',[blindIdx(1) 0 diff(blindIdx) 1], ...
     'LineWidth', 4, 'EdgeColor', [15, 128, 64]/255.0);
 set(gca,'YLim',[0, 1]);
 % Layered EID Patch
-mPlotContinuousEID(dat, 1860);
+mPlotContinuousEID(dat);
 % Prettify Figure
 opt = [];
 opt.BoxDim = [8,4] * 0.5;
@@ -196,34 +181,19 @@ set(gca, 'units', 'normalized');
 axesPosition = get(gca, 'Position');
 axesPosition(1:2) = [0.4, 0.5];
 set(gca, 'Position', axesPosition);
-if USE_SPLIT_PRINT
-    splitprint(gcf,... %separate the current figure
-        GEN_SAVE_PATH('fig6B'),... % filenames
-        {{'line';'text'},{'surface';'patch';'image'}}, ...% types of objects
-        {'-depsc2','-dtiff'},... %file formats
-        0,... %alignment mark will not be added
-        [1 0],... %axes in first figure will be visible
-        {'','-r400'});
-    close(2:4);
-else
-    print(GEN_SAVE_PATH('fig6B.pdf'), '-dpdf');
-end
 
-function mPlotContinuousEID(dat, varargin)
+print(GEN_SAVE_PATH('fig6s3B.pdf'), '-dpdf');
+
+function mPlotContinuousEID(dat)
 global PLOT_EER_BAND
 if ~PLOT_EER_BAND
     return;
 end
-if nargin == 2
-    termIdx = varargin{1};
-else
-    termIdx = inf;
-end
 %% Plot Parameters
-tScale = 10;   % Interval of EID plot update, set to 1 will plot all of the EID map
-nBins = 40;   % Color resolution in the y axis
+tScale = 5;   % Interval of EID plot update, set to 1 will plot all of the EID map
+nBins = 256;   % Color resolution in the y axis
 alpha = 0.5;  % Transparency of the EID color
-
+cmap = [0.7 0 0.4];
 eidList = dat.eidList;
 tRes = length(dat.oTrajList) / (size(eidList,2)-1);
 sRes = size(eidList,1);
@@ -243,13 +213,9 @@ for idx = 1:length(idxList)
             (i-0)*tRes, (k-0)*s;...
             (i-tScale)*tRes, (k-0)*s];
         patch('Faces',faces,'Vertices',verts,...
-            'FaceColor', [0.7 0 0.4],...
+            'FaceColor', cmap,...
             'FaceAlpha', alpha*bin(k)/nBins,...
             'EdgeColor', 'none');
-    end
-    drawnow;
-    if idx > termIdx
-        break;
     end
 end
 

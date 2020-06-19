@@ -1,4 +1,5 @@
-function makeFigS7Plot(dataPath, savePath)
+function makeFigure2S3Plot(dataPath, savePath)
+%% Make figure 2---figure supplement 3 plot
 
 close all;
 warning('off', 'MATLAB:print:FigureTooLargeForPage');
@@ -105,4 +106,5 @@ set(gca, 'units', 'normalized');
 axesPosition = get(gca, 'Position');
 axesPosition(1:2) = [0.2, 0.5];
 set(gca, 'Position', axesPosition);
-print(GEN_SAVE_PATH('figS7.pdf'), '-dpdf');
+
+print(GEN_SAVE_PATH('fig2s3.pdf'), '-dpdf');

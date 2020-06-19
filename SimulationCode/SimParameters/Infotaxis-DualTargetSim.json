@@ -322,29 +322,33 @@
         "pLSigmaAmpBayesian": 100,
         "pLSigmaAmpEID": 100,
         "pLSigmaAmp": 100,
-        "blindIdx": 0,
+        "blindIdx": false,
         "blind": "n/a",
-        "simType": "EH",
+        "simType": "IF",
         "rawTraj": false,
         "maxT": 50,
-        "objCenter": 0.5,
+        "objCenter": 0.55,
         "sInitPos": 0.4,
-        "saveDir": "./SimData/intro_sim/"
+        "stepSize": 0.005,
+        "planDepth": 3,
+        "saveDir": "./SimData/dual_target_sim/",
+        "multiTargetTracking": "dual",
+        "multiTargetInitialPos": 0.45
     },
     "SNR": [
-        60
+        30
     ],
     "wControl": [
-        20
+        10
     ],
     "Sigma": [
         0.06
     ],
     "objAmp": [
-        0.2
+        0.0
     ],
-    "figName": "fig2",
-    "filename": "EIH-Intro-SufficientLight.mat",
+    "figName": "fig2s1",
+    "filename": "IF-DualTargetSim.mat",
     "procNoiseSigma": [
         0.02
     ],
@@ -355,7 +359,7 @@
         0.025
     ],
     "randSeed": [
-        0
+        1
     ],
     "tRes": [
         101

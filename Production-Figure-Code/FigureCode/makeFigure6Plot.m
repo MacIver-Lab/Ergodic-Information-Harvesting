@@ -1,8 +1,8 @@
-function makeFig3Plots(dataPath, savePath)
-%% Plot individual panels for figure 3 insets
-% Note that due to the complexity of this figure, each animal's inset will 
+function makeFigure6Plot(dataPath, savePath)
+%% Plot individual panels for figure 6 insets
+% Note that due to the complexity of this figure, each animal's inset will
 % be plotted separately into individual PDF files
-% 
+%
 % Chen Chen
 
 close all;
@@ -13,19 +13,12 @@ GEN_SAVE_PATH = @(fname) fullfile(savePath, fname);
 barColor = [72, 110, 181;...
     50, 180, 74; ...
     236, 29, 36] / 255;
-% Lambda function handle for computing cumulative 1D distance travelled
-cumDist = @(x) sum(abs(diff(x)));
 % Whether nor not to plot EER band
 % set to 1 to enable EER plot overlay
-% note that due to the complexity of EER bands, it's can be fairly slow 
+% note that due to the complexity of EER bands, it's can be fairly slow
 % to plot the EER bands
 global PLOT_EER_BAND
 PLOT_EER_BAND = 1;
-% Use split plot method to generate vector graphic plots
-% This is a workaround for the buffer issue in MATLAB due
-% to the EER patch is too complex for the interal save
-% function to save as a vector graphic PDF
-SPLIT_PLOT = 0;
 
 %% Electric Fish Simulation
 % Load data
@@ -42,6 +35,7 @@ ss = load(GEN_BEHAVIOR_DATA_PATH('/ElectricFish/Eigenmannia-sp-StrongSignal.mat'
 fish.hSNR.fishTraj = ss.strongSigData{8, 1};
 fish.hSNR.refugeTraj = ss.strongSigData{8, 2};
 dt = 1 / 60;
+trajHighCutFreq = 2.10;
 trajSegStr = 31.5;
 trajSegLen = 30;
 trajSegStrIdx = trajSegStr * 60;
@@ -67,7 +61,7 @@ pix2cm = 1.7 / (max(fish.hSNR.refugeTraj) - min(fish.hSNR.refugeTraj));
 
 %--------- Fish Sinusoidal Tracking ---------%
 % Strong Signal Trajectory plot
-figure(1);clf; hold on;
+figure; clf; hold on;
 set(gcf, ...
     'units','normalized','outerposition',[0 0 1 1], ...
     'PaperPositionMode','auto', ...
@@ -85,7 +79,7 @@ opt = [];
 opt.BoxDim = [8,4] * 0.354;
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
-opt.YMinorTick = 'off'; 
+opt.YMinorTick = 'off';
 opt.XTick = [0, 30];
 opt.YTick = -2:2:2;
 opt.YLim = [-2, 2];
@@ -142,7 +136,7 @@ opt = [];
 opt.BoxDim = [8,4] * 0.354;
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
-opt.YMinorTick = 'off'; 
+opt.YMinorTick = 'off';
 opt.XTick = [];
 opt.YTick = [];
 opt.XLim = [0, length(EH_hSNR.oTrajList)];
@@ -170,7 +164,7 @@ opt = [];
 opt.BoxDim = [8,4] * 0.354;
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
-opt.YMinorTick = 'off'; 
+opt.YMinorTick = 'off';
 opt.XTick = [];
 opt.YTick = [];
 opt.XLim = [0, length(EH_lSNR.oTrajList)];
@@ -186,7 +180,6 @@ axesPosition(1:2) = [0.4, 0.3];
 set(gca, 'Position', axesPosition);
 
 % Statistics plot
-FPS = 60;
 cumDist = @(x) sum(abs(diff(x)));
 disp('*****************************************************');
 disp('Electric fish behavioral tracking data');
@@ -236,7 +229,6 @@ for i = 1:length(EH_lSNR_files)
     IT_hSNR = load(GEN_DATA_PATH(IT_hSNR_files(i).name), 'oTrajList', 'sTrajList', 'dt');
     
     % Filter trajectory
-    trajHighCutFreq = 2.10;
     EH_lSNR.sTrajList = LPF(EH_lSNR.sTrajList, 1/EH_lSNR.dt, trajHighCutFreq);
     EH_hSNR.sTrajList = LPF(EH_hSNR.sTrajList, 1/EH_hSNR.dt, trajHighCutFreq);
     IT_lSNR.sTrajList = LPF(IT_lSNR.sTrajList, 1/IT_lSNR.dt, trajHighCutFreq);
@@ -280,13 +272,11 @@ fprintf(['---------------------------------------------------------\n',...
 
 % Compute statistics
 % Ranksum test, right tail = median of A is greater than median of B
-[P, ~, Stats] = ranksum(reWeakSignalFish, reStrongSignalFish,...
-    'tail', 'right');
-fprintf('Behavior statistics: Wilcoxon rank sum test (one-sided) - p = %.4f (n = %d)\n', ...
+P = kruskal_wallis_test(reWeakSignalFish, reStrongSignalFish);
+fprintf('Behavior statistics: Kruskal-Wallis test - p = %.4f (n = %d)\n', ...
     P, length([reWeakSignalFish; reStrongSignalFish]));
-[P, ~, Stats] = ranksum(reErgWS, reErgSS,...
-    'tail', 'right');
-fprintf('EIH statistics: Wilcoxon rank sum test (one-sided) - p = %.4f (n = %d)\n', ...
+P = kruskal_wallis_test(reErgWS, reErgSS);
+fprintf('EIH statistics: Kruskal-Wallis test - p = %.4f (n = %d)\n', ...
     P, length([reErgWS, reErgSS]));
 
 
@@ -379,19 +369,8 @@ axesPosition = get(gca, 'Position');
 axesPosition(1:2) = [0.6, 0.3];
 set(gca, 'Position', axesPosition);
 
-
 % All set, now print the first section into PDF
-if SPLIT_PLOT
-    splitprint(gcf,... %separate the current figure
-        GEN_SAVE_PATH('fig3-ElectricFish'),... %filenames will begin with 'disp2'
-        {{'line';'text'},{'surface';'patch';'image'}}, ...% types of objects
-        {'-dpdf','-dtiff'},... %file formats
-        0,... %alignment mark will not be added
-        [1 0],... %axes in first figure will be visible
-        {'','-r400'});
-else
-    print(GEN_SAVE_PATH('fig3-ElectricFish.pdf'),'-dpdf');
-end
+print(GEN_SAVE_PATH('fig6a.pdf'),'-dpdf');
 
 %% Mole Odor Localization
 % Load Data
@@ -401,8 +380,8 @@ mole.hSNR = processMoleTraj(mole.hSNR);
 mole.lSNR = processMoleTraj(mole.lSNR);
 
 % EIH
-hSNR = load(GEN_DATA_PATH('EIH-Mole-StrongSignal-RandSeed-1.mat'));
-lSNR = load(GEN_DATA_PATH('EIH-Mole-WeakSignal-RandSeed-1.mat'));
+hSNR = load(GEN_DATA_PATH('EIH-Mole-StrongSignal-RandSeed-3.mat'));
+lSNR = load(GEN_DATA_PATH('EIH-Mole-WeakSignal-RandSeed-3.mat'));
 lSNR.eidList = flattenResultList(lSNR.phi(:,:,1:end))';
 hSNR.eidList = flattenResultList(hSNR.phi(:,:,1:end))';
 
@@ -412,7 +391,7 @@ lSNR.sTrajList = lSNR.sTrajList(1:1200);
 % y axis ratio [cm/pts]
 yAxisUnitRatio =  6.89 / (max(mole.lSNR.molePath(end:-1:1, 1)) - min(mole.lSNR.molePath(end:-1:1, 1)));
 % Strong Signal Trajectory plot
-figure(3); clf; hold on;
+figure; clf; hold on;
 set(gcf, ...
     'units','normalized','outerposition',[0 0 1 1], ...
     'PaperPositionMode','auto', ...
@@ -436,7 +415,7 @@ opt = [];
 opt.BoxDim = [8,4] * 0.354;
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
-opt.YMinorTick = 'off'; 
+opt.YMinorTick = 'off';
 opt.XTick = [0, max(timeStamps)];
 opt.YTick = [mean(yRange)-yTickInc, mean(yRange)+yTickInc];
 opt.XLim = [0, max(timeStamps)];
@@ -473,7 +452,7 @@ opt = [];
 opt.BoxDim = [8,4] * 0.354;
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
-opt.YMinorTick = 'off'; 
+opt.YMinorTick = 'off';
 opt.XTick = [0, max(timeStamps)];
 opt.YTick = [mean(yRange)-yTickInc, mean(yRange)+yTickInc];
 opt.XLim = [0, max(timeStamps)];
@@ -505,7 +484,7 @@ opt = [];
 opt.BoxDim = [8,4] * 0.354;
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
-opt.YMinorTick = 'off'; 
+opt.YMinorTick = 'off';
 opt.XTick = [];
 opt.YTick = [];
 opt.XLim = [0, length(hSNR.sTrajList)];
@@ -535,7 +514,7 @@ opt = [];
 opt.BoxDim = [8,4] * 0.354;
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
-opt.YMinorTick = 'off'; 
+opt.YMinorTick = 'off';
 opt.XTick = [];
 opt.YTick = [];
 opt.XLim = [0, length(lSNR.sTrajList)];
@@ -609,7 +588,7 @@ for i = 1:length(EH_lSNR_files)
     IT_hSNR.refDist = abs(IT_hSNR.sTrajList(1) - IT_hSNR.oTrajList(1));
     
     % Relative exploration effort - Angular distance traveled
-    % crop to ignore the distance due to different initial 
+    % crop to ignore the distance due to different initial
     % position
     EH_hSNR.moleDist = cumAngularDist(EH_hSNR.sTrajList(100:end));
     EH_lSNR.moleDist = cumAngularDist(EH_lSNR.sTrajList(100:end));
@@ -642,14 +621,11 @@ fprintf(['---------------------------------------------------------\n',...
     reInfSS_Mean, reInfSS_SEM, reInfWS_Mean, reInfWS_SEM);
 
 % Compute statistics
-% Ranksum test, right tail = median of A is greater than median of B
-[P, ~, Stats] = ranksum(reBlk, reNrm,...
-    'tail', 'right');
-fprintf('Behavior statistics: Wilcoxon rank sum test (one-sided) - p = %.4f (n = %d)\n', ...
+P = kruskal_wallis_test(reBlk, reNrm);
+fprintf('Behavior statistics: Kruskal-Wallis test - p = %.4f (n = %d)\n', ...
     P, length([reBlk, reNrm]));
-[P, ~, Stats] = ranksum(reErgWS, reErgSS,...
-    'tail', 'right');
-fprintf('EIH statistics: Wilcoxon rank sum test (one-sided) - p = %.4f (n = %d)\n', ...
+P = kruskal_wallis_test(reErgWS, reErgSS);
+fprintf('EIH statistics: Kruskal-Wallis test - p = %.4f (n = %d)\n', ...
     P, length([reErgWS, reErgSS]));
 
 
@@ -738,19 +714,7 @@ axesPosition(1:2) = [0.6, 0.3];
 set(gca, 'Position', axesPosition);
 
 % All set, now print the first section into PDF
-if SPLIT_PLOT
-    splitprint(gcf,... %separate the current figure
-        GEN_SAVE_PATH('fig3-Mole'),... %filenames will begin with 'disp2'
-        {{'line';'text'},{'surface';'patch';'image'}}, ...% types of objects
-        {'-dpdf','-dtiff'},... %file formats
-        0,... %alignment mark will not be added
-        [1 0],... %axes in first figure will be visible
-        {'','-r400'});
-else
-    print(GEN_SAVE_PATH('fig3-Mole.pdf'),'-dpdf');
-end
-
-fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));
+print(GEN_SAVE_PATH('fig6b.pdf'),'-dpdf');
 
 %% Cockroach odor source localization
 cockroachData = load(GEN_BEHAVIOR_DATA_PATH('Cockroach/cockroach_data.mat'));
@@ -760,7 +724,7 @@ dt = cockroachData.cockroach_c1_table.time_to_source / size(head,1);
 head = head(5:end, :);
 timeStamps = 0:dt:(size(head,1)-1)*dt;
 % Plot
-figure(4); clf; hold on;
+figure; clf; hold on;
 set(gcf, ...
     'units','normalized','outerposition',[0 0 1 1], ...
     'PaperPositionMode','auto', ...
@@ -780,7 +744,7 @@ opt = [];
 opt.BoxDim = [8,4] * 0.354;
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
-opt.YMinorTick = 'off'; 
+opt.YMinorTick = 'off';
 opt.XLim = [0, 10];
 opt.YLim = [-8, 8];
 opt.XTick = [0, 10];
@@ -815,7 +779,7 @@ opt = [];
 opt.BoxDim = [8,4] * 0.354;
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
-opt.YMinorTick = 'off'; 
+opt.YMinorTick = 'off';
 opt.XLim = [0, 3.5];
 opt.YLim = [-8, 8];
 opt.XTick = [0, 3.5];
@@ -830,9 +794,9 @@ axesPosition(1:2) = [0.4, 0.6];
 set(gca, 'Position', axesPosition);
 
 %--------- Ergodic Harvesting Simulation Trajectory ---------%
-lsnr = load(GEN_DATA_PATH('EIH-Cockroach-WeakSignal-RandSeed-1.mat'), ...
+lsnr = load(GEN_DATA_PATH('EIH-Cockroach-WeakSignal-RandSeed-2.mat'), ...
     'dt', 'sTrajList', 'oTrajList', 'phi');
-hsnr = load(GEN_DATA_PATH('EIH-Cockroach-StrongSignal-RandSeed-1.mat'), ...
+hsnr = load(GEN_DATA_PATH('EIH-Cockroach-StrongSignal-RandSeed-2.mat'), ...
     'dt', 'sTrajList', 'oTrajList', 'phi');
 trajLen = 1400;
 hsnr.oTrajList = hsnr.oTrajList(1:trajLen);
@@ -859,7 +823,7 @@ opt = [];
 opt.BoxDim = [8,4] * 0.354;
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
-opt.YMinorTick = 'off'; 
+opt.YMinorTick = 'off';
 opt.XLim = [0, length(hsnr.oTrajList)];
 opt.YLim = [0.2, 0.8];
 opt.XTick = [];
@@ -889,7 +853,7 @@ opt = [];
 opt.BoxDim = [8,4] * 0.354;
 opt.ShowBox = 'off';
 opt.XMinorTick = 'off';
-opt.YMinorTick = 'off'; 
+opt.YMinorTick = 'off';
 opt.XLim = [0, length(hsnr.oTrajList)];
 opt.YLim = [0.2, 0.8];
 opt.XTick = [];
@@ -915,7 +879,6 @@ re12 = calcRE(cockroachData.trial_c12);
 fprintf('Strong signal trials, n = %d\n', length(re4));
 fprintf('Weak signal trials, n = %d\n', length(re12));
 
-% Mole Odor Localization
 % Ergodic Harvesting
 EH_lSNR_files = dir(GEN_DATA_PATH('EIH-Cockroach-WeakSignal*.mat'));
 EH_hSNR_files = dir(GEN_DATA_PATH('EIH-Cockroach-StrongSignal*.mat'));
@@ -942,7 +905,7 @@ for i = 1:length(EH_lSNR_files)
     IT_hSNR.sTrajList = LPF(IT_hSNR.sTrajList, 1/IT_hSNR.dt, trajHighCutFreq);
     
     % Relative exploration effort - Angular distance traveled
-    % crop to ignore the distance due to different initial 
+    % crop to ignore the distance due to different initial
     % position
     EH_hSNR.moleDist = cumDist(EH_hSNR.sTrajList(100:end));
     EH_lSNR.moleDist = cumDist(EH_lSNR.sTrajList(100:end));
@@ -975,14 +938,11 @@ fprintf(['---------------------------------------------------------\n',...
     reInfSS_Mean, reInfSS_SEM, reInfWS_Mean, reInfWS_SEM);
 
 % Compute statistics
-% Ranksum test, right tail = median of A is greater than median of B
-[P, ~, Stats] = ranksum(re12, re4,...
-    'tail', 'right');
-fprintf('Behavior statistics: Wilcoxon rank sum test (one-sided) - p = %.4f (n = %d)\n', ...
+P = kruskal_wallis_test(re12, re4);
+fprintf('Behavior statistics: Kruskal-Wallis test - p = %.4f (n = %d)\n', ...
     P, length([re12; re4]));
-[P, ~, Stats] = ranksum(reErgWS, reErgSS,...
-    'tail', 'right');
-fprintf('EIH statistics: Wilcoxon rank sum test (one-sided) - p = %.4f (n = %d)\n', ...
+P = kruskal_wallis_test(reErgWS, reErgSS);
+fprintf('EIH statistics: Kruskal-Wallis test - p = %.4f (n = %d)\n', ...
     P, length([reErgWS, reErgSS]));
 
 % Plot group data
@@ -1069,19 +1029,9 @@ axesPosition = get(gca, 'Position');
 axesPosition(1:2) = [0.6, 0.3];
 set(gca, 'Position', axesPosition);
 
-
 % All set, now print the first section into PDF
-if SPLIT_PLOT
-    splitprint(gcf,... %separate the current figure
-        GEN_SAVE_PATH('fig3-Cockroach'),... %filenames will begin with 'disp2'
-        {{'line';'text'},{'surface';'patch';'image'}}, ...% types of objects
-        {'-dpdf','-dtiff'},... %file formats
-        0,... %alignment mark will not be added
-        [1 0],... %axes in first figure will be visible
-        {'','-r400'});
-else
-    print(GEN_SAVE_PATH('fig3-Cockroach.pdf'),'-dpdf');
-end
+print(GEN_SAVE_PATH('fig6c.pdf'),'-dpdf');
+fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));
 
 function mPlotContinuousEID(dat)
 global PLOT_EER_BAND
@@ -1089,7 +1039,7 @@ if ~PLOT_EER_BAND
     return;
 end
 %% Plot Parameters
-tScale = 10;   % Interval of EID plot update, set to 1 will plot all of the EID map
+tScale = 5;   % Interval of EID plot update, set to 1 will plot all of the EID map
 nBins = 256;   % Color resolution in the y axis
 alpha = 0.5;  % Transparency of the EID color
 cmap = [0.7 0 0.4];
@@ -1120,52 +1070,61 @@ end
 
 
 function outList = flattenResultList(list)
-    outList = zeros(size(list,2)*size(list,3), size(list,1));
-    for i = 1:size(list,3)
-        for j = 1:size(list,2)
-            outList((i-1)*size(list,2) + j,:) = list(:,j,i)';
-        end
+outList = zeros(size(list,2)*size(list,3), size(list,1));
+for i = 1:size(list,3)
+    for j = 1:size(list,2)
+        outList((i-1)*size(list,2) + j,:) = list(:,j,i)';
     end
+end
 
 function [head, tail, src] = parseDataStream(dat)
-    head = dat(:, 1:2);
-    tail = dat(:, 3:4);
-    src = dat(1, 5:6);
+head = dat(:, 1:2);
+tail = dat(:, 3:4);
+src = dat(1, 5:6);
 
 function re = calcRE(dat)
-    % Computes relative exploration
-    len = size(dat, 1);
-    re = zeros(len, 1, 'double');
-    for i = 1:len
-        re(i) = dat.walk_dist(i) / dat.distRef(i);
-    end
+% Computes relative exploration
+len = size(dat, 1);
+re = zeros(len, 1, 'double');
+for i = 1:len
+    re(i) = dat.walk_dist(i) / dat.distRef(i);
+end
 
 function dist = calcSumLength2D(path)
-    %% Calculates the cumulative 2D euclidean distance
-    distMat = pdist(path, 'euclidean');
-    distMat = squareform(distMat);
+%% Calculates the cumulative 2D euclidean distance
+distMat = pdist(path, 'euclidean');
+distMat = squareform(distMat);
 
-    dist = 0;
-    for i = 2:size(path,1)
-        dist = dist + distMat(i, i-1);
-    end
+dist = 0;
+for i = 2:size(path,1)
+    dist = dist + distMat(i, i-1);
+end
+
+function p = kruskal_wallis_test(x, y)
+samples = [...
+    reshape(x, 1, length(x)), ...
+    reshape(y, 1, length(y))];
+labels = [...
+    1.0 * ones(1, length(x)), ...
+    2.0 * ones(1, length(y))];
+p = kruskalwallis(samples, labels, 'off');
 
 
 function moleData = processMoleTraj(moleData)
-    findAngle = @(a, b) acosd(min(1,max(-1, a(:).' * b(:) / norm(a) / norm(b) )));
-    refVec = moleData.refPath(2, :) - moleData.refPath(1, :);
-    refAngle = findAngle(refVec/norm(refVec), [0, 1]);
-    if refVec(1) > 0
-        refAngle = -refAngle;
-    end
-    moleData.rotPath = rotate2D(moleData.molePath, refAngle);
-    moleData.rotRef = rotate2D(moleData.refPath, refAngle);
+findAngle = @(a, b) acosd(min(1,max(-1, a(:).' * b(:) / norm(a) / norm(b) )));
+refVec = moleData.refPath(2, :) - moleData.refPath(1, :);
+refAngle = findAngle(refVec/norm(refVec), [0, 1]);
+if refVec(1) > 0
+    refAngle = -refAngle;
+end
+moleData.rotPath = rotate2D(moleData.molePath, refAngle);
+moleData.rotRef = rotate2D(moleData.refPath, refAngle);
 
 function x = rotate2D(x, theta)
-    offset = x(1, :);
-    x = x - offset;
-    rot2x = [cosd(theta) -sind(theta); sind(theta) cosd(theta)];
-    for i = 1:size(x, 1)
-        x(i, :) = x(i, :) * rot2x;
-    end
-    x = x + offset;
+offset = x(1, :);
+x = x - offset;
+rot2x = [cosd(theta) -sind(theta); sind(theta) cosd(theta)];
+for i = 1:size(x, 1)
+    x(i, :) = x(i, :) * rot2x;
+end
+x = x + offset;

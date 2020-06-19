@@ -1,4 +1,4 @@
-function makeFig5Plot(dataPath, savePath)
+function makeFigure4Plot(dataPath, savePath)
 %% Distance from Ergodicity vs Mean Tracking Performance under different wiggle attenuation (fig 5)
 % Chen Chen
 
@@ -140,7 +140,7 @@ axesPosition = get(gca, 'Position');
 axesPosition(1:2) = [0.3, 0.25];
 set(gca, 'Position', axesPosition);
 % legend('off');
-print(GEN_SAVE_PATH('fig5C.pdf'),'-dpdf');
+print(GEN_SAVE_PATH('fig4C.pdf'),'-dpdf');
 
 %% Boxplot - Ergodic Metric vs. Attenuation
 figure(2); clf;
@@ -174,7 +174,7 @@ set(gca, 'units', 'normalized');
 axesPosition = get(gca, 'Position');
 axesPosition(1:2) = [0.3, 0.25];
 set(gca, 'Position', axesPosition);
-print(GEN_SAVE_PATH('fig5B.pdf'),'-dpdf');
+print(GEN_SAVE_PATH('fig4B.pdf'),'-dpdf');
 
 %% Boxplot - Mean Tracking Error vs. Attenuation
 figure(3); clf;
@@ -210,5 +210,5 @@ set(gca, 'units', 'normalized');
 axesPosition = get(gca, 'Position');
 axesPosition(1:2) = [0.3, 0.25];
 set(gca, 'Position', axesPosition);
-print(GEN_SAVE_PATH('fig5A.pdf'),'-dpdf');
+print(GEN_SAVE_PATH('fig4A.pdf'),'-dpdf');
 fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));
