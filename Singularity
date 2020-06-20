@@ -1,5 +1,5 @@
 BootStrap: docker
-From: continuumio/miniconda3
+From: slayerchen/eih_staging:latest
 
 %help
     This is a Singularity container for EIH simulations.
@@ -7,28 +7,16 @@ From: continuumio/miniconda3
 
 %labels
     Maintainer Chen Chen (chenchen.bme@gmail.com)
-    Version v0.2
+    Version v0.4
    
 %environment
-     export conda=/opt/conda/bin/conda
-     export pip=/opt/conda/bin/pip
-     export python3=/opt/conda/bin/python
-     export python=python3
+     conda=/opt/conda/bin/conda
+     pip=/opt/conda/bin/pip
+     python3=/opt/conda/bin/python
+     python=python3
+     export conda pip python3 python
 
 %post 
-     # update system and install gcc
-     apt-get update
-     apt-get install gcc g++ -y
-     # update conda
-     /opt/conda/bin/conda update --all -y --quiet
-     # Update pip
-     /opt/conda/bin/pip install -U pip -q
-     # Install dependencies
-     /opt/conda/bin/conda install -c conda-forge -y -q tqdm cython numba scipy=1.0.1 numpy=1.16.1 
-     # Clean up
-     /opt/conda/bin/conda clean --all -y --quiet
-     apt-get autoremove -y
-     apt-get clean
      # create bind points for HPCC environment
      mkdir -p /EIH
 
