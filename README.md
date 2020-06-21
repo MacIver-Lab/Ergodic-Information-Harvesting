@@ -35,7 +35,7 @@ cd Ergodic-Information-Harvesting
 git lfs install
 git lfs pull
 ```
-If successeded, you should see files being downloaded by `git-lfs`.
+If you succeeded, you should see files being downloaded by `git-lfs`. Once it is setup, should you decide to delete the files and start again, you should only need to do the `git clone` step.
 
 ### 2. Install Docker and Pull the EIH Container Image
 
