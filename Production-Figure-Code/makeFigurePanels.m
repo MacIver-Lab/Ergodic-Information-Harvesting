@@ -31,13 +31,12 @@ targetFig = 'fig1';
 % Control whether or not to use previously simulated dataset
 %   1 | use previouly published dataset (default)
 %   0 | use locally simulated data
-USE_PUBLISHED_DATASET = 0;
+USE_PUBLISHED_DATASET = 1;
 
 %% Internal parameters (do not change)
 FIG_DATA_PATH = './PublishedData/';
 % locally simulated data, only available when USE_PUBLISHED_DATASET == 1
-FIG_DATA_PATH_LOCAL = '../SimulationCode/SimDataAWS_run2/';
-% FIG_DATA_PATH_LOCAL = '../SimulationCode/SimData/';
+FIG_DATA_PATH_LOCAL = '../SimulationCode/SimData/';
 FIG_OUTPUT_PATH = sprintf('./FigureOutput/%s/', targetFig);
 NeedSimData = @(s) isempty(find(ismember({'fig4s1'}, s), 1));
 if ~USE_PUBLISHED_DATASET && NeedSimData(targetFig)

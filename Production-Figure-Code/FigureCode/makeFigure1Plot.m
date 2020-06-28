@@ -13,13 +13,13 @@ barColor = [72, 110, 181;...
 % note that due to the complexity of EER bands, it's can be fairly slow 
 % to plot the EER bands
 global PLOT_EER_BAND
-PLOT_EER_BAND = 1;
+PLOT_EER_BAND = 0;
 
 %% Electric Fish Simulation
 % Load data
-EH_lSNR = load(GEN_DATA_PATH('EIH-ElectricFish-WeakSignal-RandSeed-1.mat'), ...
+EH_lSNR = load(GEN_DATA_PATH('EIH-MothIntro-WeakSignal.mat'), ...
     'oTrajList', 'sTrajList', 'dt', 'phi');
-EH_hSNR = load(GEN_DATA_PATH('EIH-ElectricFish-StrongSignal-RandSeed-1.mat'), ...
+EH_hSNR = load(GEN_DATA_PATH('EIH-MothIntro-StrongSignal.mat'), ...
     'oTrajList', 'sTrajList', 'dt', 'phi');
 EH_lSNR.eidList = flattenResultList(EH_lSNR.phi(:,:,1:end-1))';
 EH_hSNR.eidList = flattenResultList(EH_hSNR.phi(:,:,1:end-1))';
@@ -99,7 +99,7 @@ axesPosition(1:2) = [0.2, 0.4];
 set(gca, 'Position', axesPosition);
 
 % All set, now print the first section into PDF
-print(GEN_SAVE_PATH('fig1s2.pdf'),'-dpdf');
+print(GEN_SAVE_PATH('fig1.pdf'),'-dpdf');
 
 function mPlotContinuousEID(dat)
 global PLOT_EER_BAND

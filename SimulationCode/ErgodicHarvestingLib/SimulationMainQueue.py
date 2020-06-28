@@ -117,7 +117,6 @@ def SimulationMainQueue(dataFiles, nThread=1):
     with open("./SimParameters/SimJobList.txt", "r") as fp:
         attenuation_sim_trials = fp.readlines()
         attenuation_sim_trials.sort()
-        attenuation_sim_trials.clear()
     nAttenuationSimTrials = len(attenuation_sim_trials)
 
     nTotalJobs = sum(nSimJobsList) + nAttenuationSimTrials
@@ -198,7 +197,7 @@ def SimulationMainQueue(dataFiles, nThread=1):
                 f"remaining jobs {remaining_jobs}",
                 color="green",
             )
-            # Unfortunately we need to wait briefly before adding new data into the queue.
+            # Unfortunately we need to wait briefly adding new data into the queue.
             # This is because it takes some time for the object to get properly ingested.
             time.sleep(0.1)
 
@@ -211,7 +210,7 @@ def SimulationMainQueue(dataFiles, nThread=1):
             f"remaining jobs {remaining_jobs}",
             color="green",
         )
-        # Unfortunately we need to wait briefly before adding new data into the queue.
+        # Unfortunately we need to wait briefly after adding new data into the queue.
         # This is because it takes some time for the object to get properly ingested.
         time.sleep(0.1)
 
