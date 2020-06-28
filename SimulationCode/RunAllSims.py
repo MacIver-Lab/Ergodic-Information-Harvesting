@@ -13,7 +13,6 @@ warnings.filterwarnings("ignore")
 
 if __name__ == "__main__":
     # get number of parallel threads, EAFP way
-    print(sys.argv)
     try:
         nThread = int(sys.argv[1])
     except BaseException:
