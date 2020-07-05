@@ -131,7 +131,7 @@
         "saveDir": "./SimData/behavior_sim/"
     },
     "SNR": [
-        60
+        50
     ],
     "wControl": [
         10

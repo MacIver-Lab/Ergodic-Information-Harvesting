@@ -1090,10 +1090,9 @@ if ~PLOT_EER_BAND
 end
 %% Plot Parameters
 tScale = 10;   % Interval of EID plot update, set to 1 will plot all of the EID map
-nBins = 40;   % Color resolution in the y axis
+nBins = 256;   % Color resolution in the y axis
 alpha = 0.5;  % Transparency of the EID color
 cmap = [0.7 0 0.4];
-
 eidList = dat.eidList;
 tRes = length(dat.oTrajList) / (size(eidList,2)-1);
 sRes = size(eidList,1);
@@ -1117,7 +1116,6 @@ for idx = 1:length(idxList)
             'FaceAlpha', alpha*bin(k)/nBins,...
             'EdgeColor', 'none');
     end
-    drawnow;
 end
 
 

@@ -328,11 +328,11 @@
         "rawTraj": false,
         "maxT": 60,
         "objCenter": 0.5,
-        "sInitPos": 0.4,
+        "sInitPos": 0.45,
         "saveDir": "./SimData/behavior_sim/"
     },
     "SNR": [
-        80
+        55
     ],
     "wControl": [
         10
