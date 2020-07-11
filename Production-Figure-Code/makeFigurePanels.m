@@ -27,7 +27,7 @@ warning('off', 'MATLAB:Axes:NegativeLimitsInLogAxis');
 %       'fig6s4' -  panels for figure 6---figure supplement 4
 %       'fig6s5' -  panels for figure 6---figure supplement 5
 %       'fig7'   -  panels for figure 7
-targetFig = 'fig6s4';
+targetFig = 'all';
 
 % Control whether or not to use previously simulated dataset
 %   1 | use previouly published dataset (default)
