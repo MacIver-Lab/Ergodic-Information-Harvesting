@@ -5,6 +5,7 @@ function makeFigure6S4Plot(dataPath, savePath)
 
 warning('off', 'MATLAB:print:FigureTooLargeForPage');
 warning('off', 'MATLAB:MKDIR:DirectoryExists');
+warning('off','MATLAB:Axes:NegativeDataInLogAxis');
 GEN_DATA_PATH = @(fname) fullfile(dataPath, fname);
 GEN_SAVE_PATH = @(fname) fullfile(savePath, fname);
 
@@ -60,6 +61,10 @@ opt.YLabel = 'Relative exploration';
 opt.IgnoreLines = true;
 setAxesProp(opt);
 legend('off');
+set(gca, 'units', 'normalized');
+axesPosition = get(gca, 'Position');
+axesPosition(1:2) = [0.4, 0.4];
+set(gca, 'Position', axesPosition);
 print(gcf,'-dpdf',GEN_SAVE_PATH('fig6s4.pdf'));
 
 avgRE_RoverLambda_1 = mean(wsDataRE( abs(wsDataRoverLambda - 1.0)  < 1e-3));

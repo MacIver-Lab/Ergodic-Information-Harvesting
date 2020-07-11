@@ -5,6 +5,7 @@ function makeFigurePanels
 close all;
 warning('off', 'MATLAB:MKDIR:DirectoryExists');
 warning('off', 'MATLAB:rmpath:DirNotFound')
+warning('off', 'MATLAB:Axes:NegativeLimitsInLogAxis');
 
 %% Specify Target Figure to Plot (Change this as needed)
 % Target figure panel
@@ -26,7 +27,7 @@ warning('off', 'MATLAB:rmpath:DirNotFound')
 %       'fig6s4' -  panels for figure 6---figure supplement 4
 %       'fig6s5' -  panels for figure 6---figure supplement 5
 %       'fig7'   -  panels for figure 7
-targetFig = 'all';
+targetFig = 'fig6s4';
 
 % Control whether or not to use previously simulated dataset
 %   1 | use previouly published dataset (default)
