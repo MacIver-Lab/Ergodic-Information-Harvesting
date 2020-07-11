@@ -52,7 +52,7 @@ def loadMothData(target="M300lux", trialID=0, nrmMid=0.5, nrmGain=0.1):
 def QueueWorker(mp_queue):
     while True:
         try:
-            args = mp_queue.get(block=True, timeout=5.0)
+            args = mp_queue.get(block=True, timeout=25.0)
             if isinstance(args, list):
                 # wiggle attenuation sim
                 print_color(
@@ -199,7 +199,7 @@ def SimulationMainQueue(dataFiles, nThread=1):
             )
             # Unfortunately we need to wait briefly adding new data into the queue.
             # This is because it takes some time for the object to get properly ingested.
-            time.sleep(0.1)
+            time.sleep(0.15)
 
     for it in range(nAttenuationSimTrials):
         # Fill in work queue
@@ -212,7 +212,7 @@ def SimulationMainQueue(dataFiles, nThread=1):
         )
         # Unfortunately we need to wait briefly after adding new data into the queue.
         # This is because it takes some time for the object to get properly ingested.
-        time.sleep(0.1)
+        time.sleep(0.15)
 
     # Wait until all the active thread to finish
     for job in jobs:

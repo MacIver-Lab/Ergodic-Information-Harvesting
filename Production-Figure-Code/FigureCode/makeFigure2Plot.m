@@ -54,12 +54,12 @@ pix2cm = 1.7 / (max(fish.hSNR.refugeTraj) - min(fish.hSNR.refugeTraj));
 
 %--------- Fish Sinusoidal Tracking ---------%
 % Strong Signal Trajectory plot
-figure(1);clf; hold on;
+figure(1); clf; hold on;
 set(gcf, ...
     'units','normalized','outerposition',[0 0 1 1], ...
     'PaperPositionMode','auto', ...
-    'PaperOrientation','landscape', ...
-    'PaperSize', [13 8]);
+    'PaperOrientation','portrait', ...
+    'PaperSize', [30, 30]);
 plot(timeIdx, fish.hSNR.refugeTraj*pix2cm, ...
     'LineWidth', 2, ...
     'Color', barColor(1,:));
@@ -84,7 +84,7 @@ legend(gca, 'off');
 set(gca,  'Position', [1    4    2.8320    1.7700]);
 set(gca, 'units', 'normalized');
 axesPosition = get(gca, 'Position');
-axesPosition(1:2) = [0.2, 0.75];
+axesPosition(1:2) = [0.4, 0.75];
 set(gca, 'Position', axesPosition);
 % Weak Signal Trajectory
 trajAxes = axes; hold on;
@@ -110,7 +110,7 @@ opt.Colors = barColor([1,3],:);
 setAxesProp(opt, trajAxes);
 legend(gca, 'off');
 set(gca, 'units', 'normalized');
-axesPosition(1:2) = [0.4, 0.75];
+axesPosition(1:2) = [0.6, 0.75];
 set(gca, 'Position', axesPosition);
 
 
@@ -142,7 +142,7 @@ setAxesProp(opt, trajAxes);
 legend(gca, 'off');
 mPlotContinuousEID(EH_hSNR, 0);
 set(gca, 'units', 'normalized');
-axesPosition(1:2) = [0.2, 0.2];
+axesPosition(1:2) = [0.4, 0.2];
 set(gca, 'Position', axesPosition);
 % Weak Signal Trajectory
 trajAxes = axes; hold on;
@@ -170,7 +170,7 @@ setAxesProp(opt, trajAxes);
 legend(gca, 'off');
 mPlotContinuousEID(EH_lSNR, 0);
 set(gca, 'units', 'normalized');
-axesPosition(1:2) = [0.4, 0.2];
+axesPosition(1:2) = [0.6, 0.2];
 set(gca, 'Position', axesPosition);
 
 %--------------------- Belief Plot --------------------------%
@@ -202,7 +202,7 @@ setAxesProp(opt, trajAxes);
 legend(gca, 'off');
 mPlotContinuousEID(EH_hSNR, 1);
 set(gca, 'units', 'normalized');
-axesPosition(1:2) = [0.2, 0.5];
+axesPosition(1:2) = [0.4, 0.5];
 set(gca, 'Position', axesPosition);
 % Weak Signal Trajectory
 trajAxes = axes; hold on;
@@ -230,7 +230,7 @@ setAxesProp(opt, trajAxes);
 legend(gca, 'off');
 mPlotContinuousEID(EH_lSNR, 1);
 set(gca, 'units', 'normalized');
-axesPosition(1:2) = [0.4, 0.5];
+axesPosition(1:2) = [0.6, 0.5];
 set(gca, 'Position', axesPosition);
 drawnow;
 print(GEN_SAVE_PATH('fig2.pdf'), '-dpdf');
