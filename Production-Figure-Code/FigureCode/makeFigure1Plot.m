@@ -100,6 +100,8 @@ set(gca, 'Position', axesPosition);
 
 % All set, now print the first section into PDF
 print(GEN_SAVE_PATH('fig1.pdf'),'-dpdf');
+fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));
+
 
 function mPlotContinuousEID(dat)
 global PLOT_EER_BAND

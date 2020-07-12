@@ -949,7 +949,7 @@ print(gcf,'-dpdf',GEN_SAVE_PATH('fig7M-P.pdf'));
 p = kruskalwallis(medGainData, medGainLabel, 'off');
 fprintf('Statistics (moth behavior): Kruskal-wallis test - p = %.4f (n = %d)\n', ...
     p, length(medGainData));
-
+fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));
 
 function out = parseCockroachData(dat)
 out.head = dat(:, 1:2);
