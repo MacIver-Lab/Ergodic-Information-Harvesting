@@ -5,6 +5,7 @@ function makeFigurePanels
 close all;
 warning('off', 'MATLAB:MKDIR:DirectoryExists');
 warning('off', 'MATLAB:rmpath:DirNotFound')
+warning('off', 'MATLAB:Axes:NegativeLimitsInLogAxis');
 
 %% Specify Target Figure to Plot (Change this as needed)
 % Target figure panel
@@ -12,7 +13,7 @@ warning('off', 'MATLAB:rmpath:DirNotFound')
 %       'all'    -  reproduce all figures
 %       'fig1'   -  panels for figure 1
 %       'fig2'   -  panels for figure 2
-%       'fig2s1' -  panels for figurecla 2---figure supplement 1
+%       'fig2s1' -  panels for figure 2---figure supplement 1
 %       'fig2s2' -  panels for figure 2---figure supplement 2
 %       'fig2s3' -  panels for figure 2---figure supplement 3
 %       'fig3'   -  panels for figure 3
@@ -26,7 +27,7 @@ warning('off', 'MATLAB:rmpath:DirNotFound')
 %       'fig6s4' -  panels for figure 6---figure supplement 4
 %       'fig6s5' -  panels for figure 6---figure supplement 5
 %       'fig7'   -  panels for figure 7
-targetFig = 'fig1';
+targetFig = 'all';
 
 % Control whether or not to use previously simulated dataset
 %   1 | use previouly published dataset (default)
@@ -38,7 +39,7 @@ FIG_DATA_PATH = './PublishedData/';
 % locally simulated data, only available when USE_PUBLISHED_DATASET == 1
 FIG_DATA_PATH_LOCAL = '../SimulationCode/SimData/';
 FIG_OUTPUT_PATH = sprintf('./FigureOutput/%s/', targetFig);
-NeedSimData = @(s) isempty(find(ismember({'fig4s1'}, s), 1));
+NeedSimData = @(s) isempty(find(ismember({'fig2s3', 'fig4s1'}, s), 1));
 if ~USE_PUBLISHED_DATASET && NeedSimData(targetFig)
     FIG_DATA_PATH = FIG_DATA_PATH_LOCAL;
 end
@@ -104,13 +105,13 @@ switch targetFig
     case 'fig6'
         makeFigure6Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'fig6s1'
-        makeFigure6S1Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
+        makeFigure6S1Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH, USE_PUBLISHED_DATASET);
     case 'fig6s2'
         makeFigure6S2Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'fig6s3'
         makeFigure6S3Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'fig6s4'
-        makeFigure6S4Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH, USE_PUBLISHED_DATASET);
+        makeFigure6S4Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'fig6s5'
         makeFigure6S5Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'fig7'

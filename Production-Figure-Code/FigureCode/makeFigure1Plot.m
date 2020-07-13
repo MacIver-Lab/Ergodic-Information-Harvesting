@@ -13,7 +13,7 @@ barColor = [72, 110, 181;...
 % note that due to the complexity of EER bands, it's can be fairly slow 
 % to plot the EER bands
 global PLOT_EER_BAND
-PLOT_EER_BAND = 0;
+PLOT_EER_BAND = 1;
 
 %% Electric Fish Simulation
 % Load data
@@ -35,7 +35,7 @@ set(gcf, ...
     'units','normalized','outerposition',[0 0 1 1], ...
     'PaperPositionMode','auto', ...
     'PaperOrientation','landscape', ...
-    'PaperSize', [13 8]);
+    'PaperSize', [30, 30]);
 
 %--------- Ergodic Harvesting Simulation Trajectory ---------%
 % Strong Signal Trajectory plot
@@ -100,6 +100,8 @@ set(gca, 'Position', axesPosition);
 
 % All set, now print the first section into PDF
 print(GEN_SAVE_PATH('fig1.pdf'),'-dpdf');
+fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));
+
 
 function mPlotContinuousEID(dat)
 global PLOT_EER_BAND
