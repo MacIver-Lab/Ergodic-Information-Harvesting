@@ -1,5 +1,5 @@
 from itertools import product
-from multiprocessing import Pool, Queue, get_context
+from multiprocessing import Pool, JoinableQueue, get_context
 from queue import Empty
 from os import makedirs, getpid
 from os.path import exists
@@ -52,7 +52,9 @@ def loadMothData(target="M300lux", trialID=0, nrmMid=0.5, nrmGain=0.1):
 def QueueWorker(mp_queue):
     while True:
         try:
-            args = mp_queue.get(block=True, timeout=5.0)
+            args = mp_queue.get(block=True, timeout=30.0)
+            time.sleep(np.random.rand())
+            mp_queue.task_done()
             if isinstance(args, list):
                 # wiggle attenuation sim
                 print_color(
@@ -127,8 +129,8 @@ def SimulationMainQueue(dataFiles, nThread=1):
     print("Starting parallel pool with {0} threads".format(nThread))
     ctx = get_context("fork")
     pool = Pool(processes=nThread)
-    max_queue_size = min(2 * nThread, nTotalJobs)
-    work_queue = Queue(maxsize=max_queue_size)
+    max_queue_size = min(nThread, nTotalJobs) + 2
+    work_queue = JoinableQueue(maxsize=max_queue_size)
     jobs = []
     remaining_jobs = nTotalJobs
     # Kick off worker threads
@@ -197,9 +199,9 @@ def SimulationMainQueue(dataFiles, nThread=1):
                 f"remaining jobs {remaining_jobs}",
                 color="green",
             )
-            # Unfortunately we need to wait briefly adding new data into the queue.
+            # Unfortunately we need to wait briefly after adding new data into the queue.
             # This is because it takes some time for the object to get properly ingested.
-            time.sleep(0.1)
+            time.sleep(0.1 + 0.2 * np.random.rand())
 
     for it in range(nAttenuationSimTrials):
         # Fill in work queue
@@ -212,8 +214,7 @@ def SimulationMainQueue(dataFiles, nThread=1):
         )
         # Unfortunately we need to wait briefly after adding new data into the queue.
         # This is because it takes some time for the object to get properly ingested.
-        time.sleep(0.1)
+        time.sleep(0.1 + 0.2 * np.random.rand())
 
     # Wait until all the active thread to finish
-    for job in jobs:
-        job.join()
+    work_queue.join()
