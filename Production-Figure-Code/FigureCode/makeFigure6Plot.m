@@ -370,6 +370,7 @@ axesPosition(1:2) = [0.6, 0.3];
 set(gca, 'Position', axesPosition);
 
 % All set, now print the first section into PDF
+drawnow;
 print(GEN_SAVE_PATH('fig6a.pdf'),'-dpdf');
 
 %% Mole Odor Localization
@@ -714,6 +715,7 @@ axesPosition(1:2) = [0.6, 0.3];
 set(gca, 'Position', axesPosition);
 
 % All set, now print the first section into PDF
+drawnow;
 print(GEN_SAVE_PATH('fig6b.pdf'),'-dpdf');
 
 %% Cockroach odor source localization
@@ -1030,6 +1032,7 @@ axesPosition(1:2) = [0.6, 0.3];
 set(gca, 'Position', axesPosition);
 
 % All set, now print the first section into PDF
+drawnow;
 print(GEN_SAVE_PATH('fig6c.pdf'),'-dpdf');
 fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));
 

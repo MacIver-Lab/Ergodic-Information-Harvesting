@@ -81,6 +81,7 @@ xlabel('Time');
 ylabel('Lateral Position');
 mPlotContinuousEID(lsnr, isBelief);
 legend(gca, 'off');
+drawnow;
 print(GEN_SAVE_PATH(outFilename), '-dpdf');
    
 function mPlotContinuousEID(dat, isBelief)
