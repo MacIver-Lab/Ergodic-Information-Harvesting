@@ -53,3 +53,9 @@ class EIDParameters:
     def UpdateDeltaT(self, dt):
         self.dt = dt
         self.maxIter = np.int(np.ceil(self.maxT / (self.dt * self.tRes)))
+
+
+# class AtomicWorkQueue:
+#     def __init__(self):
+#         self.initialized = False
+#         self.erg_params_list = 
