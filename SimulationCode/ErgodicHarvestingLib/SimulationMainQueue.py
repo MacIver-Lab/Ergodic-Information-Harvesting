@@ -132,7 +132,7 @@ def SimulationMainQueue(dataFiles, nThread=1):
     jobs = []
     remaining_jobs = nTotalJobs
     job_id = 1
-    for trial in range(1):
+    for trial in range(nTrials):
         # Parse parameters
         param = paramList[trial]
         simParam = simParamList[trial]
@@ -226,3 +226,5 @@ def SimulationMainQueue(dataFiles, nThread=1):
         jobs.append(p)
     # Wait until all the active thread to finish
     work_queue.join()
+    for job in jobs:
+        job.join()
