@@ -1,12 +1,15 @@
 from itertools import product
 from multiprocessing import Pool, JoinableQueue, get_context
 from queue import Empty
-from os import makedirs, getpid
+from os import makedirs, getpid, remove
 from os.path import exists
 from numpy import linspace
 import numpy as np
 from scipy.io import loadmat
 import time
+import tempfile
+sim_jobs_path = tempfile.mkdtemp()
+import pickle as pkl
 
 from ErgodicHarvestingLib.Simulation import EIDSim
 from ErgodicHarvestingLib.EIH_API_Sim_Entropy import EIH_Sim
@@ -52,8 +55,13 @@ def loadMothData(target="M300lux", trialID=0, nrmMid=0.5, nrmGain=0.1):
 def QueueWorker(mp_queue):
     while True:
         try:
-            args = mp_queue.get(block=True, timeout=30.0)
-            time.sleep(np.random.rand())
+            job_path = mp_queue.get(block=True, timeout=30.0)
+            time.sleep(0.5 + np.random.rand())
+            with open(job_path, 'rb') as fp:
+                args = pkl.load(fp)
+            if args is None:
+                continue
+            remove(job_path)
             mp_queue.task_done()
             if isinstance(args, list):
                 # wiggle attenuation sim
@@ -68,15 +76,6 @@ def QueueWorker(mp_queue):
                     f"[WorkerNode-{getpid()}] Received new job {args[1].filename}",
                     color="yellow",
                 )
-                # Do the extra initialization here to speed up.
-                if isinstance(args[1].rawTraj, str) and "moth" in args[1].rawTraj:
-                    args[1].rawTraj = np.array(
-                        loadMothData(
-                            target="M300lux", trialID=0, nrmGain=args[1].objAmp
-                        )[1]
-                    )
-                args[0].time = linspace(0.0, args[0].timeHorizon, args[0].tRes)
-                args[0].eidTime = linspace(0.0, args[0].timeHorizon, args[1].res)
                 EIDSim(*args)
         except Empty:
             print_color(
@@ -120,8 +119,8 @@ def SimulationMainQueue(dataFiles, nThread=1):
         attenuation_sim_trials = fp.readlines()
         attenuation_sim_trials.sort()
     nAttenuationSimTrials = len(attenuation_sim_trials)
-
-    nTotalJobs = sum(nSimJobsList) + nAttenuationSimTrials
+    nRegularSimJobs = sum(nSimJobsList)
+    nTotalJobs = nRegularSimJobs + nAttenuationSimTrials
     # Limit pool size when job size is smaller than total available threads
     if nTotalJobs < nThread:
         nThread = nTotalJobs
@@ -129,22 +128,11 @@ def SimulationMainQueue(dataFiles, nThread=1):
     print("Starting parallel pool with {0} threads".format(nThread))
     ctx = get_context("fork")
     pool = Pool(processes=nThread)
-    max_queue_size = min(nThread, nTotalJobs) + 2
-    work_queue = JoinableQueue(maxsize=max_queue_size)
+    work_queue = JoinableQueue(maxsize=nTotalJobs)
     jobs = []
     remaining_jobs = nTotalJobs
-    # Kick off worker threads
-    for _ in range(nThread):
-        # Start a new job thread
-        try:
-            p = pool.Process(target=QueueWorker, args=(work_queue,))
-        except Exception:
-            if ctx is not None:
-                # Fallback to use context
-                p = ctx.Process(target=QueueWorker, args=(work_queue,))
-        p.start()
-        jobs.append(p)
-    for trial in range(nTrials):
+    job_id = 1
+    for trial in range(1):
         # Parse parameters
         param = paramList[trial]
         simParam = simParamList[trial]
@@ -177,44 +165,64 @@ def SimulationMainQueue(dataFiles, nThread=1):
                 .replace("wC", "wC-" + str(ergParam.wControl))
                 .replace("RandSeed", "RandSeed-" + str(eidParam.randSeed))
             )
+            # Do the extra initialization here to speed up.
+            if isinstance(eidParam.rawTraj, str) and "moth" in eidParam.rawTraj:
+                eidParam.rawTraj = np.array(
+                    loadMothData(
+                        target="M300lux", trialID=0, nrmGain=eidParam.objAmp
+                    )[1]
+                )
+            ergParam.time = linspace(0.0, ergParam.timeHorizon, ergParam.tRes)
+            ergParam.eidTime = linspace(0.0, ergParam.timeHorizon, eidParam.res)
             # initialize multiple targets tracking
             if eidParam.multiTargetTracking == "dual":
-                print(
-                    f"Entering multiple target tracking with {eidParam.multiTargetTracking}!!!!!!!!!"
-                )
                 eidParam.multiTargetTracking = True
                 eidParam.otherTargets = [RealTarget(eidParam.multiTargetInitialPos)]
             elif eidParam.multiTargetTracking == "distractor":
-                print(
-                    f"Entering multiple target tracking with {eidParam.multiTargetTracking}!!!!!!!!!"
-                )
                 eidParam.multiTargetTracking = True
                 eidParam.otherTargets = [Distractor(eidParam.multiTargetInitialPos)]
 
             # Fill in work queue if it's not full
-            work_queue.put((ergParam, eidParam, False), block=True, timeout=None)
+            job_path = f'{sim_jobs_path}/eih_sim_job_{job_id}.pkl'
+            with open(job_path, 'wb') as fp:
+                pkl.dump((ergParam, eidParam, False), fp, pkl.HIGHEST_PROTOCOL)
+            work_queue.put(job_path, block=True, timeout=None)
+            job_id += 1
             remaining_jobs -= 1
             print_color(
-                f"[MasterNode-{getpid()}]: Adding new job {eidParam.filename}, "
-                f"remaining jobs {remaining_jobs}",
+                f"[MasterNode-{getpid()}]: Adding new job {eidParam.filename}",
                 color="green",
             )
             # Unfortunately we need to wait briefly after adding new data into the queue.
             # This is because it takes some time for the object to get properly ingested.
-            time.sleep(0.1 + 0.2 * np.random.rand())
+            time.sleep(0.1 + 0.1 * np.random.rand())
 
     for it in range(nAttenuationSimTrials):
+        job_path = f'{sim_jobs_path}/eih_sim_job_{job_id}.pkl'
+        with open(job_path, 'wb') as fp:
+            pkl.dump(attenuation_sim_trials[it].split(), fp, pkl.HIGHEST_PROTOCOL)
         # Fill in work queue
-        work_queue.put(attenuation_sim_trials[it].split(), block=True, timeout=None)
+        work_queue.put(job_path, block=True, timeout=None)
+        job_id += 1
         remaining_jobs -= 1
         print_color(
-            f"[MasterNode-{getpid()}]: Adding new job {attenuation_sim_trials[it].split()[3]}, "
-            f"remaining jobs {remaining_jobs}",
+            f"[MasterNode-{getpid()}]: Adding new job {attenuation_sim_trials[it].split()[3]}",
             color="green",
         )
         # Unfortunately we need to wait briefly after adding new data into the queue.
         # This is because it takes some time for the object to get properly ingested.
-        time.sleep(0.1 + 0.2 * np.random.rand())
+        time.sleep(0.1 + 0.1 * np.random.rand())
 
+    # Kick off worker threads
+    for _ in range(nThread):
+        # Start a new job thread
+        try:
+            p = pool.Process(target=QueueWorker, args=(work_queue,))
+        except Exception:
+            if ctx is not None:
+                # Fallback to use context
+                p = ctx.Process(target=QueueWorker, args=(work_queue,))
+        p.start()
+        jobs.append(p)
     # Wait until all the active thread to finish
     work_queue.join()
