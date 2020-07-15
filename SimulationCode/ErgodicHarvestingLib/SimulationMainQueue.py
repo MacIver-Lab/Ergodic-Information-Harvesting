@@ -132,6 +132,35 @@ def SimulationMainQueue(dataFiles, nThread=1):
     jobs = []
     remaining_jobs = nTotalJobs
     job_id = 1
+
+    for it in range(nAttenuationSimTrials):
+        job_path = f'{sim_jobs_path}/eih_sim_job_{job_id}.pkl'
+        with open(job_path, 'wb') as fp:
+            pkl.dump(attenuation_sim_trials[it].split(), fp, pkl.HIGHEST_PROTOCOL)
+        # Fill in work queue
+        work_queue.put(job_path, block=True, timeout=None)
+        job_id += 1
+        remaining_jobs -= 1
+        print_color(
+            f"[MasterNode-{getpid()}]: Adding new job {attenuation_sim_trials[it].split()[3]}",
+            color="green",
+        )
+        # Unfortunately we need to wait briefly after adding new data into the queue.
+        # This is because it takes some time for the object to get properly ingested.
+        time.sleep(0.1 + 0.1 * np.random.rand())
+
+    # Kick off worker threads
+    for _ in range(nThread):
+        # Start a new job thread
+        try:
+            p = pool.Process(target=QueueWorker, args=(work_queue,))
+        except Exception:
+            if ctx is not None:
+                # Fallback to use context
+                p = ctx.Process(target=QueueWorker, args=(work_queue,))
+        p.start()
+        jobs.append(p)
+
     for trial in range(nTrials):
         # Parse parameters
         param = paramList[trial]
@@ -197,33 +226,6 @@ def SimulationMainQueue(dataFiles, nThread=1):
             # This is because it takes some time for the object to get properly ingested.
             time.sleep(0.1 + 0.1 * np.random.rand())
 
-    for it in range(nAttenuationSimTrials):
-        job_path = f'{sim_jobs_path}/eih_sim_job_{job_id}.pkl'
-        with open(job_path, 'wb') as fp:
-            pkl.dump(attenuation_sim_trials[it].split(), fp, pkl.HIGHEST_PROTOCOL)
-        # Fill in work queue
-        work_queue.put(job_path, block=True, timeout=None)
-        job_id += 1
-        remaining_jobs -= 1
-        print_color(
-            f"[MasterNode-{getpid()}]: Adding new job {attenuation_sim_trials[it].split()[3]}",
-            color="green",
-        )
-        # Unfortunately we need to wait briefly after adding new data into the queue.
-        # This is because it takes some time for the object to get properly ingested.
-        time.sleep(0.1 + 0.1 * np.random.rand())
-
-    # Kick off worker threads
-    for _ in range(nThread):
-        # Start a new job thread
-        try:
-            p = pool.Process(target=QueueWorker, args=(work_queue,))
-        except Exception:
-            if ctx is not None:
-                # Fallback to use context
-                p = ctx.Process(target=QueueWorker, args=(work_queue,))
-        p.start()
-        jobs.append(p)
     # Wait until all the active thread to finish
     work_queue.join()
     for job in jobs:
