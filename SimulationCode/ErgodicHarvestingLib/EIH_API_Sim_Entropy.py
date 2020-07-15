@@ -10,11 +10,6 @@ from ErgodicHarvestingLib.EntropyTrajectorySimulation import TrajEIDSim
 
 
 def EIH_Sim(*args):
-    # import time
-    # from numpy.random import rand
-    # time.sleep(0.5 * rand())
-    # return
-
     if len(args) > 0:
         # Parameter Objects
         ergParam = ErgodicParameters()

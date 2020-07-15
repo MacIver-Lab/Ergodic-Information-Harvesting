@@ -16,11 +16,6 @@ from ErgodicHarvestingLib.save2mat import save2mat
 
 
 def EIDSim(ergParam, eidParam, showMsg=True):
-    # import time
-    # from numpy.random import rand
-    # time.sleep(0.5 * rand())
-    # return
-    
     # Reseed the numpy random module for deterministic behavior
     np.random.seed(eidParam.randSeed)
     # Initialize
