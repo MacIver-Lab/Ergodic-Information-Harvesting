@@ -56,7 +56,6 @@ def QueueWorker(mp_queue):
     while True:
         try:
             job_path = mp_queue.get(block=True, timeout=30.0)
-            time.sleep(0.5 + np.random.rand())
             with open(job_path, 'rb') as fp:
                 args = pkl.load(fp)
             if args is None:
@@ -145,9 +144,6 @@ def SimulationMainQueue(dataFiles, nThread=1):
             f"[MasterNode-{getpid()}]: Adding new job {attenuation_sim_trials[it].split()[3]}",
             color="green",
         )
-        # Unfortunately we need to wait briefly after adding new data into the queue.
-        # This is because it takes some time for the object to get properly ingested.
-        time.sleep(0.1 + 0.1 * np.random.rand())
 
     # Kick off worker threads
     for _ in range(nThread):
@@ -222,9 +218,6 @@ def SimulationMainQueue(dataFiles, nThread=1):
                 f"[MasterNode-{getpid()}]: Adding new job {eidParam.filename}",
                 color="green",
             )
-            # Unfortunately we need to wait briefly after adding new data into the queue.
-            # This is because it takes some time for the object to get properly ingested.
-            time.sleep(0.1 + 0.1 * np.random.rand())
 
     # Wait until all the active thread to finish
     work_queue.join()
