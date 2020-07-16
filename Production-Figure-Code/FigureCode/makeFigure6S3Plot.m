@@ -97,7 +97,7 @@ set(gca, 'Position', axesPosition);
 
 % All set, now print the first section into PDF
 drawnow;
-print(gcf, _SAVE_PATH('fig6s3_weakly_electric_fish.pdf'),'-dpdf');
+print(gcf, GEN_SAVE_PATH('fig6s3_weakly_electric_fish.pdf'),'-dpdf');
 
 %% Mole Odor Localization
 % EIH
@@ -181,7 +181,7 @@ set(gca, 'Position', axesPosition);
 
 % All set, now print the first section into PDF
 drawnow;
-print(gcf, _SAVE_PATH('fig6s3_mole.pdf'),'-dpdf');
+print(gcf, GEN_SAVE_PATH('fig6s3_mole.pdf'),'-dpdf');
 
 %% Cockroach odor source localization
 % Plot
@@ -272,7 +272,7 @@ set(gca, 'Position', axesPosition);
 
 % All set, now print the first section into PDF
 drawnow;
-print(gcf, _SAVE_PATH('fig6s3_cockroach.pdf'),'-dpdf');
+print(gcf, GEN_SAVE_PATH('fig6s3_cockroach.pdf'),'-dpdf');
 fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));
 
 function mPlotContinuousEID(dat)

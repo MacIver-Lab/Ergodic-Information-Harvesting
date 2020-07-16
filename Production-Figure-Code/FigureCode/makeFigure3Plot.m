@@ -447,7 +447,7 @@ title('Electric Fish (Simulation)', 'FontSize', 12)
 
 % All set, now print the first section into PDF
 drawnow;
-print(gcf, _SAVE_PATH('fig3.pdf'),'-dpdf');
+print(gcf, GEN_SAVE_PATH('fig3.pdf'),'-dpdf');
 
 function mPlotContinuousEID(dat)
 global PLOT_EER_BAND

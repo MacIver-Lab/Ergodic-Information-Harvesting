@@ -371,7 +371,7 @@ set(gca, 'Position', axesPosition);
 
 % All set, now print the first section into PDF
 drawnow;
-print(gcf, _SAVE_PATH('fig6a.pdf'),'-dpdf');
+print(gcf, GEN_SAVE_PATH('fig6a.pdf'),'-dpdf');
 
 %% Mole Odor Localization
 % Load Data
@@ -716,7 +716,7 @@ set(gca, 'Position', axesPosition);
 
 % All set, now print the first section into PDF
 drawnow;
-print(gcf, _SAVE_PATH('fig6b.pdf'),'-dpdf');
+print(gcf, GEN_SAVE_PATH('fig6b.pdf'),'-dpdf');
 
 %% Cockroach odor source localization
 cockroachData = load(GEN_BEHAVIOR_DATA_PATH('Cockroach/cockroach_data.mat'));
@@ -1033,7 +1033,7 @@ set(gca, 'Position', axesPosition);
 
 % All set, now print the first section into PDF
 drawnow;
-print(gcf, _SAVE_PATH('fig6c.pdf'),'-dpdf');
+print(gcf, GEN_SAVE_PATH('fig6c.pdf'),'-dpdf');
 fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));
 
 function mPlotContinuousEID(dat)
