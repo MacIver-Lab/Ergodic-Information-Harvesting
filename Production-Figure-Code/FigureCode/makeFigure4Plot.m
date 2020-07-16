@@ -140,7 +140,8 @@ axesPosition = get(gca, 'Position');
 axesPosition(1:2) = [0.3, 0.25];
 set(gca, 'Position', axesPosition);
 % legend('off');
-print(GEN_SAVE_PATH('fig4C.pdf'),'-dpdf');
+drawnow;
+print(gcf, _SAVE_PATH('fig4C.pdf'),'-dpdf');
 
 %% Boxplot - Ergodic Metric vs. Attenuation
 figure(2); clf;
@@ -174,7 +175,8 @@ set(gca, 'units', 'normalized');
 axesPosition = get(gca, 'Position');
 axesPosition(1:2) = [0.3, 0.25];
 set(gca, 'Position', axesPosition);
-print(GEN_SAVE_PATH('fig4B.pdf'),'-dpdf');
+drawnow;
+print(gcf, _SAVE_PATH('fig4B.pdf'),'-dpdf');
 
 %% Boxplot - Mean Tracking Error vs. Attenuation
 figure(3); clf;
@@ -210,5 +212,6 @@ set(gca, 'units', 'normalized');
 axesPosition = get(gca, 'Position');
 axesPosition(1:2) = [0.3, 0.25];
 set(gca, 'Position', axesPosition);
-print(GEN_SAVE_PATH('fig4A.pdf'),'-dpdf');
+drawnow;
+print(gcf, _SAVE_PATH('fig4A.pdf'),'-dpdf');
 fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));

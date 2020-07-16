@@ -95,7 +95,8 @@ axesPosition = get(gca, 'Position');
 axesPosition(1:2) = [0.4, 0.5];
 set(gca, 'Position', axesPosition);
 
-print(GEN_SAVE_PATH('fig6s5A.pdf'), '-dpdf');
+drawnow;
+print(gcf, _SAVE_PATH('fig6s5A.pdf'), '-dpdf');
 
 %% Initial searching
 % Load and Process Data
@@ -182,7 +183,8 @@ axesPosition = get(gca, 'Position');
 axesPosition(1:2) = [0.4, 0.5];
 set(gca, 'Position', axesPosition);
 
-print(GEN_SAVE_PATH('fig6s5B.pdf'), '-dpdf');
+drawnow;
+print(gcf, _SAVE_PATH('fig6s5B.pdf'), '-dpdf');
 
 function mPlotContinuousEID(dat)
 global PLOT_EER_BAND

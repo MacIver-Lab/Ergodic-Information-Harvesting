@@ -107,4 +107,5 @@ axesPosition = get(gca, 'Position');
 axesPosition(1:2) = [0.2, 0.5];
 set(gca, 'Position', axesPosition);
 
-print(GEN_SAVE_PATH('fig2s3.pdf'), '-dpdf');
+drawnow;
+print(gcf, _SAVE_PATH('fig2s3.pdf'), '-dpdf');

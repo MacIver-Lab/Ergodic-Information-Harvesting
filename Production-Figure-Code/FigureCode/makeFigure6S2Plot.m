@@ -220,7 +220,8 @@ axesPosition(1:2) = [0.6, 0.3];
 set(gca, 'Position', axesPosition);
 
 % All set, now print the first section into PDF
-print(GEN_SAVE_PATH('fig6s2.pdf'),'-dpdf');
+drawnow;
+print(gcf, _SAVE_PATH('fig6s2.pdf'),'-dpdf');
 
 
 function mPlotContinuousEID(dat)
