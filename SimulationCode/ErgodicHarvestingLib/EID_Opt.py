@@ -5,7 +5,6 @@ from ErgodicHarvestingLib.ergodic import ErgodicOpt
 
 
 def ergoptimize(pdf, state_init, control_init, ergParam, showStats=False, showMsg=True):
-
     state_init = np.array([state_init])
     solver = ErgodicOpt(1, 1, ergParam, control_init)
     solver.set_pdf(pdf)

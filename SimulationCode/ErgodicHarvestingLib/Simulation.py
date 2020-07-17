@@ -6,6 +6,7 @@ from time import strftime
 # Entropy
 from scipy.stats import entropy
 import numpy as np
+from numpy.random import default_rng
 from scipy.interpolate import interp1d
 
 # Import Ergodic packages
@@ -16,10 +17,10 @@ from ErgodicHarvestingLib.save2mat import save2mat
 
 
 def EIDSim(ergParam, eidParam, showMsg=True):
-    # Reseed the numpy random module for deterministic behavior
-    np.random.seed(eidParam.randSeed)
+    # Initialize the RNG with the provided seed
+    rng = default_rng(eidParam.randSeed)
     # Initialize
-    eid = EID(eidParam)
+    eid = EID(eidParam, rng)
     erg = Ergodicity(ergParam)
     # Initial control input is zero
     uinit = 0

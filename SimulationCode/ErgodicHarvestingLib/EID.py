@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from numpy.random import random, randn
 from scipy.stats import norm
 from scipy.signal import convolve
 from scipy.interpolate import interp1d
@@ -10,7 +9,8 @@ from ErgodicHarvestingLib.EntropyEID import EntropyEID
 
 
 class EID(object):
-    def __init__(self, eidParam):
+    def __init__(self, eidParam, rng):
+        self.rng = rng
         self.dt = eidParam.dt
         self.it = 0
         self.SNR = eidParam.SNR
@@ -40,7 +40,7 @@ class EID(object):
         self.pStateTransition /= np.sum(self.pStateTransition)
 
         # Internal Objects
-        self.sensor = self.Sensor(eidParam)
+        self.sensor = self.Sensor(eidParam, rng)
 
     def UpdateTraj(self, traj, pLast):
         self.max_iter = len(traj)
@@ -219,7 +219,8 @@ class EID(object):
             self.MeanObjPos = np.zeros([max_iter, 1])
 
     class Sensor(object):
-        def __init__(self, eidParam):
+        def __init__(self, eidParam, rng):
+            self.rng = rng
             self.SNR = eidParam.SNR
             self.SpatialResol = eidParam.res  # Samples per measure
             self.Scale = 1.0
@@ -298,7 +299,7 @@ class EID(object):
                 return self.rawTraj(t)
 
         def Measure(self, sPos, t):
-            noise = self.NoiseAmp * randn(1)
+            noise = self.NoiseAmp * self.rng.standard_normal()
             # Interpolate over sample grid
             Vp = self.Vp
             objPos = self.ObjPos(t)
@@ -309,7 +310,7 @@ class EID(object):
                 self.V = 0.0
             elif self.blind == "noise":
                 # Sensor blinded, returing pure random measurements
-                self.V = Vp(random(1))
+                self.V = Vp(self.rng.random())
             else:
                 # normal sensor reading
                 self.V = Vp(offset) + noise

@@ -18,7 +18,7 @@ barColor = [72, 110, 181;...
 % note that due to the complexity of EER bands, it's can be fairly slow
 % to plot the EER bands
 global PLOT_EER_BAND
-PLOT_EER_BAND = 1;
+PLOT_EER_BAND = 0;
 
 %% Electric Fish Simulation
 % Load data

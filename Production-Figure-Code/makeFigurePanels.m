@@ -27,17 +27,17 @@ warning('off', 'MATLAB:Axes:NegativeLimitsInLogAxis');
 %       'fig6s4' -  panels for figure 6---figure supplement 4
 %       'fig6s5' -  panels for figure 6---figure supplement 5
 %       'fig7'   -  panels for figure 7
-targetFig = 'all';
+targetFig = 'fig6';
 
 % Control whether or not to use previously simulated dataset
 %   1 | use previouly published dataset (default)
 %   0 | use locally simulated data
-USE_PUBLISHED_DATASET = 1;
+USE_PUBLISHED_DATASET = 0;
 
 %% Internal parameters (do not change)
 FIG_DATA_PATH = './PublishedData/';
 % locally simulated data, only available when USE_PUBLISHED_DATASET == 1
-FIG_DATA_PATH_LOCAL = '../SimulationCode/SimData/';
+FIG_DATA_PATH_LOCAL = '../SimulationCode/SimData_AWS_test_1/';
 FIG_OUTPUT_PATH = sprintf('./FigureOutput/%s/', targetFig);
 NeedSimData = @(s) isempty(find(ismember({'fig2s3', 'fig4s1'}, s), 1));
 if ~USE_PUBLISHED_DATASET && NeedSimData(targetFig)
