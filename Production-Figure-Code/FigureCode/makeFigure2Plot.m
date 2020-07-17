@@ -233,7 +233,7 @@ set(gca, 'units', 'normalized');
 axesPosition(1:2) = [0.6, 0.5];
 set(gca, 'Position', axesPosition);
 drawnow;
-print(GEN_SAVE_PATH('fig2.pdf'), '-dpdf');
+print(gcf, GEN_SAVE_PATH('fig2.pdf'), '-dpdf');
 fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));
 
 

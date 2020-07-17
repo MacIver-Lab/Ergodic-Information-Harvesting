@@ -81,7 +81,8 @@ xlabel('Time');
 ylabel('Lateral Position');
 mPlotContinuousEID(lsnr, isBelief);
 legend(gca, 'off');
-print(GEN_SAVE_PATH(outFilename), '-dpdf');
+drawnow;
+print(gcf, GEN_SAVE_PATH(outFilename), '-dpdf');
    
 function mPlotContinuousEID(dat, isBelief)
 global PLOT_EER_BAND

@@ -21,11 +21,6 @@ cumDist = @(x) sum(abs(diff(x)));
 % to plot the EER bands
 global PLOT_EER_BAND
 PLOT_EER_BAND = 1;
-% Use split plot method to generate vector graphic plots
-% This is a workaround for the buffer issue in MATLAB due
-% to the EER patch is too complex for the interal save
-% function to save as a vector graphic PDF
-SPLIT_PLOT = 0;
 
 %% Electric Fish Simulation
 % Load data
@@ -381,17 +376,8 @@ set(gca, 'Position', axesPosition);
 
 
 % All set, now print the first section into PDF
-if SPLIT_PLOT
-    splitprint(gcf,... %separate the current figure
-        GEN_SAVE_PATH('fig3-ElectricFish'),... %filenames will begin with 'disp2'
-        {{'line';'text'},{'surface';'patch';'image'}}, ...% types of objects
-        {'-dpdf','-dtiff'},... %file formats
-        0,... %alignment mark will not be added
-        [1 0],... %axes in first figure will be visible
-        {'','-r400'});
-else
-    print(GEN_SAVE_PATH('fig3-ElectricFish.pdf'),'-dpdf');
-end
+drawnow;
+print(gcf, GEN_SAVE_PATH('fig3-ElectricFish.pdf'),'-dpdf');
 
 %% Mole Odor Localization
 % Load Data
@@ -738,17 +724,8 @@ axesPosition(1:2) = [0.6, 0.3];
 set(gca, 'Position', axesPosition);
 
 % All set, now print the first section into PDF
-if SPLIT_PLOT
-    splitprint(gcf,... %separate the current figure
-        GEN_SAVE_PATH('fig3-Mole'),... %filenames will begin with 'disp2'
-        {{'line';'text'},{'surface';'patch';'image'}}, ...% types of objects
-        {'-dpdf','-dtiff'},... %file formats
-        0,... %alignment mark will not be added
-        [1 0],... %axes in first figure will be visible
-        {'','-r400'});
-else
-    print(GEN_SAVE_PATH('fig3-Mole.pdf'),'-dpdf');
-end
+drawnow;
+print(gcf, GEN_SAVE_PATH('fig3-Mole.pdf'),'-dpdf');
 
 fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));
 
@@ -1071,17 +1048,8 @@ set(gca, 'Position', axesPosition);
 
 
 % All set, now print the first section into PDF
-if SPLIT_PLOT
-    splitprint(gcf,... %separate the current figure
-        GEN_SAVE_PATH('fig3-Cockroach'),... %filenames will begin with 'disp2'
-        {{'line';'text'},{'surface';'patch';'image'}}, ...% types of objects
-        {'-dpdf','-dtiff'},... %file formats
-        0,... %alignment mark will not be added
-        [1 0],... %axes in first figure will be visible
-        {'','-r400'});
-else
-    print(GEN_SAVE_PATH('fig3-Cockroach.pdf'),'-dpdf');
-end
+drawnow;
+print(gcf, GEN_SAVE_PATH('fig3-Cockroach.pdf'),'-dpdf');
 
 function mPlotContinuousEID(dat)
 global PLOT_EER_BAND

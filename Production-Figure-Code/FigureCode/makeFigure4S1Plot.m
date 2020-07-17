@@ -131,6 +131,7 @@ set(gca, 'units', 'normalized');
 axesPosition = get(gca, 'Position');
 axesPosition(1:2) = [0.4, 0.4];
 set(gca, 'Position', axesPosition);
-print(GEN_SAVE_PATH('fig4s1.pdf'), '-dpdf');
+drawnow;
+print(gcf, GEN_SAVE_PATH('fig4s1.pdf'), '-dpdf');
 
 fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));
