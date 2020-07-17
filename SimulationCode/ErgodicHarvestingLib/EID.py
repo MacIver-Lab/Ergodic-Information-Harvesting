@@ -46,7 +46,7 @@ class EID(object):
         self.max_iter = len(traj)
 
         # Internal Objects
-        self.sensor = self.Sensor(self.eidParam)
+        self.sensor = self.Sensor(self.eidParam, self.rng)
 
         # Sensor Position, shape = (max_iter, 1)
         self.sPos = traj
