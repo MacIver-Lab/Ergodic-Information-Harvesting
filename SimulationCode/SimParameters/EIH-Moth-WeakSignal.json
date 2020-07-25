@@ -336,6 +336,7 @@
         30
     ],
     "wControl": [
+        10,
         20
     ],
     "Sigma": [
@@ -345,7 +346,7 @@
         0.2
     ],
     "figName": "fig5",
-    "filename": "EIH-Moth-WeakSignal-RandSeed.mat",
+    "filename": "EIH-Moth-WeakSignal-wC-RandSeed.mat",
     "procNoiseSigma": [
         0.02
     ],
