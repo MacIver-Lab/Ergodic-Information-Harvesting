@@ -2,7 +2,7 @@
 
 # Import basic packages
 import numpy as np
-from numpy.random import default_rng
+from numpy.random import Generator, MT19937
 
 # Time
 from time import strftime
@@ -18,7 +18,7 @@ from ErgodicHarvestingLib.save2mat import save2mat
 
 def TrajEIDSim(ergParam, eidParam, rawTraj, showMsg=True):
     # Initialize the RNG with the provided seed
-    rng = default_rng(eidParam.randSeed)
+    rng = Generator(MT19937(eidParam.randSeed))
     # Initialize
     eid = EID(eidParam, rng)
     erg = Ergodicity(ergParam)
