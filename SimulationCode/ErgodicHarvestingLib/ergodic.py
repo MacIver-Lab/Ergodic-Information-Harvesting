@@ -35,8 +35,8 @@ class ProjectionBasedOpt(object):
         self.odeParam = {
             "method": "RK23",
             "t_span": (time[0], time[-1]),
-            "rtol": 1e-5,
-            "atol": 1e-10,
+            "rtol": 1e-4,
+            "atol": 1e-7,
             "t_eval": time,
             "min_step": odeDeltaT,
             "first_step": odeDeltaT,
