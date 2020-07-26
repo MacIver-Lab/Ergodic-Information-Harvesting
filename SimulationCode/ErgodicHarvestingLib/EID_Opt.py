@@ -28,7 +28,7 @@ def ergoptimize(pdf, state_init, control_init, ergParam, showStats=False, showMs
         solver.update_traj(newtraj[0], newtraj[1])
         newcost = solver.evalcost()
 
-        while newcost > (costs + alpha * gamma * newdcost) and gamma > 1e-8:
+        while newcost > (costs + alpha * gamma * newdcost) and gamma > 1e-5:
             gamma = beta * gamma
             stepDirection = [
                 trajlist[0] + gamma * descdir[0],
