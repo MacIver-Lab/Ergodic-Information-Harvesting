@@ -64,7 +64,19 @@ def EIDSim(ergParam, eidParam, showMsg=True):
                 showStats=False,
                 showMsg=showMsg,
             )
-            # [Optional] Filter the wiggle to evaluate causation
+            traj_amp = max(rawTraj)-min(rawTraj)
+            if traj_amp < 0.01:
+                # try again with a random perturbation
+                uinit += np.sign(uinit) * (0.15 + 0.1 * rng.random())
+                [rawTraj, uinit] = ergoptimize(
+                    phi[:, -1],
+                    sTrajList[-1],
+                    control_init=uinit,
+                    ergParam=ergParam,
+                    showStats=False,
+                    showMsg=showMsg,
+                )
+                traj_amp = max(rawTraj) - min(rawTraj)
             traj = interp1d(ergParam.time, rawTraj)(ergParam.eidTime)
             # Update measurement and EID with current trajectory
             eid.UpdateTraj(traj, pLast)
