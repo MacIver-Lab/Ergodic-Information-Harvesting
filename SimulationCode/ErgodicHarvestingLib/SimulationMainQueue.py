@@ -56,6 +56,7 @@ def QueueWorker(mp_queue):
     while True:
         try:
             job_path = mp_queue.get(block=True, timeout=30.0)
+            remaining_jobs = mp_queue.qsize()
             with open(job_path, 'rb') as fp:
                 args = pkl.load(fp)
             if args is None:
@@ -65,14 +66,14 @@ def QueueWorker(mp_queue):
             if isinstance(args, list):
                 # wiggle attenuation sim
                 print_color(
-                    f"[WorkerNode-{getpid()}] Received new job {args[3]}",
+                    f"[WorkerNode-{getpid()}] Received new job {args[3]}, remaining jobs {remaining_jobs}",
                     color="yellow",
                 )
                 EIH_Sim(*args)
             else:
                 # other sims
                 print_color(
-                    f"[WorkerNode-{getpid()}] Received new job {args[1].filename}",
+                    f"[WorkerNode-{getpid()}] Received new job {args[1].filename}, remaining jobs {remaining_jobs}",
                     color="yellow",
                 )
                 EIDSim(*args)
