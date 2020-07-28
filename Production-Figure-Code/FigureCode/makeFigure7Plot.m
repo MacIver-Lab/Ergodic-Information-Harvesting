@@ -233,7 +233,6 @@ idx_hSNR = 1;
 findAngle = @(a, b) acosd(min(1,max(-1, a(:).' * b(:) / norm(a) / norm(b) )));
 for i = 1:length(fNames)
     moleData = load([fNames(i).folder, '/', fNames(i).name]);
-    disp(fNames(i).name);
     if ~contains(fNames(i).name, 'b1')
         % all figures other than b1* have inverted input
         % due to digitization
@@ -255,7 +254,6 @@ for i = 1:length(fNames)
             decomposeFourierMag(rotPath(:, 1), [], 1/15, 2);
         [~, MoleFreqMagRawY_lSNR(:, idx_lSNR)] = ...
             decomposeFourierMag(rotPath(:, 2), [], 1/15, 2);
-        fprintf('Trial length %.2f\n', size(rotPath, 1)/15);
         % Compute averaged spectrum magnitude
         MoleFreqMagX_lSNR(idx_lSNR) = mean(MoleFreqMagRawX_lSNR(:, idx_lSNR));
         MoleFreqMagY_lSNR(idx_lSNR) = mean(MoleFreqMagRawY_lSNR(:, idx_lSNR));
@@ -267,7 +265,6 @@ for i = 1:length(fNames)
             decomposeFourierMag(rotPath(:, 1), [], 1/15, 2);
         [~, MoleFreqMagRawY_hSNR(:, idx_hSNR)] = ...
             decomposeFourierMag(rotPath(:, 2), [], 1/15, 2);
-        fprintf('Trial length %.2f\n', size(rotPath, 1)/15);
         % Compute averaged spectrum magnitude
         MoleFreqMagX_hSNR(idx_hSNR) = mean(MoleFreqMagRawX_hSNR(:, idx_hSNR));
         MoleFreqMagY_hSNR(idx_hSNR) = mean(MoleFreqMagRawY_hSNR(:, idx_hSNR));
@@ -706,8 +703,8 @@ FreqResolution = 0.001;
 CutOffFreq = 3.5;
 LPFHighCutFreq = 6.0;
 NPeaks = 18;
-hsnrFiles = dir(GEN_DATA_PATH('EIH-Moth-StrongSignal*.mat'));
-lsnrFiles = dir(GEN_DATA_PATH('EIH-Moth-WeakSignal*.mat'));
+hsnrFiles = dir(GEN_DATA_PATH('EIH-Moth-StrongSignal-wC-20-*.mat'));
+lsnrFiles = dir(GEN_DATA_PATH('EIH-Moth-WeakSignal-wC-20-*.mat'));
 hsnrBodeGain = zeros(length(hsnrFiles), NPeaks, 'double');
 lsnrBodeGain = zeros(length(lsnrFiles), NPeaks, 'double');
 locs = [53, 73, 126, 177, 276, 325, 427, 475, 576, 725, 926, ...
