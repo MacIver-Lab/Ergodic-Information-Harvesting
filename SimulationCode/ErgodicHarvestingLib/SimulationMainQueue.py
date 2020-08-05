@@ -53,6 +53,7 @@ def loadMothData(target="M300lux", trialID=0, nrmMid=0.5, nrmGain=0.1):
 
 
 def QueueWorker(mp_queue):
+    time.sleep(2.5)
     while True:
         try:
             job_path = mp_queue.get(block=True, timeout=30.0)
@@ -117,7 +118,7 @@ def SimulationMainQueue(dataFiles, nThread=1):
     # additional wiggle attenuation sims
     with open("./SimParameters/SimJobList.txt", "r") as fp:
         attenuation_sim_trials = fp.readlines()
-        attenuation_sim_trials.sort()
+        attenuation_sim_trials.clear()
     nAttenuationSimTrials = len(attenuation_sim_trials)
     nRegularSimJobs = sum(nSimJobsList)
     nTotalJobs = nRegularSimJobs + nAttenuationSimTrials
@@ -169,7 +170,7 @@ def SimulationMainQueue(dataFiles, nThread=1):
         # Check if saveDir exists, create the folder if not
         if not exists(eidParam.saveDir):
             print(f"Save folder {eidParam.saveDir} does not exist, creating...")
-            makedirs(eidParam.saveDir)
+            makedirs(eidParam.saveDir, exist_ok=True)
         ergParam.time = None
         ergParam.eidTime = None
         for it in range(nJobs):
