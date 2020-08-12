@@ -118,7 +118,7 @@ def SimulationMainQueue(dataFiles, nThread=1):
     # additional wiggle attenuation sims
     with open("./SimParameters/SimJobList.txt", "r") as fp:
         attenuation_sim_trials = fp.readlines()
-        attenuation_sim_trials.clear()
+        attenuation_sim_trials.sort()
     nAttenuationSimTrials = len(attenuation_sim_trials)
     nRegularSimJobs = sum(nSimJobsList)
     nTotalJobs = nRegularSimJobs + nAttenuationSimTrials
