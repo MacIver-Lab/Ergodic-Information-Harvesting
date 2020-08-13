@@ -2,6 +2,7 @@
 
 # Import basic packages
 import numpy as np
+from numpy.random import Generator, MT19937
 
 # Time
 from time import strftime
@@ -16,10 +17,10 @@ from ErgodicHarvestingLib.save2mat import save2mat
 
 
 def TrajEIDSim(ergParam, eidParam, rawTraj, showMsg=True):
-    # Reseed the numpy random module for deterministic behavior
-    np.random.seed(eidParam.randSeed)
+    # Initialize the RNG with the provided seed
+    rng = Generator(MT19937(eidParam.randSeed))
     # Initialize
-    eid = EID(eidParam)
+    eid = EID(eidParam, rng)
     erg = Ergodicity(ergParam)
     eidList = np.ones([ergParam.res, eidParam.maxIter])
     eidList[:, 1] /= eidList[:, 1].sum()

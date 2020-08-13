@@ -5,7 +5,7 @@ GEN_DATA_PATH = @(fname) fullfile(dataPath, '/wiggle_attenuation_sim', fname);
 GEN_BEHAVIOR_DATA_PATH = @(fname) fullfile('./PublishedData/', 'animal_behavior_data', fname);
 GEN_SAVE_PATH = @(fname) fullfile(savePath, fname);
 % Lock random number generator seed
-rng(0);
+rng(7);
 
 %% Kinematic Energy of Electric Fish Behavior
 load(GEN_BEHAVIOR_DATA_PATH('ElectricFish/Eigenmannia-sp-StrongSignal.mat'), 'strongSigData');
@@ -41,7 +41,7 @@ set(gcf, ...
 energyData = [relativeEffortS,relativeEffortW];
 energyLabel = [ones(1,length(relativeEffortS)), 2*ones(1,length(relativeEffortW))];
 notBoxPlot(energyData, energyLabel,...
-    'jitter', 0.04, 'alpha', 0.5);
+    'jitter', 0.05, 'alpha', 0.5);
 opt = [];
 opt.BoxDim = [8, 5]*0.5;
 opt.YLabel = 'Relative Energy'; % ylabel

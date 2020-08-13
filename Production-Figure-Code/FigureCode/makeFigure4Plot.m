@@ -106,16 +106,15 @@ legHdl(1) = line([refTrial.meanErgodicityMean,refTrial.meanErgodicityMean], [-10
 line([0, 1], [refTrial.meanEstErrMean, refTrial.meanEstErrMean],...
     'LineWidth', 2, 'Color', 'k', 'LineStyle', '--');
 
-
 % Plot raw data
 plot(refTrial.meanErgodicityRaw, refTrial.meanEstErrRaw, 'o', 'color', colorMap(1,:),...
-    'markerfacecolor', colorMap(1,:)*0.65, 'markersize', 4);
+    'markerfacecolor', colorMap(1,:)*0.65, 'markersize', 5);
 legHdl(2) = plot(lowAttenTrials.meanErgodicityRaw, lowAttenTrials.meanEstErrRaw, 'o', 'color', colorMap(2,:),...
-    'markerfacecolor', colorMap(2,:)*0.65, 'markersize', 4);
+    'markerfacecolor', colorMap(2,:)*0.65, 'markersize', 5);
 plot(medAttenTrials.meanErgodicityRaw, medAttenTrials.meanEstErrRaw, 'o', 'color', colorMap(3,:),...
-    'markerfacecolor', colorMap(3,:)*0.65, 'markersize', 4);
+    'markerfacecolor', colorMap(3,:)*0.65, 'markersize', 5);
 plot(highAttenTrials.meanErgodicityRaw, highAttenTrials.meanEstErrRaw, 'o', 'color', colorMap(4,:),...
-    'markerfacecolor', colorMap(4,:)*0.65, 'markersize', 4);
+    'markerfacecolor', colorMap(4,:)*0.65, 'markersize', 5);
 
 xlabel('Mean Distance from Ergodicity', 'FontSize', 22);
 ylabel('Mean Relative Tracking Error', 'FontSize', 22);
@@ -123,7 +122,7 @@ legend(legHdl, 'No Attenuation', 'With Attenuation', 'Location', 'southeast');
 
 % Prettify figure
 opt = [];
-opt.BoxDim = [8,5];
+opt.BoxDim = [8,5] * 0.5;
 opt.YLim = [40, 80];
 opt.YTick = 40:10:80;
 opt.XLim = [0.20, 0.45];
@@ -132,26 +131,20 @@ opt.XMinorTick = 'off';
 opt.YMinorTick = 'off';
 opt.ShowBox = 'off';
 opt.FontName = 'Helvetica';
+opt.FontSize = 12;
 opt.IgnoreLines = 1;
 setAxesProp(opt, gca);
 set(gca,'YTickLabel', strcat(num2str((opt.YTick)'),'%'));
 set(gca, 'units', 'normalized');
 axesPosition = get(gca, 'Position');
-axesPosition(1:2) = [0.3, 0.25];
+axesPosition(1:2) = [0.4, 0.7];
 set(gca, 'Position', axesPosition);
-% legend('off');
-drawnow;
-print(gcf, GEN_SAVE_PATH('fig4C.pdf'),'-dpdf');
 
 %% Boxplot - Ergodic Metric vs. Attenuation
-figure(2); clf;
-set(gcf, ...
-    'units','normalized','outerposition',[0 0 1 1], ...
-    'PaperPositionMode','auto', ...
-    'PaperOrientation','landscape', ...
-    'PaperSize', [30, 30]);
+axes;
 notBoxPlot(meanErgodicity(gAtten ~= 0), gAtten(gAtten ~= 0), ...
-    'jitter', 0.2, 'jitterScale', 5, 'alpha', 0.5), hold on;
+    'jitter', 2.0, 'jitterScale', 5, 'alpha', 0.5, ...
+    'markMean', false, 'dotSize', 24), hold on;
 line([-5, max(gAtten)+1], [refTrial.meanErgodicityMean,refTrial.meanErgodicityMean], ...
     'LineStyle', '--', 'LineWidth', 2, 'Color', 'k');
 xlabel('Wiggle Attenuation (dB)');
@@ -159,7 +152,7 @@ ylabel('Mean Distance from Ergodicity');
 
 % Prettify figure
 opt = [];
-opt.BoxDim = [8,5];
+opt.BoxDim = [8,5] * 0.5;
 opt.YLim = [0.20, 0.45];
 opt.YTick = 0.20:0.05:0.45;
 opt.XLim = [min(gAtten), max(gAtten)+5];
@@ -169,24 +162,19 @@ opt.YMinorTick = 'off';
 opt.ShowBox = 'off';
 opt.FontName = 'Helvetica';
 opt.IgnoreLines = 1;
+opt.FontSize = 12;
 setAxesProp(opt, gca);
 legend('off');
 set(gca, 'units', 'normalized');
 axesPosition = get(gca, 'Position');
-axesPosition(1:2) = [0.3, 0.25];
+axesPosition(1:2) = [0.4, 0.4];
 set(gca, 'Position', axesPosition);
-drawnow;
-print(gcf, GEN_SAVE_PATH('fig4B.pdf'),'-dpdf');
 
 %% Boxplot - Mean Tracking Error vs. Attenuation
-figure(3); clf;
-set(gcf, ...
-    'units','normalized','outerposition',[0 0 1 1], ...
-    'PaperPositionMode','auto', ...
-    'PaperOrientation','landscape', ...
-    'PaperSize', [30, 30]);
+axes;
 notBoxPlot(meanEstErrorMeanBelief(gAtten ~= 0), gAtten(gAtten ~= 0), ...
-    'jitter', 0.2, 'jitterScale', 5, 'alpha', 0.5), hold on;
+    'jitter', 2.0, 'jitterScale', 5, 'alpha', 0.5, ...
+    'markMean', false, 'dotSize', 24), hold on;
 line([-5, max(gAtten)+1], [refTrial.meanEstErrMean,refTrial.meanEstErrMean], ...
     'LineStyle', '--', 'LineWidth', 2, 'Color', 'k');
 
@@ -195,7 +183,7 @@ ylabel('Mean Relative Tracking Error');
 
 % Prettify figure
 opt = [];
-opt.BoxDim = [8,5];
+opt.BoxDim = [8,5] * 0.5;
 opt.YLim = [47.5, 80];
 opt.XLim = [min(gAtten), max(gAtten)+5];
 opt.YTick = 50:10:80;
@@ -204,14 +192,15 @@ opt.XMinorTick = 'off';
 opt.YMinorTick = 'off';
 opt.ShowBox = 'off';
 opt.FontName = 'Helvetica';
+opt.FontSize = 12;
 opt.IgnoreLines = 1;
 setAxesProp(opt, gca);
 set(gca,'YTickLabel', strcat(num2str((opt.YTick)'),'%'));
 legend('off');
 set(gca, 'units', 'normalized');
 axesPosition = get(gca, 'Position');
-axesPosition(1:2) = [0.3, 0.25];
+axesPosition(1:2) = [0.4, 0.1];
 set(gca, 'Position', axesPosition);
 drawnow;
-print(gcf, GEN_SAVE_PATH('fig4A.pdf'),'-dpdf');
+print(gcf, GEN_SAVE_PATH('fig4.pdf'),'-dpdf');
 fprintf('Figure panels created at %s\n', GEN_SAVE_PATH(''));

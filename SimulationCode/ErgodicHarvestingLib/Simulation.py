@@ -6,6 +6,7 @@ from time import strftime
 # Entropy
 from scipy.stats import entropy
 import numpy as np
+from numpy.random import Generator, MT19937
 from scipy.interpolate import interp1d
 
 # Import Ergodic packages
@@ -16,10 +17,10 @@ from ErgodicHarvestingLib.save2mat import save2mat
 
 
 def EIDSim(ergParam, eidParam, showMsg=True):
-    # Reseed the numpy random module for deterministic behavior
-    np.random.seed(eidParam.randSeed)
+    # Initialize the RNG with the provided seed
+    rng = Generator(MT19937(eidParam.randSeed))
     # Initialize
-    eid = EID(eidParam)
+    eid = EID(eidParam, rng)
     erg = Ergodicity(ergParam)
     # Initial control input is zero
     uinit = 0
@@ -63,7 +64,19 @@ def EIDSim(ergParam, eidParam, showMsg=True):
                 showStats=False,
                 showMsg=showMsg,
             )
-            # [Optional] Filter the wiggle to evaluate causation
+            traj_amp = max(rawTraj)-min(rawTraj)
+            if traj_amp < 0.01:
+                # try again with a random perturbation
+                uinit += np.sign(uinit) * (0.15 + 0.1 * rng.random())
+                [rawTraj, uinit] = ergoptimize(
+                    phi[:, -1],
+                    sTrajList[-1],
+                    control_init=uinit,
+                    ergParam=ergParam,
+                    showStats=False,
+                    showMsg=showMsg,
+                )
+                traj_amp = max(rawTraj) - min(rawTraj)
             traj = interp1d(ergParam.time, rawTraj)(ergParam.eidTime)
             # Update measurement and EID with current trajectory
             eid.UpdateTraj(traj, pLast)

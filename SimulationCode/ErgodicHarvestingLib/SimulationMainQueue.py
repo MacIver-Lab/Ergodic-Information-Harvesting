@@ -53,9 +53,11 @@ def loadMothData(target="M300lux", trialID=0, nrmMid=0.5, nrmGain=0.1):
 
 
 def QueueWorker(mp_queue):
+    time.sleep(2.5)
     while True:
         try:
             job_path = mp_queue.get(block=True, timeout=30.0)
+            remaining_jobs = mp_queue.qsize()
             with open(job_path, 'rb') as fp:
                 args = pkl.load(fp)
             if args is None:
@@ -65,14 +67,14 @@ def QueueWorker(mp_queue):
             if isinstance(args, list):
                 # wiggle attenuation sim
                 print_color(
-                    f"[WorkerNode-{getpid()}] Received new job {args[3]}",
+                    f"[WorkerNode-{getpid()}] Received new job {args[3]}, remaining jobs {remaining_jobs}",
                     color="yellow",
                 )
                 EIH_Sim(*args)
             else:
                 # other sims
                 print_color(
-                    f"[WorkerNode-{getpid()}] Received new job {args[1].filename}",
+                    f"[WorkerNode-{getpid()}] Received new job {args[1].filename}, remaining jobs {remaining_jobs}",
                     color="yellow",
                 )
                 EIDSim(*args)
@@ -168,7 +170,7 @@ def SimulationMainQueue(dataFiles, nThread=1):
         # Check if saveDir exists, create the folder if not
         if not exists(eidParam.saveDir):
             print(f"Save folder {eidParam.saveDir} does not exist, creating...")
-            makedirs(eidParam.saveDir)
+            makedirs(eidParam.saveDir, exist_ok=True)
         ergParam.time = None
         ergParam.eidTime = None
         for it in range(nJobs):

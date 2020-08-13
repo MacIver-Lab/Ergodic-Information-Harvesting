@@ -51,7 +51,7 @@ def EIH_Sim(*args):
                         eidParam.saveDir
                     )
                 )
-                makedirs(eidParam.saveDir)
+                makedirs(eidParam.saveDir, exist_ok=True)
             # Load source file
             print("Loading source file {0}".format(sourceFile))
             sourceData = loadmat(sourceFile)

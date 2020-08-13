@@ -38,6 +38,7 @@ USE_PUBLISHED_DATASET = 1;
 FIG_DATA_PATH = './PublishedData/';
 % locally simulated data, only available when USE_PUBLISHED_DATASET == 1
 FIG_DATA_PATH_LOCAL = '../SimulationCode/SimData/';
+% FIG_DATA_PATH_LOCAL = '../SimulationCode/SimData_AWS_RNG_test_4/';
 FIG_OUTPUT_PATH = sprintf('./FigureOutput/%s/', targetFig);
 NeedSimData = @(s) isempty(find(ismember({'fig2s3', 'fig4s1'}, s), 1));
 if ~USE_PUBLISHED_DATASET && NeedSimData(targetFig)

@@ -207,13 +207,15 @@ if ~legacyCall
     params.addParameter('style','patch', @(x) ischar(x) && any(strncmp(x,{'patch','line','sdline'},inf)) ); 
     params.addParameter('interval','SEM', @(x) ischar(x) && any(strncmp(x,{'SEM','tInterval'},inf)) ); 
     params.addParameter('markMedian', false, @(x) islogical(x));
+    params.addParameter('markMean', true, @(x) islogical(x));
     params.addParameter('alpha', 0.4, @(x) isnumeric(x) & isscalar(x));
     params.addParameter('jitterScale', 0.1, @(x) isnumeric(x) & isscalar(x));
     params.addParameter('dotSize', 60, @(x) isnumeric(x) & isscalar(x));
     params.addParameter('plotColor', 'r', @(x) ischar(x));
     params.addParameter('blendPatchColor', false, @(x) islogical(x));
     params.addParameter('plotRawData', true, @(x) islogical(x));
-    params.addParameter('rawDataMarkerColor', [0.1, 0.1, 0.1], @(x) length(x) == 3);
+    params.addParameter('rawDataMarkerFaceColor', [0.1, 0.1, 0.1], @(x) length(x) == 3);
+    params.addParameter('rawDataMarkerEdgeColor', [0.1, 0.1, 0.1], @(x) length(x) == 3);
     params.addParameter('scaledJitter', false, @(x) islogical(x));
 
     params.parse(varargin{:});
@@ -222,6 +224,7 @@ if ~legacyCall
     jitter =  params.Results.jitter;
     style =  params.Results.style;
     interval = params.Results.interval;
+    markMean = params.Results.markMean;
     markMedian = params.Results.markMedian;
     alpha = params.Results.alpha;
     jitterScale = params.Results.jitterScale;
@@ -229,7 +232,8 @@ if ~legacyCall
     plotColor = params.Results.plotColor;
     plotRawData = params.Results.plotRawData;
     blendPatchColor = params.Results.blendPatchColor;
-    rawDataMarkerColor = params.Results.rawDataMarkerColor;
+    rawDataMarkerFaceColor = params.Results.rawDataMarkerFaceColor;
+    rawDataMarkerEdgeColor = params.Results.rawDataMarkerEdgeColor;
     scaledJitter = params.Results.scaledJitter;
     
     %Set interval function
@@ -354,6 +358,7 @@ function [h,statsOut]=myPlotter(X,Y)
      colPatch = [0.6, 0.6, 1];
  elseif plotColor == 'r'
      colPatch = [1, 0.6, 0.6];
+ elseif length()
  end
 
  for k=1:length(X)
@@ -398,28 +403,21 @@ function [h,statsOut]=myPlotter(X,Y)
         
      if plotRawData
          h(k).data=scatter(thisX+J, thisY, dotSize, ...
-             'MarkerFaceColor', rawDataMarkerColor, ...
-             'MarkerEdgeColor', rawDataMarkerColor);
+             'MarkerFaceColor', rawDataMarkerFaceColor, ...
+             'MarkerEdgeColor', rawDataMarkerEdgeColor);
          h(k).data.MarkerFaceAlpha = alpha;
-         h(k).data.MarkerEdgeAlpha = 0;
+         h(k).data.MarkerEdgeAlpha = alpha;
      end
  end
-
-%  if strcmp(style,'line') || strcmp(style,'sdline')
-%    for k=1:length(X)    
-%      %Plot SD
-%      h(k).sd=plot([X(k),X(k)],[mu(k)-SD(k),mu(k)+SD(k)],...
-%                   '-','color',[0.2,0.2,1],'linewidth',2);
-%      set(h(k).sd,'ZData',[1,1]*-1)
-%    end
-%  end
 
  if strcmp(style,'line')
      for k=1:length(X)     
          %Plot mean and SEM (and optionally the median)
-         h(k).mu=plot(X(k),mu(k),'o','color','r',...
-             'markerfacecolor','r',...
-             'markersize',10);
+         if markMean
+             h(k).mu=plot(X(k),mu(k),'o','color','r',...
+                 'markerfacecolor','r',...
+                 'markersize',10);
+         end
         
          h(k).sem=plot([X(k),X(k)],[mu(k)-SEM(k),mu(k)+SEM(k)],'-r',...
              'linewidth',2);   

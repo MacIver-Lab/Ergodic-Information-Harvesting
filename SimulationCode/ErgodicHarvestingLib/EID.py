@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from numpy.random import random, randn
 from scipy.stats import norm
 from scipy.signal import convolve
 from scipy.interpolate import interp1d
@@ -10,7 +9,8 @@ from ErgodicHarvestingLib.EntropyEID import EntropyEID
 
 
 class EID(object):
-    def __init__(self, eidParam):
+    def __init__(self, eidParam, rng):
+        self.rng = rng
         self.dt = eidParam.dt
         self.it = 0
         self.SNR = eidParam.SNR
@@ -40,13 +40,13 @@ class EID(object):
         self.pStateTransition /= np.sum(self.pStateTransition)
 
         # Internal Objects
-        self.sensor = self.Sensor(eidParam)
+        self.sensor = self.Sensor(eidParam, rng)
 
     def UpdateTraj(self, traj, pLast):
         self.max_iter = len(traj)
 
         # Internal Objects
-        self.sensor = self.Sensor(self.eidParam)
+        self.sensor = self.Sensor(self.eidParam, self.rng)
 
         # Sensor Position, shape = (max_iter, 1)
         self.sPos = traj
@@ -61,7 +61,7 @@ class EID(object):
         self.phi = np.zeros([self.sensor.SpatialResol, self.max_iter])
 
     def Simulate(self, extIter):
-        # Determine sensor blind behavior
+        # Check if the sensor should be blinded with noise
         if (
             type(self.eidParam.blindIdx) != bool
             and type(self.eidParam.blindIdx) != int
@@ -69,12 +69,6 @@ class EID(object):
         ):
             self.sensor.blind = self.eidParam.blind
             self.pLast = np.ones([self.sensor.SpatialResol, 1])
-            print(
-                "Enter blind sensor mode at iter #{0} ({1:.2f})".format(
-                    extIter, extIter * self.max_iter * self.dt
-                ),
-                end="",
-            )
         else:
             self.sensor.blind = 0
 
@@ -105,9 +99,6 @@ class EID(object):
         phi = convolve(sensor.FIPow2, pB, mode="same")
         # Normalize
         phi = phi / phi.sum()
-
-        print("Var(EID) = {0}".format(np.var(phi)))
-
         self.phi[:, it] = phi
 
     def CalcEntropyEID(self, pB, it=None):
@@ -219,7 +210,8 @@ class EID(object):
             self.MeanObjPos = np.zeros([max_iter, 1])
 
     class Sensor(object):
-        def __init__(self, eidParam):
+        def __init__(self, eidParam, rng):
+            self.rng = rng
             self.SNR = eidParam.SNR
             self.SpatialResol = eidParam.res  # Samples per measure
             self.Scale = 1.0
@@ -238,7 +230,6 @@ class EID(object):
             self.noisePower = 10.0 * np.log10(mmPower) - self.SNR
             self.noisePower = 10.0 ** (self.noisePower / 10.0)
             self.noiseSigma = np.sqrt(self.noisePower)
-            # print("Noise power = {0}".format(self.noisePower))
             self.NoiseAmp = self.RefMM.max() / (10.0 ** (self.SNR / 20.0))
             # Current Sensor Measurement
             self.V = 0.0
@@ -298,7 +289,7 @@ class EID(object):
                 return self.rawTraj(t)
 
         def Measure(self, sPos, t):
-            noise = self.NoiseAmp * randn(1)
+            noise = self.NoiseAmp * self.rng.standard_normal()
             # Interpolate over sample grid
             Vp = self.Vp
             objPos = self.ObjPos(t)
@@ -309,7 +300,7 @@ class EID(object):
                 self.V = 0.0
             elif self.blind == "noise":
                 # Sensor blinded, returing pure random measurements
-                self.V = Vp(random(1))
+                self.V = Vp(self.rng.random())
             else:
                 # normal sensor reading
                 self.V = Vp(offset) + noise
