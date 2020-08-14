@@ -99,7 +99,7 @@ You should see a new MATLAB figure containing Figure 2 panels. PDF(s) will be sa
 To reproduce all the figures, follow the same steps, but set `targetFig = 'all'`
 
 ### Benchmark Running Time
-- **Benchmark on AWS**: `~4.03 hours` on AWS EC2 c5a.24xlarge instance (Ubuntu 18.04 LTS 64-bit, AMD EPYC 7R32 with boost frequency up-to 3.3GHz, 48 Core/96 Threads available under HVM), `~22.17 hours` on AWS EC2 c5a.4xlarge instance (Ubuntu 18.04 LTS 64-bit, AMD EPYC 7R32 with boost frequency up-to 3.3GHz, 8 Core/16 Threads available under HVM). **Benchmark on macOS**: `~100 hours' on a 2015 iMac with 8 threads running on a 3.3 GHz Quad-Core Intel Core i5.
+- **Benchmark on AWS**: `~4.03 hours` on AWS EC2 c5a.24xlarge instance (Ubuntu 18.04 LTS 64-bit, AMD EPYC 7R32 with boost frequency up-to 3.3GHz, 48 Core/96 Threads available under HVM), `~22.17 hours` on AWS EC2 c5a.4xlarge instance (Ubuntu 18.04 LTS 64-bit, AMD EPYC 7R32 with boost frequency up-to 3.3GHz, 8 Core/16 Threads available under HVM). **Benchmark on macOS**: `~100 hours' on a 2015 iMac (macOS 10.15.6, 64-bit 3.3 GHz Quad-Core Intel Core i5, 4 Core/8 Threads).
 
 ### Additional Note for Linux and MacOS Users
 #### Prevent System from Sleeping During Simulation
