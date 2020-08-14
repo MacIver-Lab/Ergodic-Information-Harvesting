@@ -23,8 +23,10 @@ Note that this repository has included all of the published data, including all 
 ## Detailed Steps
 To avoid possible [dependency hell](https://en.wikipedia.org/wiki/Dependency_hell) and minimize the effort of setting up the runtime environment we used for our results, we prebuilt a [container image](https://en.wikipedia.org/wiki/Container_(virtualization)) to be used for executing all the simulation code in Python using [Docker](https://docs.docker.com/get-started/overview/). Here is an article explaining the utility of containers for reproducibility of research: [Singularity: Scientific containers for mobility of compute](https://doi.org/10.1371/journal.pone.0177459). Note that this is only for reproducing simulations: for generation of the figures from the simulations, a local installation of MATLAB (not provided in the container) is still required.
 
-### 1. Clone This Repository
-To start, you will need to clone the most recent version of the EIH repository. Two tools are required:
+### 1. Obtain code and data
+To start, you will either be using the [Zenodo](https://zenodo.org) archived repository, which includes both the data and the code; or, if you prefer, you clone the most recent version of the EIH repository. To obtain the Zenodo archived repository, which is a zip of the release of the repository corresponding to the release of the publication by eLife, you will simply search "maciver chen" on the [Zenodo](https://zenodo.org) website, and download the 32GB zip file of this repository. 
+
+To clone the most recent version of the EIH repository (which may have changes from the archived release to correct errors that are found), two tools are required:
 - `git` - is used to pull all the non-data files from this repository. Go to [git's official release page](https://git-scm.com/downloads) to download and install git. Then use the following command to clone this repository:
  ```bash
  git clone --depth=1 https://github.com/MacIver-Lab/Ergodic-Information-Harvesting
@@ -39,7 +41,7 @@ If you succeeded, you should see files being downloaded by `git-lfs`. Once it is
 
 ### 2. Install Docker and Pull the EIH Container Image
 
-- Install Docker by following the official documentations: https://docs.docker.com/engine/install/
+- Install Docker by following the official documentation: https://docs.docker.com/engine/install/
 
 - (Optionally) For Linux or Linux-based HPCC/cloud computing environments, please additionally follow the [post-installation setup steps for Linux](https://docs.docker.com/engine/install/linux-postinstall/) to allow running docker without `sudo`. If you don't want or unable to follow this step, you will need to make sure to run docker commands with `sudo docker` rather than `docker`.
 
