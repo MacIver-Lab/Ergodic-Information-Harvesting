@@ -1,4 +1,4 @@
-function makeFigure6S1Plot(dataPath, savePath, usePublished)
+function makeFigure6S1Plot(dataPath, savePath)
 %% Plot figure 6---figure supplement 1
 
 close all;
@@ -8,13 +8,9 @@ GEN_DATA_PATH = @(fname) fullfile(dataPath, fname);
 GEN_SAVE_PATH = @(fname) fullfile(savePath, fname);
 
 %% Load data
-if usePublished
-    load(GEN_DATA_PATH('snr_sweep_sim/SNR_SweepSim_Data.mat'));
-else
-    % Search for simulated data in the working directory
-    [snrErg, snrInf, RE_Erg, RE_Inf] = ...
-        ProcessData(GEN_DATA_PATH('snr_sweep_sim/'));
-end
+% Search for simulated data in the working directory
+[snrErg, snrInf, RE_Erg, RE_Inf] = ...
+    ProcessData(GEN_DATA_PATH('snr_sweep_sim/'));
 
 %% Plot result
 figure(1); clf;
@@ -42,6 +38,7 @@ opt.YMinorTick = 'off';
 opt.XTick = [10:10:50];
 opt.YTick = [0:0.5:2.5];
 opt.XLim = [9, 57];
+opt.YLim = [0, 2.5];
 opt.FontName = 'Helvetica';
 opt.FontSize = 14;
 opt.IgnoreLines = 1;

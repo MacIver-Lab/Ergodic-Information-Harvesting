@@ -106,7 +106,7 @@ switch targetFig
     case 'fig6'
         makeFigure6Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'fig6s1'
-        makeFigure6S1Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH, USE_PUBLISHED_DATASET);
+        makeFigure6S1Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'fig6s2'
         makeFigure6S2Plot(FIG_DATA_PATH, FIG_OUTPUT_PATH);
     case 'fig6s3'
